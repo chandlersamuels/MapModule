@@ -1,0 +1,9 @@
+#mapid{
+  height: 500px;
+  width: 800px;
+  display: inline-block;
+}
+
+body{
+  padding:20px
+}
