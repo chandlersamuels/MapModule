@@ -78,7 +78,7 @@ var testObjects =
 		            "colorScheme": "Greens",
 		            "colorRange": 3,
 		            "colorSchemeAdditional": {
-		                "colorSchemeSplitFlag": false,
+		                "colorSchemeSplitFlag": true,
 		                "breakpoint": 0,
 		                "positiveColorScheme": "Greens",
 		                "negativeColorScheme": "Reds"
@@ -95,11 +95,11 @@ var testObjects =
 		    "data": [
 		        {
 		            "State": "AL",
-		            "Sales": 10
+		            "Sales": -10
 		        },
 		        {
 		            "State": "FL",
-		            "Sales": 5
+		            "Sales": -5
 		        },
 		        {
 		            "State": "IL",
@@ -111,7 +111,7 @@ var testObjects =
 					 },
 					 {
 							"State": "TX",
-							"Sales": 25
+							"Sales": 23
 					}
 		    ]
 		},

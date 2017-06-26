@@ -148,54 +148,115 @@ function renderMap(obj) {
                 }
               })
 
-              console.log(dataArray);
-
-              var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
-              var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
-
-
-
-              var income_color={};
-
-              var max = d3.max(dataArray, function(d){return d;});
-              var min = d3.min(dataArray, function(d){return d;})
-
-              var income_domain = [];
-              income_domain = range(max, min, colorRange);
-
-              console.log(income_domain)
-
-              income_color = d3.scaleLinear() //scaleLinear for D3.V4
-                .domain(income_domain)
-                .range(colorbrewer[colorScheme][colorRange]);
-
-                // var income_color = {};
-                //
-                // var income_color = d3.scaleLinear()
-                //   .range(colorbrewer.Greens[3])
-                //   .domain(income_domain);
-
-              function style(feature){
-                return{
-                  fillColor: income_color(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn]),
-                  weight:2,
-                  opacity:1,
-                  color: 'darkgrey',
-                  dashArray: '1',
-                  fillOpacity: 1
-                };
-              }
-
               var statesData = data;
               console.log(statesData)
               var geojson;
 
+              if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false){
 
-              geojson = L.geoJson(statesData,{
-                style: style
-              }).addTo(map);
+                var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
+                var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
+
+                var income_color={};
+
+                var max = d3.max(dataArray, function(d){return d;});
+                var min = d3.min(dataArray, function(d){return d;})
+
+                var income_domain = [];
+                income_domain = range(max, min, colorRange);
+
+
+                income_color = d3.scaleLinear() //scaleLinear for D3.V4
+                  .domain(income_domain)
+                  .range(colorbrewer[colorScheme][colorRange]);
+
+
+                  function style(feature){
+                    return{
+                      fillColor: income_color(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn]),
+                      weight:2,
+                      opacity:1,
+                      color: 'darkgrey',
+                      dashArray: '1',
+                      fillOpacity: 1
+                    };
+                  }
+
+                  geojson = L.geoJson(statesData,{
+                    style: style
+                  }).addTo(map);
+
+                console.log("ASWERADFAWAEASDFASfd")
+              }
+              else{
+
+                var income_domainPOS = []
+                var income_domainNEG = []
+
+                var max = d3.max(dataArray, function(d){return d;});
+                var min = d3.min(dataArray, function(d){return d;});
+
+                var colorSchemePOS= obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
+                var colorSchemeNEG= obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
+
+
+
+                var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
+
+                var income_domain = [];
+                income_domainNEG = rangeNEG(0, min, colorRange);
+                income_domainPOS = range(max, 0, colorRange);
+
+                income_colorPOS = d3.scaleLinear() //scaleLinear for D3.V4
+                  .domain(income_domainPOS)
+                  .range(colorbrewer[colorSchemePOS][colorRange]);
+
+                income_colorNEG = d3.scaleLinear() //scaleLinear for D3.V4
+                  .domain(income_domainNEG)
+                  .range(colorbrewer[colorSchemeNEG][colorRange]);
+
+                function style(feature){
+                  if(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn] == undefined){
+                     return {
+                         fillColor: "grey", //conf
+                         weight: 2,
+                         opacity: 1,
+                         color: 'darkgrey',
+                         dashArray: '1',
+                         fillOpacity: .2
+                     };}
+                     else{
+                       colorScheme = "Reds"
+                       if(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn] < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint){
+                         return {
+                             fillColor: income_colorNEG(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn]), //conf
+                             weight: 2,
+                             opacity: 1,
+                             color: 'darkgrey',
+                             dashArray: '1',
+                             fillOpacity: 1
+                         };}
+                       else {
+                         return {
+                             fillColor: income_colorPOS(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn]), //conf
+                             weight: 2,
+                             opacity: 1,
+                             color: 'darkgrey',
+                             dashArray: '1',
+                             fillOpacity: 1
+                           };}
+                     }
+                   }
+
+                  geojson = L.geoJson(statesData,{
+                    style: style
+                  }).addTo(map);
+
+                console.log("doesnt work")
+
+              }
             }
-				}
+				  }
 
 				else if(obj.vizualizationConfiguration.defaultMapFace == "continuous"){
 					console.log("continuous")
