@@ -5,14 +5,13 @@ var colorScale = d3.scaleOrdinal()
 // This function will be placed inside the RI360 framework
 function renderMap(obj) {
 
-	var dataobject = obj.data;
-	console.log(dataobject[0].Price)
-
-
 	if(obj.vizualizationConfiguration.defaultMapType == "slippy")
 	{
+
+        var dataobject = obj.data;
+  	    console.log(dataobject[0].Price)
 			//pull data from slippy map type
-			var tileDisplay = obj.vizualizationConfiguration.slippy.tileUrl,
+			  var tileDisplay = obj.vizualizationConfiguration.slippy.tileUrl,
 				zoomLevel=obj.vizualizationConfiguration.slippy.zoomLevel,
 				Latitude =obj.vizualizationConfiguration.slippy.defaultLatitude,
 				Longitude =obj.vizualizationConfiguration.slippy.defaultLongitude;
@@ -34,18 +33,6 @@ function renderMap(obj) {
 					var map = L.map('mapid').setView([39.7392, -104.9903], 4);
 					L.tileLayer(tileDisplay).addTo(map);
 				}
-
-				// if(obj.vizualizationConfiguration.geographyBoundariesFlag == true){
-				// 		var geojson;
-				// 		geographyMapKey = obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl;
-				// 		console.log(geographyMapKey)
-				// 		geojson = L.geoJson(geographyMapKey).addTo(map);
-				// }
-				// else{
-				// 	console.log("No Map")
-				// }
-
-		//Slippy map integration
 
 				if(obj.vizualizationConfiguration.defaultMapFace == "discrete"){
 					var latLong = [];
@@ -116,9 +103,8 @@ function renderMap(obj) {
 								radius: 100,
 						}).addTo(map);
 					}
-					}
-
 				}
+			}
 
 				else if(obj.vizualizationConfiguration.defaultMapFace == "sumByArea"){
 
@@ -279,20 +265,188 @@ function renderMap(obj) {
 
 	else if(obj.vizualizationConfiguration.defaultMapType == "svg")
 	{
-				if(obj.vizualizationConfiguration.defaultMapFace == "discrete"){
 
-				}
-				else if(obj.vizualizationConfiguration.defaultMapFace == "sumByArea"){
+    d3.queue() //used to ensure that all data is loaded into the program before execution
+      .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.topoJsonUrl)
+      .await(ready)
 
-				}
-				else{
-					console.log("incorrect defaultMapFace")
-				}
-	}
+      function ready(error, data){
+        if(error) throw error;
 
-	else{
-		console.log("Incorrect Map Type")
-	}
+        var usMap = topojson.feature(data, {
+          type: "GeometryCollection",
+          geometries: data.objects.USMap.geometries //grabbing the points to create the polygon points so it can trace the Map
+        });
+
+        //identify projection -using geoalbersUSA
+        var projection = d3.geoAlbersUsa() //geoAlbersUsa is the basic map projection, there are many more. This is the best for plane US view.
+          .fitExtent([[20,20],[700,500]], usMap) //FitExtent used to fit the "Tile" for the viewer
+
+        var geoPath = d3.geoPath().projection(projection) //initialize the path
+
+
+        if(obj.vizualizationConfiguration.defaultMapFace == "sumByArea"){
+
+            if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false){
+
+                console.log("inside sumByArea");
+
+                var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
+                var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
+
+                  var valueArray= [];
+                  _.each(obj.data, function(dataRow){
+                    valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
+                  })
+
+
+                  var max = d3.max(valueArray, function(d) { return d;});
+                  var min = d3.min(valueArray, function(d) { return d;});
+
+                  var income_domain = range(max, min, colorRange)
+
+                  var income_color = d3.scaleLinear() //scaleLinear for D3.V4
+                    .domain(income_domain)
+                    .range(colorbrewer[colorScheme][colorRange]);
+
+
+
+                d3.select("svg.pivotCount").selectAll("path") //assign the projected map to the svg in HTML
+                  .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
+                  .enter()
+                  .append("path")
+                  .attr("d", geoPath)
+                  .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+                  .style("stroke-width", "2")
+                  .attr("fill", function(d){
+                    //feature.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]
+                    var geographyData = _.find(obj.data, function (dataRow){
+                      return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                    });
+
+                    if(geographyData){
+                        var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                        return income_color(value);
+                    }
+                    else{
+                      console.log("No geography data defined")
+                      return "Grey"
+                    }
+
+                    console.log(geographyData);
+                    console.log(d.properties[obj.vizualizationConfiguration.sumAreas.mapField]); //might have to
+                  })
+
+                }
+                else{
+
+                  var income_domainPOS = []
+                  var income_domainNEG = []
+
+                  var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange
+                  var colorSchemeNEG = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
+                  var colorSchemePOS = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
+
+                  console.log(colorSchemePOS);
+                  console.log(colorSchemeNEG);
+
+                  var valueArray= [];
+
+                  _.each(obj.data, function(dataRow){
+                    valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
+                  })
+
+                  var max = d3.max(valueArray, function(d) { return d;});
+                  var min = d3.min(valueArray, function(d) { return d;});
+
+                  //returns an array of integers
+                  income_domainPOS = range(max, 0, colorRange);
+                  income_domainNEG = rangeNEG(0, min, colorRange);
+
+                  var income_colorPOS = d3.scaleLinear() //scaleLinear for D3.V4
+                    .domain(income_domainPOS)
+                    .range(colorbrewer[colorSchemePOS][colorRange]);
+
+                  var income_colorNEG = d3.scaleLinear() //scaleLinear for D3.V4
+                    .domain(income_domainNEG)
+                    .range(colorbrewer[colorSchemeNEG][colorRange]);
+
+
+                  d3.select("svg.pivotCount").selectAll("path") //assign the projected map to the svg in HTML
+                    .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
+                    .enter()
+                    .append("path")
+                    .attr("d", geoPath)
+                    .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+                    .style("stroke-width", "2")
+                    .attr("fill", function(d){
+                      //feature.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]
+                      var geographyData = _.find(obj.data, function (dataRow){
+                        return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                      });
+
+                      if(geographyData){
+                          var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                          if(value < 0)
+                          {
+                            return(income_colorNEG(value));
+                          }
+                          else
+                          {
+                            return(income_colorPOS(value));
+                          }
+                      }
+                      else
+                      {
+                        console.log("No geography data defined")
+                        return ("Grey");
+                      }
+                    })
+                  }
+                }
+                else if(obj.vizualizationConfiguration.defaultMapFace == "discrete"){
+
+                  var valueArray = [];
+
+                  _.each(obj.data, function(dataRow){
+                    valueArray.push([+dataRow[obj.vizualizationConfiguration.discretes[0].latColumn], +dataRow[obj.vizualizationConfiguration.discretes[0].longColumn], dataRow[obj.vizualizationConfiguration.discretes[0].attributeColumns.category]])
+                  })
+
+                console.log(valueArray)
+
+
+                  d3.select("svg.pivotCount").selectAll("path") //assign the projected map to the svg in HTML
+                    .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
+                    .enter()
+                    .append("path")
+                    .attr("d", geoPath)
+                    .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+                    .style("stroke-width", "2")
+                    .attr("fill","lightgrey")
+
+                  d3.select("svg.pivotCount").selectAll("circle")
+                		.data(valueArray).enter()
+                		.append("circle")
+                		.attr("cx", function (d) { console.log(projection(d[0])); return projection(d)[0]})
+                		.attr("cy", function (d) { return projection(d[1]); })
+                		.attr("r", "15px")
+                		.attr("fill", function(d){ return "Blue"})
+
+
+              }
+                else{
+                  console.log("incorrect defaultMapFace")
+                }
+              }
+            }
+
+  else{
+    console.log("Incorrect Map Type")
+    }
+
+
+
+
 
 
 }
@@ -301,5 +455,5 @@ function renderMap(obj) {
 // *****
 // only have one of the following run at a time
 //renderMap(testObjects["1-slippy-discrete"]);
-renderMap(testObjects["2-slippy-area"]);
+renderMap(testObjects["4-svg-discrete"]);
 //renderMap(testObjects["3-svg-area"]);

@@ -15,7 +15,7 @@ var testObjects =
 		        "geographyBoundariesFlag": true,
 		        "geographyBoundaries": {
 		            "mapName": "US Map by State",
-		            "topoJsonUrl": "blah/blah/blah/USStates.topojson",
+		            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
 		            "geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
 		        },
 		        "discretes": [{
@@ -116,27 +116,30 @@ var testObjects =
 		    ]
 		},
 		"3-svg-area": {
-		    "vizualizationConifugration": {
+		    "vizualizationConfiguration": {
 		        "defaultMapType": "svg",
-		        "svg": {},
+						"defaultMapFace": "sumByArea",
+		        "svg": {
+							"jsonType":"GeometryCollection"
+						},
 		        "slippy": {},
 		        "geographyBoundariesFlag": true,
 		        "geographyBoundaries": {
 		            "mapName": "US Map by State",
-		            "topoJsonUrl": "blah/blah/blah/USStates.topojson",
+		            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
 		            "geoJsonUrl": "blah/blah/blah/USStates.geojson"
 		        },
 		        "discretes": [],
 		        "sumAreas": {
-		            "colorScheme": "Paired",
+		            "colorScheme": "Greens",
 		            "colorRange": 9,
 		            "colorSchemeAdditional": {
-		                "colorSchemeSplitFlag": false,
+		                "colorSchemeSplitFlag": true,
 		                "breakpoint": 0,
 		                "positiveColorScheme": "Greens",
 		                "negativeColorScheme": "Reds"
 		            },
-		            "mapField": "STATEFS",
+		            "mapField": "STUSPS",
 		            "mapColumns": [
 		                "State",
 		                "County"
@@ -146,18 +149,85 @@ var testObjects =
 		        }
 		    },
 		    "data": [
+					{
+							"State": "NY",
+							"Sales": "300"
+					},
+					{
+							"State": "PA",
+							"Sales": "-150"
+					},
+					{
+							"State": "TX",
+							"Sales": "105"
+					},
 		        {
 		            "State": "MD",
-		            "Sales": "549957.88"
+		            "Sales": "670"
 		        },
 		        {
 		            "State": "FL",
-		            "Sales": "211563.2"
+		            "Sales": "-450"
 		        },
 		        {
 		            "State": "IL",
-		            "Sales": "186942.95"
+		            "Sales": "-530"
 		        }
 		    ]
+		},
+		"4-svg-discrete": {
+		    "vizualizationConfiguration": {
+		        "defaultMapType": "svg",
+						"defaultMapFace": "discrete",
+		        "slippy": {
+		            "defaultLatitude": 37.4316,
+		            "defaultLongitude": -78.6569,
+		            "zoomLevel": 6,
+		            "tileType": "Open Street Maps",
+		            "tileUrl": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+		        },
+		        "geographyBoundariesFlag": true,
+		        "geographyBoundaries": {
+		            "mapName": "US Map by State",
+		            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
+		            "geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
+		        },
+		        "discretes": [{
+		            "colorScheme": "Paired",
+		            "latColumn": "LatitudeLocation",
+		            "longColumn": "LongitudeLocation",
+		            "categoryFlag": true,
+		            "magnitudeFlag": false,
+		            "displayOptions": "none",
+		            "attributeColumns": {
+		                "category": "Make",
+		                "magnitude": "Price",
+		                "label": "VIN",
+		                "additional": [
+		                    "Make",
+		                    "Model"
+		                ]
+		            }
+		        }]
+		    },
+		    "data": [{
+		        "Dealer": "Barbee's Freeway",
+		        "VIN": "228388288",
+		        "Make": "Toyota",
+		        "Model": "WRX STI",
+		        "Year": "5107",
+		        "Price": "1938",
+		        "LatitudeLocation": 40.0150 ,
+						"LongitudeLocation": -105.2705
+		    }, {
+		        "Dealer": "Barbee's Freeway",
+		        "VIN": "228388288",
+		        "Make": "Subaru",
+		        "Model": "WRX STI",
+		        "Year": "2107",
+		        "Price": "6938",
+		        "LatitudeLocation": 40.0000 ,
+						"LongitudeLocation": -76.7000
+		    }]
 		}
 	};
