@@ -43,6 +43,39 @@ function renderMap(obj) {
 
 					}
 
+          if(obj.vizualizationConfiguration.geographyBoundariesFlag == true){
+            console.log("geographyBoundariesFlag equal true")
+
+            d3.queue() //used to ensure that all data is loaded into the program before execution
+              .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
+              .await(ready)
+
+              function style(feature){
+                return{
+                  fillColor: "lightgrey",
+                  weight:1,
+                  opacity:.5,
+                  color: 'darkgrey',
+                  dashArray: '1',
+                  fillOpacity: .5
+                };
+              }
+
+              function ready(error, data){
+
+                var statesData = data;
+                console.log(statesData)
+                var geojson;
+
+                geojson = L.geoJson(statesData,{
+                  style:style
+                }).addTo(map);
+
+              }
+          }
+
+
+
           console.log(latLong)
 
 					if(obj.vizualizationConfiguration.discretes[0].categoryFlag == true && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == false){
@@ -255,6 +288,38 @@ function renderMap(obj) {
 					for(var i=0; i < dataobject.length; i++){
 						latLong.push([dataobject[i][obj.vizualizationConfiguration.discretes[0].latColumn], dataobject[i][obj.vizualizationConfiguration.discretes[0].longColumn]])
 					}
+
+          if(obj.vizualizationConfiguration.geographyBoundariesFlag == true){
+            console.log("geographyBoundariesFlag equal true")
+
+            d3.queue() //used to ensure that all data is loaded into the program before execution
+              .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
+              .await(ready)
+
+              function style(feature){
+                return{
+                  fillColor: "lightgrey",
+                  weight:1,
+                  opacity:.5,
+                  color: 'darkgrey',
+                  dashArray: '1',
+                  fillOpacity: .5
+                };
+              }
+
+              function ready(error, data){
+
+                var statesData = data;
+                console.log(statesData)
+                var geojson;
+
+                geojson = L.geoJson(statesData,{
+                  style:style
+                }).addTo(map);
+
+              }
+          }
+
 					var heat = L.heatLayer(latLong,{
 										 radius: 15,
 										 blur: 5,
@@ -267,6 +332,37 @@ function renderMap(obj) {
           for(var i=0; i < dataobject.length; i++){
 						latLong.push([dataobject[i][obj.vizualizationConfiguration.discretes[0].latColumn], dataobject[i][obj.vizualizationConfiguration.discretes[0].longColumn]])
 					}
+
+          if(obj.vizualizationConfiguration.geographyBoundariesFlag == true){
+            console.log("geographyBoundariesFlag equal true")
+
+            d3.queue() //used to ensure that all data is loaded into the program before execution
+              .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
+              .await(ready)
+
+              function style(feature){
+                return{
+                  fillColor: "lightgrey",
+                  weight:1,
+                  opacity:.5,
+                  color: 'darkgrey',
+                  dashArray: '1',
+                  fillOpacity: .5
+                };
+              }
+
+              function ready(error, data){
+
+                var statesData = data;
+                console.log(statesData)
+                var geojson;
+
+                geojson = L.geoJson(statesData,{
+                  style:style
+                }).addTo(map);
+
+              }
+          }
 
           var markers = L.markerClusterGroup({ chunkedLoading: true });
 
@@ -515,15 +611,79 @@ function renderMap(obj) {
     }
 
 
+    $('select').on('change', function() {
 
+      if(this.value == 1){
+        map.remove();
+    //     var node  = document.getElementById("mapid");
+    //     node.parentNode.removeChild(node);
+    //
+    //     var div = document.createElement("div");
+    //     div.setAttribute("id", "mapid");
+    // // as an example add it to the body
+    //     document.body.appendChild(div);
 
+        renderMap(testObjects["1-slippy-discrete"]);
+      }
+      else if(this.value == 2){
+        map.remove();
+    //     var node  = document.getElementById("mapid");
+    //     node.parentNode.removeChild(node);
+    //
+    //     var div = document.createElement("div");
+    //     div.setAttribute("id", "mapid");
+    // // as an example add it to the body
+    //     document.body.appendChild(div);
 
+        renderMap(testObjects["1-slippy-discrete-two"]);
+      }
+      else if(this.value == 3){
+        map.remove();
+    //     var node  = document.getElementById("mapid");
+    //     node.parentNode.removeChild(node);
+    //
+    //     var div = document.createElement("div");
+    //     div.setAttribute("id", "mapid");
+    // // as an example add it to the body
+    //     document.body.appendChild(div);
+
+        renderMap(testObjects["2-slippy-area"]);
+      }
+      else if(this.value == 4){
+        map.remove();
+    //     var node  = document.getElementById("mapid");
+    //     node.parentNode.removeChild(node);
+    //
+    //     var div = document.createElement("div");
+    //     div.setAttribute("id", "mapid");
+    // // as an example add it to the body
+    //     document.body.appendChild(div);
+
+        renderMap(testObjects["3-svg-area"]);
+      }
+      else if(this.value == 5){
+        map.remove();
+    //     var node  = document.getElementById("mapid");
+    //     node.parentNode.removeChild(node);
+    //
+    //     var div = document.createElement("div");
+    //     div.setAttribute("id", "mapid");
+    // // as an example add it to the body
+    //     document.body.appendChild(div);
+
+        renderMap(testObjects["4-svg-discrete"]);
+      }
+    })
 
 }
+
+
+
+
 
 
 // *****
 // only have one of the following run at a time
 //renderMap(testObjects["1-slippy-discrete"]);
-renderMap(testObjects["1-slippy-discrete-two"]);
+renderMap(testObjects["2-slippy-area"]);
 //renderMap(testObjects["3-svg-area"]);

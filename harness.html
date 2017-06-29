@@ -5,6 +5,9 @@
 		<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
 		<script src ="https://d3js.org/topojson.v2.min.js"></script>
 
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
 		  <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
 			<script type='text/javascript' src='http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js'></script>
 
@@ -23,8 +26,18 @@
 		<title> RI360 - Map module </title>
 	</head>
 	<body>
-		<svg class = "pivotCount" width = "700" height = "500"></svg>
+		<div>
+			<h4><u> DataType </u></h4>
+			<select>
+          <option value="1">1-slippy-discrete</option>
+          <option value="2">1-slippy-discrete-two</option>
+          <option value="3">2-slippy-area</option>
+          <option value="4">3-svg-area</option>
+          <option value="5">4-svg-discrete</option>
+      </select>
+		</div>
 		<div id="mapid"></div>
+		<svg class = "pivotCount" width = "1500" height = "1000"></svg>
 		  <script src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
 			<script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js'></script>
 	    <script src ="test-objects.js"></script>

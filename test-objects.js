@@ -4,7 +4,7 @@ var testObjects =
 		"1-slippy-discrete": {
 		    "vizualizationConfiguration": {
 		        "defaultMapType": "slippy",
-						"defaultMapFace": "aggregate",
+						"defaultMapFace": "discrete",
 		        "slippy": {
 		            "defaultLatitude": 37.4316,
 		            "defaultLongitude": -78.6569,
@@ -67,7 +67,7 @@ var testObjects =
 		            "tileType": "Open Street Maps",
 		            "tileUrl": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
 		        },
-		        "geographyBoundariesFlag": true,
+		        "geographyBoundariesFlag": false,
 		        "geographyBoundaries": {
 		            "mapName": "US Map by State",
 		            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
