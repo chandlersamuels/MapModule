@@ -10,7 +10,7 @@ function renderMap(obj) {
 	{
 
         var dataobject = obj.data;
-  	    console.log(dataobject[0].Price)
+  	    console.log(dataobject[0].Ticket)
 			//pull data from slippy map type
 			  var tileDisplay = obj.vizualizationConfiguration.slippy.tileUrl,
 				zoomLevel=obj.vizualizationConfiguration.slippy.zoomLevel,
@@ -39,7 +39,7 @@ function renderMap(obj) {
 					var latLong = [];
 
 					for(var i=0; i < dataobject.length; i++){
-						latLong.push([dataobject[i][obj.vizualizationConfiguration.discretes[0].latColumn], dataobject[i][obj.vizualizationConfiguration.discretes[0].longColumn]]);
+						latLong.push([dataobject[i][obj.vizualizationConfiguration.discretes[0].latColumn], +dataobject[i][obj.vizualizationConfiguration.discretes[0].longColumn]]);
 
 					}
 
@@ -50,6 +50,7 @@ function renderMap(obj) {
 						var key = obj.vizualizationConfiguration.discretes[0].attributeColumns.category;
 
 							for(var i = 0; i < latLong.length; i++){
+                console.log(latLong[i])
 								var circle = L.circle(latLong[i], {
 									color: colorScale(dataobject[i][key]),
 									fillColor: '#f03',
@@ -524,5 +525,5 @@ function renderMap(obj) {
 // *****
 // only have one of the following run at a time
 //renderMap(testObjects["1-slippy-discrete"]);
-renderMap(testObjects["1-slippy-discrete"]);
+renderMap(testObjects["1-slippy-discrete-two"]);
 //renderMap(testObjects["3-svg-area"]);

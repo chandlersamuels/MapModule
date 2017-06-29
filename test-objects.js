@@ -56,6 +56,57 @@ var testObjects =
 						"LongitudeLocation": -76.7000
 		    }]
 		},
+		"1-slippy-discrete-two": {
+		    "vizualizationConfiguration": {
+		        "defaultMapType": "slippy",
+						"defaultMapFace": "discrete",
+		        "slippy": {
+		            "defaultLatitude": 37.4316,
+		            "defaultLongitude": -78.6569,
+		            "zoomLevel": 6,
+		            "tileType": "Open Street Maps",
+		            "tileUrl": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+		        },
+		        "geographyBoundariesFlag": true,
+		        "geographyBoundaries": {
+		            "mapName": "US Map by State",
+		            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
+		            "geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
+		        },
+		        "discretes": [{
+		            "colorScheme": "Paired",
+		            "latColumn": "lat",
+		            "longColumn": "long",
+		            "categoryFlag": true,
+		            "magnitudeFlag": true,
+		            "displayOptions": "none",
+		            "attributeColumns": {
+		                "category": "Type",
+		                "magnitude": "Revenue",
+		                "label": "Ticket",
+		                "additional": [
+		                    "Ticket",
+		                    "Type"
+		                ]
+		            }
+		        }]
+		    },
+		    "data": [
+                        {"Ticket":"498716","Type":"Network","long":-80.402131,"lat":37.130387,"Revenue":1111},
+                        {"Ticket":"498717","Type":"Network","long":-80.576964,"lat":37.146625,"Revenue":1111},
+                        {"Ticket":"498718","Type":"Network","long":-80.424182,"lat":37.135182,"Revenue":1111},
+                        {"Ticket":"498719","Type":"Cable","long":-79.075052,"lat":37.275092,"Revenue":1111},
+                        {"Ticket":"498720","Type":"Network-Res DSL","long":-78.752936,"lat":38.820019,"Revenue":1111},
+                        {"Ticket":"498721","Type":"VOIP-Res-ShenTel Cable","long":-80.478879,"lat":39.015119,"Revenue":1111},
+                        {"Ticket":"498722","Type":"Prospect Account","long":-81.236414,"lat":36.899211,"Revenue":1111},
+                        {"Ticket":"498723","Type":"VOIP-Res-ShenTel Cable","long":-79.381601,"lat":39.401738,"Revenue":1111},
+                        {"Ticket":"498726","Type":"Network - Business Cust","long":-80.417739,"lat":37.131102,"Revenue":1111},
+                        {"Ticket":"498727","Type":"Prospect Account","long":-79.270755,"lat":37.296991,"Revenue":1111},
+                        {"Ticket":"498728","Type":"Network-Res DSL","long":-78.594149,"lat":38.808933,"Revenue":13111},
+                        {"Ticket":"498731","Type":"Network","long":-78.833646,"lat":37.363566,"Revenue":11211},
+                        {"Ticket":"500806","Type":"VOIP-Res-ShenTel Cable","long":-79.620919,"lat":37.002124,"Revenue":11111}
+                     ]
+		},
 		"2-slippy-area": {
 		    "vizualizationConfiguration": {
 		        "defaultMapType": "slippy",
