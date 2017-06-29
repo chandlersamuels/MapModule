@@ -4,7 +4,7 @@ var testObjects =
 		"1-slippy-discrete": {
 		    "vizualizationConfiguration": {
 		        "defaultMapType": "slippy",
-						"defaultMapFace": "discrete",
+						"defaultMapFace": "aggregate",
 		        "slippy": {
 		            "defaultLatitude": 37.4316,
 		            "defaultLongitude": -78.6569,
@@ -193,11 +193,13 @@ var testObjects =
 		            "geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
 		        },
 		        "discretes": [{
-		            "colorScheme": "Paired",
+								"minBubbleSize": 3,
+								"maxBubbleSize": 15,
+		            "colorScheme": "Green",
 		            "latColumn": "LatitudeLocation",
 		            "longColumn": "LongitudeLocation",
 		            "categoryFlag": true,
-		            "magnitudeFlag": false,
+		            "magnitudeFlag": true,
 		            "displayOptions": "none",
 		            "attributeColumns": {
 		                "category": "Make",
@@ -216,17 +218,28 @@ var testObjects =
 		        "Make": "Toyota",
 		        "Model": "WRX STI",
 		        "Year": "5107",
-		        "Price": "1938",
+		        "Price": "212345",
 		        "LatitudeLocation": 40.0150 ,
 						"LongitudeLocation": -105.2705
-		    }, {
+		    },
+				{
+		        "Dealer": "Barbee's Freeway",
+		        "VIN": "228388288",
+		        "Make": "Lexus",
+		        "Model": "WRX STI",
+		        "Year": "5107",
+		        "Price": "50723",
+		        "LatitudeLocation": 40.0150 ,
+						"LongitudeLocation": -104.2705
+		    },
+				{
 		        "Dealer": "Barbee's Freeway",
 		        "VIN": "228388288",
 		        "Make": "Subaru",
 		        "Model": "WRX STI",
 		        "Year": "2107",
-		        "Price": "6938",
-		        "LatitudeLocation": 40.0000 ,
+		        "Price": "37123",
+		        "LatitudeLocation": 40.0150 ,
 						"LongitudeLocation": -76.7000
 		    }]
 		}

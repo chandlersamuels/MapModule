@@ -1,4 +1,5 @@
-
+var colorScale1 = d3.scaleOrdinal()
+      .range(['#C0C0C0', '#808080', '#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
 var colorScale = d3.scaleOrdinal()
       .range(['#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
 // Chandler - this is the function where you build all your magic
@@ -38,8 +39,11 @@ function renderMap(obj) {
 					var latLong = [];
 
 					for(var i=0; i < dataobject.length; i++){
-						latLong.push([dataobject[i].LatitudeLocation, dataobject[i].LongitudeLocation]);
+						latLong.push([dataobject[i][obj.vizualizationConfiguration.discretes[0].latColumn], dataobject[i][obj.vizualizationConfiguration.discretes[0].longColumn]]);
+
 					}
+
+          console.log(latLong)
 
 					if(obj.vizualizationConfiguration.discretes[0].categoryFlag == true && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == false){
 
@@ -248,7 +252,7 @@ function renderMap(obj) {
 					console.log("continuous")
 					var latLong = [];
 					for(var i=0; i < dataobject.length; i++){
-						latLong.push([dataobject[i].LatitudeLocation, dataobject[i].LongitudeLocation])
+						latLong.push([dataobject[i][obj.vizualizationConfiguration.discretes[0].latColumn], dataobject[i][obj.vizualizationConfiguration.discretes[0].longColumn]])
 					}
 					var heat = L.heatLayer(latLong,{
 										 radius: 15,
@@ -256,6 +260,26 @@ function renderMap(obj) {
 										 maxZoom: 15,
 								 }).addTo(map);
 				}
+
+        else if(obj.vizualizationConfiguration.defaultMapFace == "aggregate"){
+          var latLong = [];
+          for(var i=0; i < dataobject.length; i++){
+						latLong.push([dataobject[i][obj.vizualizationConfiguration.discretes[0].latColumn], dataobject[i][obj.vizualizationConfiguration.discretes[0].longColumn]])
+					}
+
+          var markers = L.markerClusterGroup({ chunkedLoading: true });
+
+          for(var i = 0; i < latLong.length; i++){
+            var a = latLong[i];
+            var title= a[2];
+            var marker = L.marker(L.latLng(a[0], a[1]), {title: title});
+            marker.bindPopup(title);
+            markers.addLayer(marker);
+          }
+
+        map.addLayer(markers);
+        }
+
 
 				else{
 					console.log("incorrect defaultMapFace")
@@ -387,7 +411,7 @@ function renderMap(obj) {
 
                       if(geographyData){
                           var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
-                          if(value < 0)
+                          if(value < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint)
                           {
                             return(income_colorNEG(value));
                           }
@@ -404,34 +428,79 @@ function renderMap(obj) {
                     })
                   }
                 }
+
+
+
                 else if(obj.vizualizationConfiguration.defaultMapFace == "discrete"){
 
                   var valueArray = [];
+                  var magnitude = [];
+
 
                   _.each(obj.data, function(dataRow){
-                    valueArray.push([+dataRow[obj.vizualizationConfiguration.discretes[0].latColumn], +dataRow[obj.vizualizationConfiguration.discretes[0].longColumn], dataRow[obj.vizualizationConfiguration.discretes[0].attributeColumns.category]])
+                    valueArray.push([+dataRow[obj.vizualizationConfiguration.discretes[0].longColumn], +dataRow[obj.vizualizationConfiguration.discretes[0].latColumn], dataRow[obj.vizualizationConfiguration.discretes[0].attributeColumns.category], +dataRow[obj.vizualizationConfiguration.discretes[0].attributeColumns.magnitude]])
+                    magnitude.push([+dataRow[obj.vizualizationConfiguration.discretes[0].attributeColumns.magnitude]]);
                   })
+
+                  var max = d3.max(magnitude, function(d) { return d;});
+                  var min = d3.min(magnitude, function(d) { return d;});
+
+                  var rScale = d3.scaleLinear();
+                  rScale.domain([max, min]).range([obj.vizualizationConfiguration.discretes[0].minBubbleSize, obj.vizualizationConfiguration.discretes[0].maxBubbleSize]); //reverse min max for proper magnitude distribution for bubble sizes.
 
                 console.log(valueArray)
 
+                d3.select("svg.pivotCount").selectAll("path") //assign the projected map to the svg in HTML
+                  .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
+                  .enter()
+                  .append("path")
+                  .attr("d", geoPath)
+                  .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+                  .style("stroke-width", "2")
+                  .attr("fill","lightgrey")
 
-                  d3.select("svg.pivotCount").selectAll("path") //assign the projected map to the svg in HTML
-                    .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
-                    .enter()
-                    .append("path")
-                    .attr("d", geoPath)
-                    .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+                if(obj.vizualizationConfiguration.discretes[0].categoryFlag == true && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == false){
+                  d3.select("svg.pivotCount").selectAll("circle")
+                    .data(valueArray).enter()
+                    .append("circle")
+                    .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+                    .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+                    .attr("r", "2px")
+                    .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+                }
+                else if(obj.vizualizationConfiguration.discretes[0].categoryFlag == false && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == true){
+                  d3.select("svg.pivotCount").selectAll("circle")
+                    .data(valueArray).enter()
+                    .append("circle")
+                    .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+                    .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+                    .attr("r", function(d){ console.log(rScale(d[3])); return rScale(d[3])})
+                    .attr("fill", obj.vizualizationConfiguration.discretes[0].colorScheme)
+
+                }
+                else if(obj.vizualizationConfiguration.discretes[0].categoryFlag == true && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == true){
+                  d3.select("svg.pivotCount").selectAll("circle")
+                    .data(valueArray).enter()
+                    .append("circle")
+                    .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+                    .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+                    .attr("r", function(d){ console.log(d[3] + " translates to " + rScale(d[3])); return rScale(d[3])})
+                    .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+                    .attr("opacity", .75)
+                    .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
                     .style("stroke-width", "2")
-                    .attr("fill","lightgrey")
+                }
+                else {
 
                   d3.select("svg.pivotCount").selectAll("circle")
-                		.data(valueArray).enter()
-                		.append("circle")
-                		.attr("cx", function (d) { console.log(projection(d[0])); return projection(d)[0]})
-                		.attr("cy", function (d) { return projection(d[1]); })
-                		.attr("r", "15px")
-                		.attr("fill", function(d){ return "Blue"})
+                    .data(valueArray).enter()
+                    .append("circle")
+                    .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+                    .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+                    .attr("r", 3)
+                    .attr("fill", "Red")
 
+                }
 
               }
                 else{
@@ -455,5 +524,5 @@ function renderMap(obj) {
 // *****
 // only have one of the following run at a time
 //renderMap(testObjects["1-slippy-discrete"]);
-renderMap(testObjects["4-svg-discrete"]);
+renderMap(testObjects["1-slippy-discrete"]);
 //renderMap(testObjects["3-svg-area"]);
