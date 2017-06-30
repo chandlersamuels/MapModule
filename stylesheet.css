@@ -1,9 +1,10 @@
-#mapid{
-  height: 650px;
-  width: 1000px;
-  display: inline-block;
+body{
+  padding:0px;
+  margin: 0px;
 }
 
-body{
-  padding:20px
-}
+html, svg, #mapid {
+          padding-top: 30px;
+           height: 100%;
+           width: 100%;
+       }

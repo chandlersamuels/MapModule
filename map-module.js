@@ -1,16 +1,47 @@
-var colorScale1 = d3.scaleOrdinal()
-      .range(['#C0C0C0', '#808080', '#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
-var colorScale = d3.scaleOrdinal()
-      .range(['#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
 // Chandler - this is the function where you build all your magic
 // This function will be placed inside the RI360 framework
+
+// function createDiv(){
+//
+// //   var node  = document.getElementById("mapid");
+// //   if(node){
+// //   node.parentNode.removeChild(node);
+// // }
+// //
+// //   var div = document.createElement("div");
+// //   div.setAttribute("id", "mapid");
+// // // as an example add it to the body
+// //   document.body.appendChild(div);
+//
+//   var svg = document.getElementsByClassName(".pivotCount")[0];
+//
+//   if(svg){
+//     svg.parentNode.removeChild(svg);
+//   }
+//   var newSVG = document.createElement("svg");
+//   newSVG.setAttribute("class", "pivotCount");
+//   newSVG.setAttribute("height", "1000");
+//   newSVG.setAttribute("width", "1500");
+//
+//   document.body.appendChild(newSVG);
+//
+// }
+
+
+
 function renderMap(obj) {
+
+  var colorScale1 = d3.scaleOrdinal()
+        .range(['#C0C0C0', '#808080', '#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
+  var colorScale = d3.scaleOrdinal()
+        .range(['#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
+
+  //createDiv();
 
 	if(obj.vizualizationConfiguration.defaultMapType == "slippy")
 	{
 
         var dataobject = obj.data;
-  	    console.log(dataobject[0].Ticket)
 			//pull data from slippy map type
 			  var tileDisplay = obj.vizualizationConfiguration.slippy.tileUrl,
 				zoomLevel=obj.vizualizationConfiguration.slippy.zoomLevel,
@@ -54,10 +85,10 @@ function renderMap(obj) {
                 return{
                   fillColor: "lightgrey",
                   weight:1,
-                  opacity:.5,
+                  opacity:1,
                   color: 'darkgrey',
                   dashArray: '1',
-                  fillOpacity: .5
+                  fillOpacity: .2
                 };
               }
 
@@ -168,7 +199,6 @@ function renderMap(obj) {
               }
                 else{
                   feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn] = 0;
-                  console.log("no data for this region")
                 }
               })
 
@@ -276,7 +306,7 @@ function renderMap(obj) {
                     style: style
                   }).addTo(map);
 
-                console.log("doesnt work")
+
 
               }
             }
@@ -387,6 +417,12 @@ function renderMap(obj) {
 	else if(obj.vizualizationConfiguration.defaultMapType == "svg")
 	{
 
+    console.log("Inside SVG")
+
+    var svg = d3.select("body").append("svg")
+       .attr("width", 1000)
+       .attr("height", 800)
+
     d3.queue() //used to ensure that all data is loaded into the program before execution
       .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.topoJsonUrl)
       .await(ready)
@@ -394,16 +430,21 @@ function renderMap(obj) {
       function ready(error, data){
         if(error) throw error;
 
+        console.log("loaded the data: " + data)
+
         var usMap = topojson.feature(data, {
           type: "GeometryCollection",
           geometries: data.objects.USMap.geometries //grabbing the points to create the polygon points so it can trace the Map
         });
+
+        console.log(usMap)
 
         //identify projection -using geoalbersUSA
         var projection = d3.geoAlbersUsa() //geoAlbersUsa is the basic map projection, there are many more. This is the best for plane US view.
           .fitExtent([[20,20],[700,500]], usMap) //FitExtent used to fit the "Tile" for the viewer
 
         var geoPath = d3.geoPath().projection(projection) //initialize the path
+
 
 
         if(obj.vizualizationConfiguration.defaultMapFace == "sumByArea"){
@@ -432,7 +473,7 @@ function renderMap(obj) {
 
 
 
-                d3.select("svg.pivotCount").selectAll("path") //assign the projected map to the svg in HTML
+                svg.selectAll("path") //assign the projected map to the svg in HTML
                   .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
                   .enter()
                   .append("path")
@@ -454,7 +495,7 @@ function renderMap(obj) {
                       return "Grey"
                     }
 
-                    console.log(geographyData);
+
                     console.log(d.properties[obj.vizualizationConfiguration.sumAreas.mapField]); //might have to
                   })
 
@@ -477,6 +518,8 @@ function renderMap(obj) {
                     valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
                   })
 
+                  console.log(valueArray);
+
                   var max = d3.max(valueArray, function(d) { return d;});
                   var min = d3.min(valueArray, function(d) { return d;});
 
@@ -493,7 +536,7 @@ function renderMap(obj) {
                     .range(colorbrewer[colorSchemeNEG][colorRange]);
 
 
-                  d3.select("svg.pivotCount").selectAll("path") //assign the projected map to the svg in HTML
+                  svg.selectAll("path") //assign the projected map to the svg in HTML
                     .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
                     .enter()
                     .append("path")
@@ -505,6 +548,8 @@ function renderMap(obj) {
                       var geographyData = _.find(obj.data, function (dataRow){
                         return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
                       });
+
+                      console.log(geographyData)
 
                       if(geographyData){
                           var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
@@ -523,6 +568,7 @@ function renderMap(obj) {
                         return ("Grey");
                       }
                     })
+
                   }
                 }
 
@@ -547,7 +593,7 @@ function renderMap(obj) {
 
                 console.log(valueArray)
 
-                d3.select("svg.pivotCount").selectAll("path") //assign the projected map to the svg in HTML
+                svg.selectAll("path") //assign the projected map to the svg in HTML
                   .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
                   .enter()
                   .append("path")
@@ -557,7 +603,7 @@ function renderMap(obj) {
                   .attr("fill","lightgrey")
 
                 if(obj.vizualizationConfiguration.discretes[0].categoryFlag == true && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == false){
-                  d3.select("svg.pivotCount").selectAll("circle")
+                  svg.selectAll("circle")
                     .data(valueArray).enter()
                     .append("circle")
                     .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
@@ -566,7 +612,7 @@ function renderMap(obj) {
                     .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
                 }
                 else if(obj.vizualizationConfiguration.discretes[0].categoryFlag == false && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == true){
-                  d3.select("svg.pivotCount").selectAll("circle")
+                  svg.selectAll("circle")
                     .data(valueArray).enter()
                     .append("circle")
                     .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
@@ -576,7 +622,8 @@ function renderMap(obj) {
 
                 }
                 else if(obj.vizualizationConfiguration.discretes[0].categoryFlag == true && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == true){
-                  d3.select("svg.pivotCount").selectAll("circle")
+                  console.log("Here")
+                  svg.selectAll("circle")
                     .data(valueArray).enter()
                     .append("circle")
                     .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
@@ -589,7 +636,7 @@ function renderMap(obj) {
                 }
                 else {
 
-                  d3.select("svg.pivotCount").selectAll("circle")
+                  svg.selectAll("circle")
                     .data(valueArray).enter()
                     .append("circle")
                     .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
@@ -610,80 +657,20 @@ function renderMap(obj) {
     console.log("Incorrect Map Type")
     }
 
-
-    $('select').on('change', function() {
-
-      if(this.value == 1){
-        map.remove();
-    //     var node  = document.getElementById("mapid");
-    //     node.parentNode.removeChild(node);
-    //
-    //     var div = document.createElement("div");
-    //     div.setAttribute("id", "mapid");
-    // // as an example add it to the body
-    //     document.body.appendChild(div);
-
-        renderMap(testObjects["1-slippy-discrete"]);
-      }
-      else if(this.value == 2){
-        map.remove();
-    //     var node  = document.getElementById("mapid");
-    //     node.parentNode.removeChild(node);
-    //
-    //     var div = document.createElement("div");
-    //     div.setAttribute("id", "mapid");
-    // // as an example add it to the body
-    //     document.body.appendChild(div);
-
-        renderMap(testObjects["1-slippy-discrete-two"]);
-      }
-      else if(this.value == 3){
-        map.remove();
-    //     var node  = document.getElementById("mapid");
-    //     node.parentNode.removeChild(node);
-    //
-    //     var div = document.createElement("div");
-    //     div.setAttribute("id", "mapid");
-    // // as an example add it to the body
-    //     document.body.appendChild(div);
-
-        renderMap(testObjects["2-slippy-area"]);
-      }
-      else if(this.value == 4){
-        map.remove();
-    //     var node  = document.getElementById("mapid");
-    //     node.parentNode.removeChild(node);
-    //
-    //     var div = document.createElement("div");
-    //     div.setAttribute("id", "mapid");
-    // // as an example add it to the body
-    //     document.body.appendChild(div);
-
-        renderMap(testObjects["3-svg-area"]);
-      }
-      else if(this.value == 5){
-        map.remove();
-    //     var node  = document.getElementById("mapid");
-    //     node.parentNode.removeChild(node);
-    //
-    //     var div = document.createElement("div");
-    //     div.setAttribute("id", "mapid");
-    // // as an example add it to the body
-    //     document.body.appendChild(div);
-
-        renderMap(testObjects["4-svg-discrete"]);
-      }
-    })
-
 }
 
 
+$('select').on('change', function() {
+    d3.select("svg").selectAll("*").remove();
+    console.log("loading test case " + this.value );
+    renderMap(testObjects[this.value]);
 
+  })
 
 
 
 // *****
 // only have one of the following run at a time
 //renderMap(testObjects["1-slippy-discrete"]);
-renderMap(testObjects["2-slippy-area"]);
-//renderMap(testObjects["3-svg-area"]);
+//renderMap(testObjects["1-slippy-discrete-two"]);
+renderMap(testObjects["3-svg-area"]);

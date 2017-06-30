@@ -67,7 +67,7 @@ var testObjects =
 		            "tileType": "Open Street Maps",
 		            "tileUrl": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
 		        },
-		        "geographyBoundariesFlag": false,
+		        "geographyBoundariesFlag": true,
 		        "geographyBoundaries": {
 		            "mapName": "US Map by State",
 		            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
@@ -185,7 +185,7 @@ var testObjects =
 		            "colorScheme": "Greens",
 		            "colorRange": 9,
 		            "colorSchemeAdditional": {
-		                "colorSchemeSplitFlag": true,
+		                "colorSchemeSplitFlag": false,
 		                "breakpoint": 0,
 		                "positiveColorScheme": "Greens",
 		                "negativeColorScheme": "Reds"
@@ -201,7 +201,7 @@ var testObjects =
 		    },
 		    "data": [
 					{
-							"State": "NY",
+							"State": "AL",
 							"Sales": "300"
 					},
 					{
