@@ -71,8 +71,9 @@ function renderMap(obj) {
 
 					for(var i=0; i < dataobject.length; i++){
 						latLong.push([dataobject[i][obj.vizualizationConfiguration.discretes[0].latColumn], +dataobject[i][obj.vizualizationConfiguration.discretes[0].longColumn]]);
-
 					}
+
+          console.log(latLong);
 
           if(obj.vizualizationConfiguration.geographyBoundariesFlag == true){
             console.log("geographyBoundariesFlag equal true")
@@ -82,13 +83,14 @@ function renderMap(obj) {
               .await(ready)
 
               function style(feature){
+                console.log("instyle")
                 return{
-                  fillColor: "lightgrey",
+                  fillColor: "blue",
                   weight:1,
                   opacity:1,
                   color: 'darkgrey',
                   dashArray: '1',
-                  fillOpacity: .2
+                  fillOpacity: .7
                 };
               }
 
@@ -121,7 +123,7 @@ function renderMap(obj) {
 									fillOpacity: 0.5,
 									radius: 15
 							}).addTo(map);
-							console.log("false true")
+							console.log("true false")
 						}
 					}
 					else if(obj.vizualizationConfiguration.discretes[0].categoryFlag == false && obj.vizualizationConfiguration.discretes[0].magnitudeFlag == true){
@@ -673,4 +675,4 @@ $('select').on('change', function() {
 // only have one of the following run at a time
 //renderMap(testObjects["1-slippy-discrete"]);
 //renderMap(testObjects["1-slippy-discrete-two"]);
-renderMap(testObjects["3-svg-area"]);
+renderMap(testObjects["1-slippy-discrete-two"]);

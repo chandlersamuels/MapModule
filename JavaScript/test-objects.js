@@ -3,7 +3,7 @@ var testObjects =
 	{
 		"1-slippy-discrete": {
 		    "vizualizationConfiguration": {
-		        "defaultMapType": "slippy",
+		        "defaultMapType": "jusa",
 						"defaultMapFace": "discrete",
 		        "slippy": {
 		            "defaultLatitude": 37.4316,
@@ -71,7 +71,7 @@ var testObjects =
 		        "geographyBoundaries": {
 		            "mapName": "US Map by State",
 		            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
-		            "geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
+		            "geoJsonUrl": "Maps/USbyState/USMap.geojson"
 		        },
 		        "discretes": [{
 		            "colorScheme": "Paired",
@@ -112,9 +112,9 @@ var testObjects =
 		        "defaultMapType": "slippy",
 						"defaultMapFace": "sumByArea",
 		        "slippy": {
-		            "defaultLatitude": "",
-		            "defaultLongitude": "",
-		            "zoomLevel": 6,
+		            "defaultLatitude": 37.4316,
+		            "defaultLongitude": -78.6569,
+		            "zoomLevel": 4,
 		            "tileType": "Open Street Maps",
 		            "tileUrl": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
 		        },
@@ -122,12 +122,13 @@ var testObjects =
 		        "geographyBoundaries": {
 		            "mapName": "US Map by State",
 		            "topoJsonUrl": "blah/blah/blah/USStates.topojson",
-		            "geoJsonUrl": "Maps/USbyState/USMap.geojson"
 		        },
 		        "discretes": [],
 		        "sumAreas": {
 		            "colorScheme": "Greens",
 		            "colorRange": 3,
+								"PopupInfoName": "NAME",
+								"PopupInfoName": "Sales",
 		            "colorSchemeAdditional": {
 		                "colorSchemeSplitFlag": true,
 		                "breakpoint": 0,
@@ -150,11 +151,11 @@ var testObjects =
 		        },
 		        {
 		            "State": "FL",
-		            "Sales": -5
+		            "Sales": 5
 		        },
 		        {
 		            "State": "IL",
-		            "Sales": 20
+		            "Sales": -20
 		        },
 						{
 							 "State": "PA",
