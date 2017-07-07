@@ -3,8 +3,6 @@ var testObjects =
 	{
 		"1-slippy-discrete": {
 		    "vizualizationConfiguration": {
-		        "defaultMapType": "jusa",
-						"defaultMapFace": "discrete",
 		        "slippy": {
 		            "defaultLatitude": 37.4316,
 		            "defaultLongitude": -78.6569,
@@ -19,7 +17,7 @@ var testObjects =
 		            "geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
 		        },
 		        "discretes": [{
-								"continousFlag": true,
+								"continousFlag":false
 		            "colorScheme": "Paired",
 		            "latColumn": "LatitudeLocation",
 		            "longColumn": "LongitudeLocation",
@@ -37,7 +35,7 @@ var testObjects =
 		            }
 		        }]
 		    },
-		    "discreteData": [[{
+		    "dataDiscrete": [[{
 		        "Dealer": "Barbee's Freeway",
 		        "VIN": "228388288",
 		        "Make": "Toyota",
@@ -60,6 +58,7 @@ var testObjects =
 		"1-slippy-discrete-two": {
 		    "vizualizationConfiguration": {
 		        "defaultMapType": "slippy",
+						"defaultMapFace": "discrete",
 		        "slippy": {
 		            "defaultLatitude": 37.4316,
 		            "defaultLongitude": -78.6569,
@@ -74,11 +73,10 @@ var testObjects =
 		            "geoJsonUrl": "Maps/USbyState/USMap.geojson"
 		        },
 		        "discretes": [{
-								"continuousFlag": false,
 		            "colorScheme": "Paired",
 		            "latColumn": "lat",
 		            "longColumn": "long",
-		            "categoryFlag": false,
+		            "categoryFlag": true,
 		            "magnitudeFlag": true,
 		            "displayOptions": "none",
 		            "attributeColumns": {
@@ -92,7 +90,7 @@ var testObjects =
 		            }
 		        }]
 		    },
-		    "discreteData": [[
+		    "data": [
                         {"Ticket":"498716","Type":"Network","long":-80.402131,"lat":37.130387,"Revenue":1111},
                         {"Ticket":"498717","Type":"Network","long":-80.576964,"lat":37.146625,"Revenue":1111},
                         {"Ticket":"498718","Type":"Network","long":-80.424182,"lat":37.135182,"Revenue":1111},
@@ -106,12 +104,10 @@ var testObjects =
                         {"Ticket":"498728","Type":"Network-Res DSL","long":-78.594149,"lat":38.808933,"Revenue":13111},
                         {"Ticket":"498731","Type":"Network","long":-78.833646,"lat":37.363566,"Revenue":11211},
                         {"Ticket":"500806","Type":"VOIP-Res-ShenTel Cable","long":-79.620919,"lat":37.002124,"Revenue":11111}
-                     ]]
+                     ]
 		},
 		"2-slippy-area": {
 		    "vizualizationConfiguration": {
-		        "defaultMapType": "slippy",
-						"defaultMapFace": "sumByArea",
 		        "slippy": {
 		            "defaultLatitude": 37.4316,
 		            "defaultLongitude": -78.6569,
@@ -146,7 +142,7 @@ var testObjects =
 		            "attributeColumns": []
 		        }
 		    },
-		    "data": [
+		    "dataArea": [
 		        {
 		            "State": "AL",
 		            "Sales": -10

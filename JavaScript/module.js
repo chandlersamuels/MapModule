@@ -1,5 +1,11 @@
 function renderChart(obj){
 
+  var colorScale1 = d3.scaleOrdinal()
+        .range(['#C0C0C0', '#808080', '#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
+  var colorScale = d3.scaleOrdinal()
+        .range(['#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
+
+
   if(obj.vizualizationConfiguration.defaultMapType == "slippy"){
   console.log("inside of slippy");
 
@@ -22,7 +28,7 @@ function renderChart(obj){
       }
 
 
-      if(obj.vizualizationConfiguration.defaultMapFace == "sumByArea"){
+      if(obj.vizualizationConfiguration.sumAreas){
         console.log("MapFace: SumByArea");
 
         d3.queue() //used to ensure that all data is loaded into the program before execution
@@ -257,85 +263,171 @@ function renderChart(obj){
             }
           }//end of Ready Function
 
-
       }
-      else if(obj.vizualizationConfiguration.defaultMapFace == "discrete"){
-        console.log("MapFace: discrete");
 
-        if(obj.vizualizationConfiguration.geographyBoundariesFlag == true){
+      //draw geographical boundries if not already drawn by sumbyArea
+      if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas){
 
-          d3.queue() //used to ensure that all data is loaded into the program before execution
-            .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
-            .await(ready)
+        d3.queue() //used to ensure that all data is loaded into the program before execution
+          .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
+          .await(ready)
 
-            function style(feature){
-              return{
-                fillColor: "black",
-                weight:1,
-                opacity:1,
-                color: 'darkgrey',
-                dashArray: '1',
-                fillOpacity: .4
-              };
-            }
+          function style(feature){
+            return{
+              fillColor: "lightgrey",
+              weight:1,
+              opacity:1,
+              color: 'darkgrey',
+              dashArray: '1',
+              fillOpacity: .2
+            };
+          }
 
-            function ready(error, data){
+          function ready(error, data){
 
-              var statesData = data;
-              var geojson;
-
-              geojson = L.geoJson(statesData,{
-                style:style
-              }).addTo(map);
-
-            } //end of ready function
-        } //end of if boundryflag is true
-
-        console.log("Made it through and still colored")
-
-
-
-      } //end of discrete block
-
-
-      else if(obj.vizualizationConfiguration.defaultMapFace == "continuous"){
-        console.log("MapFace: continuous");
+            var statesData = data;
+            var geojson;
+            geojson = L.geoJson(statesData,{
+              style:style
+            }).addTo(map);
       }
-      else{
-        console.log("Incorrect MapFace");
-      }
+    }
+    //discretes loop
+      for(var i=0; i < obj.vizualizationConfiguration.discretes.length; i++){
+          console.log("valid for loop")
+
+        var discreteConfig = obj.vizualizationConfiguration.discretes[i]
+
+        var valueArray = [];
+        var magnitude = [];
+
+        console.log(discreteConfig);
+
+        _.each(obj.discreteData[i], function(dataRow){
+          valueArray.push([+dataRow[discreteConfig.latColumn], +dataRow[discreteConfig.longColumn]])
+          magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
+        })
+
+        console.log(valueArray);
+        console.log(magnitude);
+
+        if(discreteConfig.continuousFlag == true){
+
+          var heat = L.heatLayer(valueArray,{
+										 radius: 20,
+										 blur: 5,
+										 maxZoom: 10,
+								 }).addTo(map);
+
+          console.log("do continuous")
+        }
+
+        else{
+              if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true)
+              {
+                var categorykey = discreteConfig.attributeColumns.category;
+                var magnitudekey = discreteConfig.attributeColumns.magnitude;
+
+                function getRadius(data, i){
+                  return data;
+                }
+
+                  console.log("True True")
+                  for(var j = 0; j < valueArray.length; j++){
+                    var circle = L.circle(valueArray[j], {
+                      color: colorScale(obj.discreteData[i][j][categorykey]),
+                      fillColor: colorScale(obj.discreteData[i][j][categorykey]),
+                      fillOpacity: 1,
+                      radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
+                  }).addTo(map);
+                }
+              }
+
+              else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false)
+              {
+
+                var categorykey = discreteConfig.attributeColumns.category;
+
+                  console.log("True False")
+                  for(var j = 0; j < valueArray.length; j++){
+                    var circle = L.circle(valueArray[j], {
+                      color: colorScale(obj.discreteData[i][j][categorykey]),
+                      fillColor: colorScale(obj.discreteData[i][j][categorykey]),
+                      fillOpacity: 1,
+                      radius: 100,
+                  }).addTo(map);
+                }
+              }
+
+              else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true)
+              {
+
+                  function getRadius(data, i){
+                    return data;
+                  }
+
+                  var magnitudekey = discreteConfig.attributeColumns.magnitude;
+
+                  console.log("false True")
+                  for(var j = 0; j < valueArray.length; j++){
+                    var circle = L.circle(valueArray[j], {
+                      color: 'red',
+                      fillColor: '#f03',
+                      fillOpacity: 1,
+                      radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
+                  }).addTo(map);
+                }
+              }
+
+              else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == false)
+              {
+                  console.log("False False")
+                  for(var i = 0; i < valueArray.length; i++){
+                    var circle = L.circle(valueArray[i], {
+                      color: 'red',
+                      fillColor: '#f03',
+                      fillOpacity: 1,
+                      radius: 15,
+                  }).addTo(map);
+                }
+              }
+
+          }//end of else continuous flag
+
+      }//end of descretes loop
+
   }  //End of Slippy
 
   else if(obj.vizualizationConfiguration.defaultMapType == "svg"){
       console.log("inside of svg");
-      if(obj.vizualizationConfiguration.defaultMapFace == "sumByArea"){
+
+      //draw map here
+
+      if(obj.vizualizationConfiguration.sumAreas){
         console.log("MapFace: SumByArea");
       }
-      else if(obj.vizualizationConfiguration.defaultMapFace == "discrete"){
-        console.log("MapFace: discrete");
-      }
-      else if(obj.vizualizationConfiguration.defaultMapFace == "continuous"){
-        console.log("MapFace: continuous");
-      }
-      else{
-        console.log("incorrect MapFace")
-      }
 
+      for(var i =0; i<obj.vizualizationConfiguration.discretes.length; i++){
+        var discreteConfig = obj.vizualizationConfiguration.discrete[i]
 
+        var valueArray = [];
+        var magnitude = [];
 
+        _.each(obj.discreteData[i], function(dataRow){
+          valueArray.push([+dataRow[discreteConfig.longColumn], +dataRow[discreteConfig.latColumn], dataRow[discreteConfig.attributeColumns.category], +dataRow[discreteConfig.attributeColumns.magnitude]])
+          magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
+        })
+          //all discrete is going inside for loop.
+          if(discreteConfig.continousFlag == true){
+            //color the bubbles in here
+            console.log("inside continuous")
 
-  }
+          }
 
-  else{
-    console.log("not a correct maptype")
-  }
+      }//end of discretes loop
 
+  } //end of SVG
 
-
-
-
-
-
-}
+}//end of renderChart
 
 renderChart(testObjects["1-slippy-discrete-two"])
