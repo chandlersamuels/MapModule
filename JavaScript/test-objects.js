@@ -78,7 +78,7 @@ var testObjects =
 		            "colorScheme": "Paired",
 		            "latColumn": "lat",
 		            "longColumn": "long",
-		            "categoryFlag": false,
+		            "categoryFlag": true,
 		            "magnitudeFlag": true,
 		            "displayOptions": "none",
 		            "attributeColumns": {
@@ -172,7 +172,6 @@ var testObjects =
 		"3-svg-area": {
 		    "vizualizationConfiguration": {
 		        "defaultMapType": "svg",
-						"defaultMapFace": "sumByArea",
 		        "svg": {
 							"jsonType":"GeometryCollection"
 						},
@@ -186,7 +185,8 @@ var testObjects =
 		        "discretes": [],
 		        "sumAreas": {
 		            "colorScheme": "Greens",
-		            "colorRange": 9,
+		            "colorRange": 3,
+								"popupTextDescription":" Total Sales: ",
 		            "colorSchemeAdditional": {
 		                "colorSchemeSplitFlag": false,
 		                "breakpoint": 0,
@@ -205,27 +205,27 @@ var testObjects =
 		    "data": [
 					{
 							"State": "AL",
-							"Sales": "300"
+							"Sales": "1300"
 					},
 					{
 							"State": "PA",
-							"Sales": "-150"
+							"Sales": "1210"
 					},
 					{
 							"State": "TX",
-							"Sales": "105"
+							"Sales": "36"
 					},
 		        {
 		            "State": "MD",
-		            "Sales": "670"
+		            "Sales": "70"
 		        },
 		        {
 		            "State": "FL",
-		            "Sales": "-450"
+		            "Sales": "450"
 		        },
 		        {
 		            "State": "IL",
-		            "Sales": "-530"
+		            "Sales": "530"
 		        }
 		    ]
 		},

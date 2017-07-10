@@ -322,7 +322,8 @@ function renderChart(obj){
           console.log("do continuous")
         }
 
-        else{
+        else{ //colored bubbles
+
               if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true)
               {
                 var categorykey = discreteConfig.attributeColumns.category;
@@ -330,6 +331,12 @@ function renderChart(obj){
 
                 function getRadius(data, i){
                   return data;
+                }
+
+                function Description(locations){
+                  console.log("this is work") //adding description for popup window over mouseover
+                  description = "ServiceType: " + locations[0];
+                  return description;
                 }
 
                   console.log("True True")
@@ -341,6 +348,7 @@ function renderChart(obj){
                       radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
                   }).addTo(map);
                 }
+
               }
 
               else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false)
@@ -399,12 +407,243 @@ function renderChart(obj){
   }  //End of Slippy
 
   else if(obj.vizualizationConfiguration.defaultMapType == "svg"){
-      console.log("inside of svg");
+    console.log("Inside SVG")
 
+    var svg = d3.select("div").append("svg")
+       .attr("width", 1000)
+       .attr("height", 800)
+
+    d3.queue() //used to ensure that all data is loaded into the program before execution
+      .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.topoJsonUrl)
+      .await(ready)
+
+      function ready(error, data){
+        if(error) throw error;
+
+        console.log("loaded the data: " + data)
+
+        var usMap = topojson.feature(data, {
+          type: "GeometryCollection",
+          geometries: data.objects.USMap.geometries //grabbing the points to create the polygon points so it can trace the Map
+        });
+
+        console.log(usMap)
+
+        //identify projection -using geoalbersUSA
+        var projection = d3.geoAlbersUsa() //geoAlbersUsa is the basic map projection, there are many more. This is the best for plane US view.
+          .fitExtent([[20,20],[700,500]], usMap) //FitExtent used to fit the "Tile" for the viewer
+
+        var geoPath = d3.geoPath().projection(projection) //initialize the path
+
+        var div = d3.select("body").append("div")
+          .attr("class", "tooltip")
+          .style("opacity", 0);
       //draw map here
-
       if(obj.vizualizationConfiguration.sumAreas){
         console.log("MapFace: SumByArea");
+
+          if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false){
+            console.log("colorSchemeSplitFlag is set to false");
+
+            var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
+            var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
+
+            var valueArray= [];
+            _.each(obj.data, function(dataRow){
+              valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
+            })
+
+
+            var max = d3.max(valueArray, function(d) { return d;});
+            var min = d3.min(valueArray, function(d) { return d;});
+
+            var income_domain = range(max, min, colorRange)
+
+            var income_color = d3.scaleLinear() //scaleLinear for D3.V4
+              .domain(income_domain)
+              .range(colorbrewer[colorScheme][colorRange]);
+
+
+            svg.selectAll("path") //assign the projected map to the svg in HTML
+              .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
+              .enter()
+              .append("path")
+              .attr("d", geoPath)
+              .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+              .style("stroke-width", "2")
+              .attr("fill", function(d){
+                var geographyData = _.find(obj.data, function (dataRow){
+                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                });
+
+                if(geographyData){
+                    var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                    return income_color(value);
+                }
+                else{
+                  console.log("No geography data defined")
+                  return "Grey"
+                }
+
+                console.log(d.properties[obj.vizualizationConfiguration.sumAreas.mapField]); //might have to
+              }).on("mouseover", function(d) {
+
+                var geographyData = _.find(obj.data, function (dataRow){
+                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                });
+
+                console.log(geographyData)
+
+                var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
+
+                console.log(value);
+                console.log(state);
+
+                if(geographyData){
+                  div.transition()
+                  	   .duration(200)
+                       .style("opacity", .9)
+                     var text = "State: "+ state +"<br/>" + obj.vizualizationConfiguration.sumAreas.popupTextDescription + value;
+                       div.html(text)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
+                }
+                else{
+                  div.transition()
+                  	   .duration(200)
+                       .style("opacity", .9)
+                     var text = "No data assigned";
+                       div.html(text)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
+                }
+          	})
+              .on("mouseout", function(d) {
+                  div.transition()
+                     .duration(500)
+                     .style("opacity", 0);
+              });
+
+
+
+
+
+
+
+
+
+
+          }
+          else{
+            console.log("colorsccheme split flag is set to true")
+
+            var income_domainPOS = []
+            var income_domainNEG = []
+
+            var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange
+            var colorSchemeNEG = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
+            var colorSchemePOS = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
+
+            console.log(colorSchemePOS);
+            console.log(colorSchemeNEG);
+
+            var valueArray= [];
+
+            _.each(obj.data, function(dataRow){
+              valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
+            })
+
+            console.log(valueArray);
+
+            var max = d3.max(valueArray, function(d) { return d;});
+            var min = d3.min(valueArray, function(d) { return d;});
+
+            //returns an array of integers
+            income_domainPOS = range(max, 0, colorRange);
+            income_domainNEG = rangeNEG(0, min, colorRange);
+
+            var income_colorPOS = d3.scaleLinear() //scaleLinear for D3.V4
+              .domain(income_domainPOS)
+              .range(colorbrewer[colorSchemePOS][colorRange]);
+
+            var income_colorNEG = d3.scaleLinear() //scaleLinear for D3.V4
+              .domain(income_domainNEG)
+              .range(colorbrewer[colorSchemeNEG][colorRange]);
+
+
+            svg.selectAll("path") //assign the projected map to the svg in HTML
+              .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
+              .enter()
+              .append("path")
+              .attr("d", geoPath)
+              .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+              .style("stroke-width", "2")
+              .attr("fill", function(d){
+                //feature.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]
+                var geographyData = _.find(obj.data, function (dataRow){
+                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                });
+
+                console.log(geographyData)
+
+                if(geographyData){
+                    var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                    if(value < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint)
+                    {
+                      return(income_colorNEG(value));
+                    }
+                    else
+                    {
+                      return(income_colorPOS(value));
+                    }
+                }
+                else
+                {
+                  console.log("No geography data defined")
+                  return ("Grey");
+                }
+              }).on("mouseover", function(d) {
+
+                var geographyData = _.find(obj.data, function (dataRow){
+                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                });
+
+                console.log(geographyData)
+
+                var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
+
+                console.log(value);
+                console.log(state);
+
+                if(geographyData){
+                  div.transition()
+                  	   .duration(200)
+                       .style("opacity", .9)
+                     var text = "State: "+ state +"<br/>" + obj.vizualizationConfiguration.sumAreas.popupTextDescription + value;
+                       div.html(text)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
+                }
+                else{
+                  div.transition()
+                  	   .duration(200)
+                       .style("opacity", .9)
+                     var text = "No data assigned";
+                       div.html(text)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
+                }
+          	})
+              .on("mouseout", function(d) {
+                  div.transition()
+                     .duration(500)
+                     .style("opacity", 0);
+              });
+          }
+
+
       }
 
       for(var i =0; i<obj.vizualizationConfiguration.discretes.length; i++){
@@ -426,8 +665,10 @@ function renderChart(obj){
 
       }//end of discretes loop
 
+    }//end of ready function
+
   } //end of SVG
 
 }//end of renderChart
 
-renderChart(testObjects["1-slippy-discrete-two"])
+renderChart(testObjects["3-svg-area"]);

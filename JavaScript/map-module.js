@@ -458,22 +458,19 @@ function renderMap(obj) {
                 var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
                 var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
 
-                  var valueArray= [];
-                  _.each(obj.data, function(dataRow){
-                    valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
-                  })
+                var valueArray= [];
+                _.each(obj.data, function(dataRow){
+                  valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
+                })
 
+                var max = d3.max(valueArray, function(d) { return d;});
+                var min = d3.min(valueArray, function(d) { return d;});
 
-                  var max = d3.max(valueArray, function(d) { return d;});
-                  var min = d3.min(valueArray, function(d) { return d;});
+                var income_domain = range(max, min, colorRange)
 
-                  var income_domain = range(max, min, colorRange)
-
-                  var income_color = d3.scaleLinear() //scaleLinear for D3.V4
-                    .domain(income_domain)
-                    .range(colorbrewer[colorScheme][colorRange]);
-
-
+                var income_color = d3.scaleLinear() //scaleLinear for D3.V4
+                  .domain(income_domain)
+                  .range(colorbrewer[colorScheme][colorRange]);
 
                 svg.selectAll("path") //assign the projected map to the svg in HTML
                   .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
