@@ -64,6 +64,9 @@ function renderChart(obj){
               var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
               var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
 
+              console.log(colorScheme)
+              console.log(colorRange)
+
               var income_color={};
 
               var max = d3.max(dataArray, function(d){return d;});
@@ -71,6 +74,8 @@ function renderChart(obj){
 
               var income_domain = [];
               income_domain = range(max, min, colorRange);
+
+              console.log(income_domain)
 
               income_color = d3.scaleLinear() //scaleLinear for D3.V4
                 .domain(income_domain)
@@ -132,7 +137,6 @@ function renderChart(obj){
                     this.update();
                     return this._div;
                 };
-
                 // method that we will use to update the control based on feature properties passed
                 info.update = function (props) {
                     console.log(props)
@@ -267,7 +271,6 @@ function renderChart(obj){
 
       //draw geographical boundries if not already drawn by sumbyArea
       if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas){
-
         d3.queue() //used to ensure that all data is loaded into the program before execution
           .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
           .await(ready)
@@ -767,4 +770,4 @@ function renderChart(obj){
 
 }//end of renderChart
 
-renderChart(testObjects["3-svg-area"]);
+renderChart(testObjects["1-slippy-discrete-two"]);

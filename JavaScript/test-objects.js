@@ -132,7 +132,7 @@ var testObjects =
 								"PopupInfoName": "NAME",
 							  "PopupInfoName": "Sales",
 		            "colorSchemeAdditional": {
-		                "colorSchemeSplitFlag": true,
+		                "colorSchemeSplitFlag": false,
 		                "breakpoint": 0,
 		                "positiveColorScheme": "Greens",
 		                "negativeColorScheme": "Reds"
@@ -149,7 +149,7 @@ var testObjects =
 		    "data": [
 		        {
 		            "State": "AL",
-		            "Sales": -10
+		            "Sales": 10
 		        },
 		        {
 		            "State": "FL",
@@ -157,7 +157,7 @@ var testObjects =
 		        },
 		        {
 		            "State": "IL",
-		            "Sales": -20
+		            "Sales": 20
 		        },
 						{
 							 "State": "PA",
