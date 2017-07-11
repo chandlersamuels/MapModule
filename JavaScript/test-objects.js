@@ -188,7 +188,7 @@ var testObjects =
 		            "colorRange": 3,
 								"popupTextDescription":" Total Sales: ",
 		            "colorSchemeAdditional": {
-		                "colorSchemeSplitFlag": false,
+		                "colorSchemeSplitFlag": true,
 		                "breakpoint": 0,
 		                "positiveColorScheme": "Greens",
 		                "negativeColorScheme": "Reds"
@@ -209,11 +209,11 @@ var testObjects =
 					},
 					{
 							"State": "PA",
-							"Sales": "1210"
+							"Sales": "-1210"
 					},
 					{
 							"State": "TX",
-							"Sales": "36"
+							"Sales": "-36"
 					},
 		        {
 		            "State": "MD",
@@ -253,7 +253,7 @@ var testObjects =
 		            "latColumn": "LatitudeLocation",
 		            "longColumn": "LongitudeLocation",
 		            "categoryFlag": true,
-		            "magnitudeFlag": true,
+		            "magnitudeFlag": false,
 		            "displayOptions": "none",
 		            "attributeColumns": {
 		                "category": "Make",
@@ -266,7 +266,7 @@ var testObjects =
 		            }
 		        }]
 		    },
-		    "data": [[{
+		    "discreteData": [[{
 		        "Dealer": "Barbee's Freeway",
 		        "VIN": "228388288",
 		        "Make": "Toyota",

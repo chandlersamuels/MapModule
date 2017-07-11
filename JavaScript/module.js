@@ -525,15 +525,6 @@ function renderChart(obj){
                      .style("opacity", 0);
               });
 
-
-
-
-
-
-
-
-
-
           }
           else{
             console.log("colorsccheme split flag is set to true")
@@ -601,7 +592,7 @@ function renderChart(obj){
                 else
                 {
                   console.log("No geography data defined")
-                  return ("Grey");
+                  return ("lightgrey");
                 }
               }).on("mouseover", function(d) {
 
@@ -646,22 +637,127 @@ function renderChart(obj){
 
       }
 
-      for(var i =0; i<obj.vizualizationConfiguration.discretes.length; i++){
-        var discreteConfig = obj.vizualizationConfiguration.discrete[i]
+      console.log(obj.vizualizationConfiguration.discretes.length)
+
+      for(var i = 0; i < obj.vizualizationConfiguration.discretes.length; i++){
+        svg.selectAll("path") //assign the projected map to the svg in HTML
+          .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
+          .enter()
+          .append("path")
+          .attr("d", geoPath)
+          .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+          .style("stroke-width", "2")
+          .attr("fill","lightgrey")
+
+        var discreteConfig = obj.vizualizationConfiguration.discretes[i];
 
         var valueArray = [];
         var magnitude = [];
+
+        console.log(discreteConfig.attributeColumns.category)
 
         _.each(obj.discreteData[i], function(dataRow){
           valueArray.push([+dataRow[discreteConfig.longColumn], +dataRow[discreteConfig.latColumn], dataRow[discreteConfig.attributeColumns.category], +dataRow[discreteConfig.attributeColumns.magnitude]])
           magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
         })
-          //all discrete is going inside for loop.
-          if(discreteConfig.continousFlag == true){
-            //color the bubbles in here
-            console.log("inside continuous")
 
-          }
+        var max = d3.max(magnitude, function(d) { return d;});
+        var min = d3.min(magnitude, function(d) { return d;});
+
+        var rScale = d3.scaleLinear();
+        rScale.domain([max, min]).range([discreteConfig.minBubbleSize, discreteConfig.maxBubbleSize]); //reverse min max for proper magnitude distribution for bubble sizes.
+
+        console.log("discreteConfig "+discreteConfig)
+        console.log("valueArray "+valueArray)
+        console.log("magnitude "+magnitude)
+        console.log("max "+max)
+        console.log("min "+min)
+
+      if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false){
+        console.log("true false")
+        svg.selectAll("circle")
+          .data(valueArray).enter()
+          .append("circle")
+          .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+          .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+          .attr("r", "2px")
+          .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+          .attr("opacity", .75)
+          .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+          .style("stroke-width", "2")
+          .on("mouseover", function(d) {
+
+          var category = d[2];
+          var magnitudeVariable = d[3];
+
+            // var geographyData = _.find(obj.data, function (dataRow){
+            //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+            // });
+            //
+            // console.log(geographyData)
+            //
+            // var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+            // var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
+            //
+            // console.log(value);
+            // console.log(state);
+
+              div.transition()
+                   .duration(200)
+                   .style("opacity", .9)
+                 var text = " The " + discreteConfig.attributeColumns.category + " is " + category  + "</br>The " + discreteConfig.attributeColumns.magnitude + " is " + magnitudeVariable;
+                   div.html(text)
+                     .style("left", (d3.event.pageX) + "px")
+                     .style("top", (d3.event.pageY - 28) + "px");
+                   })
+
+          .on("mouseout", function(d) {
+              div.transition()
+                 .duration(500)
+                 .style("opacity", 0);
+          });
+      }
+      else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true){
+        console.log("False True")
+        svg.selectAll("circle")
+          .data(valueArray).enter()
+          .append("circle")
+          .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+          .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+          .attr("r", function(d){ console.log(rScale(d[3])); return rScale(d[3])})
+          .attr("fill", obj.vizualizationConfiguration.discretes[0].colorScheme)
+          .attr("opacity", .75)
+          .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+          .style("stroke-width", "2")
+
+      }
+      else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true){
+        console.log("True True")
+        svg.selectAll("circle")
+          .data(valueArray).enter()
+          .append("circle")
+          .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+          .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+          .attr("r", function(d){ console.log(d[3] + " translates to " + rScale(d[3])); return rScale(d[3])})
+          .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+          .attr("opacity", .75)
+          .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+          .style("stroke-width", "2")
+      }
+      else {
+
+        svg.selectAll("circle")
+          .data(valueArray).enter()
+          .append("circle")
+          .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+          .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+          .attr("r", 3)
+          .attr("fill", "Red")
+          .attr("opacity", .75)
+          .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+          .style("stroke-width", "2")
+
+      }
 
       }//end of discretes loop
 
