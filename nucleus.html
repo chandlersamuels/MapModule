@@ -13,14 +13,23 @@
     <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
     <script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
     <script src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
-    
+
     <link rel="stylesheet" type = "text/css" href = "style.css">
 
   </head>
   <body>
-    <div id= "mapid"></div>
+
+    <forum>
+      <input type="radio" name="colorRange" id="1-slippy-discrete-two" value="slippy discrete"  /> 1-slippy-discrete-two
+      <input type="radio" name="colorRange" id="2-slippy-area" value="slippy area" /> 2-slippy-area
+      <input type="radio" name="colorRange" id="3-svg-area" value="svg area" checked = "checked"/> 3-svg-area
+      <input type="radio" name="colorRange" id="4-svg-discrete" value="svg discrete" /> 4-svg-discrete
+    </forum>
+
+    <div id= "mapContents"></div>
     <script src ="JavaScript/test-objects.js"></script>
     <script src ="JavaScript/helper.js"></script>
     <script src ="JavaScript/module.js"></script>
+
   </body>
 </html>

@@ -1,3 +1,15 @@
+function emptyMapContents(){
+
+  var node = document.getElementById("mapContents")
+    while (node.hasChildNodes()) {
+        node.removeChild(node.lastChild);
+    }
+}
+
+
+
+
+
 function renderChart(obj){
 
   var colorScale1 = d3.scaleOrdinal()
@@ -141,7 +153,7 @@ function renderChart(obj){
                 info.update = function (props) {
                     console.log(props)
                     this._div.innerHTML = '<h4>Total Sales by state</h4>' +  (props ?
-                        '<b>' + props[obj.vizualizationConfiguration.sumAreas.PopupInfo] + '</b><br />' + props.Sales + ' total sales '
+                        '<b>' + props.NAME + '</b><br />' + props.Sales + ' total sales '
                         : 'Hover over a state'); //Things that goes inside the pop-up window.
                 };
 
@@ -336,12 +348,6 @@ function renderChart(obj){
                   return data;
                 }
 
-                function Description(locations){
-                  console.log("this is work") //adding description for popup window over mouseover
-                  description = "ServiceType: " + locations[0];
-                  return description;
-                }
-
                   console.log("True True")
                   for(var j = 0; j < valueArray.length; j++){
                     var circle = L.circle(valueArray[j], {
@@ -349,6 +355,8 @@ function renderChart(obj){
                       fillColor: colorScale(obj.discreteData[i][j][categorykey]),
                       fillOpacity: 1,
                       radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
+                  }).on("mouseover", function(e){
+                      console.log(e);
                   }).addTo(map);
                 }
 
@@ -368,6 +376,7 @@ function renderChart(obj){
                       radius: 100,
                   }).addTo(map);
                 }
+
               }
 
               else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true)
@@ -415,6 +424,7 @@ function renderChart(obj){
     var svg = d3.select("div").append("svg")
        .attr("width", 1000)
        .attr("height", 800)
+       .attr("id", "svg")
 
     d3.queue() //used to ensure that all data is loaded into the program before execution
       .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.topoJsonUrl)
@@ -438,7 +448,7 @@ function renderChart(obj){
 
         var geoPath = d3.geoPath().projection(projection) //initialize the path
 
-        var div = d3.select("body").append("div")
+        var div = d3.select("div").append("div")
           .attr("class", "tooltip")
           .style("opacity", 0);
       //draw map here
@@ -770,4 +780,60 @@ function renderChart(obj){
 
 }//end of renderChart
 
-renderChart(testObjects["1-slippy-discrete-two"]);
+
+document.getElementById("1-slippy-discrete-two").addEventListener('click', function (){
+  jsonData = "1-slippy-discrete-two"
+
+  emptyMapContents()
+
+  var div = document.createElement("div");
+  div.setAttribute("id", "mapid");
+// as an example add it to the body
+  document.getElementById("mapContents").appendChild(div);
+
+  renderChart(testObjects[jsonData])
+})
+
+
+
+document.getElementById("2-slippy-area").addEventListener('click', function(){
+
+  emptyMapContents()
+
+  jsonData = "2-slippy-area"
+
+  var div = document.createElement("div");
+  div.setAttribute("id", "mapid");
+// as an example add it to the body
+  document.getElementById("mapContents").appendChild(div);
+
+  renderChart(testObjects[jsonData])
+})
+
+
+
+document.getElementById("3-svg-area").addEventListener('click', function(){
+  console.log(d3.select("svg"))
+
+    emptyMapContents()
+
+
+    jsonData = "3-svg-area"
+
+    renderChart(testObjects[jsonData])
+})
+
+
+
+document.getElementById("4-svg-discrete").addEventListener('click', function(){
+
+  emptyMapContents()
+
+  jsonData = "4-svg-discrete"
+  renderChart(testObjects[jsonData])
+})
+
+
+
+
+renderChart(testObjects["3-svg-area"]);
