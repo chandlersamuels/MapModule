@@ -315,14 +315,27 @@ function renderChart(obj){
 
         var valueArray = [];
         var magnitude = [];
+        var attributesArray = [];
+
 
         console.log(discreteConfig);
 
         _.each(obj.discreteData[i], function(dataRow){
           valueArray.push([+dataRow[discreteConfig.latColumn], +dataRow[discreteConfig.longColumn]])
           magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
+          var attributes={};
+          attributes[discreteConfig.attributeColumns.category] = dataRow[discreteConfig.attributeColumns.category];
+          attributes[discreteConfig.attributeColumns.magnitude] = dataRow[discreteConfig.attributeColumns.magnitude];
+
+          for(var x =0; x< discreteConfig.attributeColumns.additional.length; x++){
+            attributes[discreteConfig.attributeColumns.additional[x]] = dataRow[discreteConfig.attributeColumns.additional[x]]
+          }
+
+          console.log(attributes)
+          attributesArray.push(attributes)
         })
 
+        console.log(attributesArray);
         console.log(valueArray);
         console.log(magnitude);
 
@@ -348,6 +361,17 @@ function renderChart(obj){
                   return data;
                 }
 
+
+                function Description(locations){ //adding description for popup window over mouseove
+                  var str = "";
+                  for (var key in locations) {
+                    if (locations.hasOwnProperty(key)) {
+                      str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+                    }
+                  }
+                  return str;
+                }
+
                   console.log("True True")
                   for(var j = 0; j < valueArray.length; j++){
                     var circle = L.circle(valueArray[j], {
@@ -355,15 +379,27 @@ function renderChart(obj){
                       fillColor: colorScale(obj.discreteData[i][j][categorykey]),
                       fillOpacity: 1,
                       radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
-                  }).on("mouseover", function(e){
-                      console.log(e);
-                  }).addTo(map);
+                  }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                        this.openPopup();
+                      }).on('mouseout', function (e) {
+                            this.closePopup();
+                          }).addTo(map);
                 }
 
               }
 
               else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false)
               {
+
+                function Description(locations){ //adding description for popup window over mouseove
+                  var str = "";
+                  for (var key in locations) {
+                    if (locations.hasOwnProperty(key)) {
+                      str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+                    }
+                  }
+                  return str;
+                }
 
                 var categorykey = discreteConfig.attributeColumns.category;
 
@@ -374,7 +410,11 @@ function renderChart(obj){
                       fillColor: colorScale(obj.discreteData[i][j][categorykey]),
                       fillOpacity: 1,
                       radius: 100,
-                  }).addTo(map);
+                  }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                        this.openPopup();
+                      }).on('mouseout', function (e) {
+                            this.closePopup();
+                          }).addTo(map);
                 }
 
               }
@@ -386,6 +426,16 @@ function renderChart(obj){
                     return data;
                   }
 
+                  function Description(locations){ //adding description for popup window over mouseove
+                    var str = "";
+                    for (var key in locations) {
+                      if (locations.hasOwnProperty(key)) {
+                        str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+                      }
+                    }
+                    return str;
+                  }
+
                   var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
                   console.log("false True")
@@ -395,20 +445,38 @@ function renderChart(obj){
                       fillColor: '#f03',
                       fillOpacity: 1,
                       radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
-                  }).addTo(map);
+                  }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                        this.openPopup();
+                      }).on('mouseout', function (e) {
+                            this.closePopup();
+                          }).addTo(map);
                 }
               }
 
               else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == false)
               {
+                function Description(locations){ //adding description for popup window over mouseove
+                  var str = "";
+                  for (var key in locations) {
+                    if (locations.hasOwnProperty(key)) {
+                      str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+                    }
+                  }
+                  return str;
+                }
+
                   console.log("False False")
-                  for(var i = 0; i < valueArray.length; i++){
-                    var circle = L.circle(valueArray[i], {
+                  for(var j = 0; j < valueArray.length; j++){
+                    var circle = L.circle(valueArray[j], {
                       color: 'red',
                       fillColor: '#f03',
                       fillOpacity: 1,
                       radius: 15,
-                  }).addTo(map);
+                  }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                        this.openPopup();
+                      }).on('mouseout', function (e) {
+                            this.closePopup();
+                          }).addTo(map);
                 }
               }
 
@@ -666,13 +734,26 @@ function renderChart(obj){
 
         var valueArray = [];
         var magnitude = [];
+        var attributesArray = [];
 
         console.log(discreteConfig.attributeColumns.category)
 
         _.each(obj.discreteData[i], function(dataRow){
-          valueArray.push([+dataRow[discreteConfig.longColumn], +dataRow[discreteConfig.latColumn], dataRow[discreteConfig.attributeColumns.category], +dataRow[discreteConfig.attributeColumns.magnitude]])
+
+          var attributes = {};
+          attributes[discreteConfig.attributeColumns.category] = dataRow[discreteConfig.attributeColumns.category];
+          attributes[discreteConfig.attributeColumns.magnitude] = dataRow[discreteConfig.attributeColumns.magnitude];
+
+          console.log(attributes)
+
+          valueArray.push([+dataRow[discreteConfig.longColumn], +dataRow[discreteConfig.latColumn], dataRow[discreteConfig.attributeColumns.category], +dataRow[discreteConfig.attributeColumns.magnitude], attributes])
           magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
+
+
+
         })
+
+        console.log(valueArray)
 
         var max = d3.max(magnitude, function(d) { return d;});
         var min = d3.min(magnitude, function(d) { return d;});
@@ -687,6 +768,18 @@ function renderChart(obj){
         console.log("min "+min)
 
       if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false){
+
+        function Description(locations){ //adding description for popup window over mouseove
+            var str = "";
+            for (var key in locations) {
+              if (locations.hasOwnProperty(key)) {
+                str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+              }
+            }
+            return str;
+          }
+
+
         console.log("true false")
         svg.selectAll("circle")
           .data(valueArray).enter()
@@ -700,8 +793,8 @@ function renderChart(obj){
           .style("stroke-width", "2")
           .on("mouseover", function(d) {
 
-          var category = d[2];
-          var magnitudeVariable = d[3];
+
+
 
             // var geographyData = _.find(obj.data, function (dataRow){
             //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
@@ -718,11 +811,12 @@ function renderChart(obj){
               div.transition()
                    .duration(200)
                    .style("opacity", .9)
-                 var text = " The " + discreteConfig.attributeColumns.category + " is " + category  + "</br>The " + discreteConfig.attributeColumns.magnitude + " is " + magnitudeVariable;
-                   div.html(text)
+                     var descriptionText = Description(d[4])
+                   div.html(descriptionText)
                      .style("left", (d3.event.pageX) + "px")
                      .style("top", (d3.event.pageY - 28) + "px");
-                   })
+
+                 })
 
           .on("mouseout", function(d) {
               div.transition()
@@ -732,20 +826,74 @@ function renderChart(obj){
       }
       else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true){
         console.log("False True")
+
+        function Description(locations){ //adding description for popup window over mouseove
+            var str = "";
+            for (var key in locations) {
+              if (locations.hasOwnProperty(key)) {
+                str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+              }
+            }
+            return str;
+          }
+
         svg.selectAll("circle")
           .data(valueArray).enter()
           .append("circle")
           .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
           .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
           .attr("r", function(d){ console.log(rScale(d[3])); return rScale(d[3])})
-          .attr("fill", obj.vizualizationConfiguration.discretes[0].colorScheme)
+          .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
           .attr("opacity", .75)
-          .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+          .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
+          .on("mouseover", function(d) {
+
+
+
+
+            // var geographyData = _.find(obj.data, function (dataRow){
+            //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+            // });
+            //
+            // console.log(geographyData)
+            //
+            // var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+            // var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
+            //
+            // console.log(value);
+            // console.log(state);
+
+              div.transition()
+                   .duration(200)
+                   .style("opacity", .9)
+                     var descriptionText = Description(d[4])
+                   div.html(descriptionText)
+                     .style("left", (d3.event.pageX) + "px")
+                     .style("top", (d3.event.pageY - 28) + "px");
+
+                 })
+
+          .on("mouseout", function(d) {
+              div.transition()
+                 .duration(500)
+                 .style("opacity", 0);
+          });
 
       }
       else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true){
         console.log("True True")
+
+        function Description(locations){ //adding description for popup window over mouseove
+            var str = "";
+            for (var key in locations) {
+              if (locations.hasOwnProperty(key)) {
+                str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+              }
+            }
+            return str;
+          }
+
         svg.selectAll("circle")
           .data(valueArray).enter()
           .append("circle")
@@ -756,8 +904,50 @@ function renderChart(obj){
           .attr("opacity", .75)
           .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
+          .on("mouseover", function(d) {
+
+
+
+
+            // var geographyData = _.find(obj.data, function (dataRow){
+            //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+            // });
+            //
+            // console.log(geographyData)
+            //
+            // var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+            // var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
+            //
+            // console.log(value);
+            // console.log(state);
+
+              div.transition()
+                   .duration(200)
+                   .style("opacity", .9)
+                     var descriptionText = Description(d[4])
+                   div.html(descriptionText)
+                     .style("left", (d3.event.pageX) + "px")
+                     .style("top", (d3.event.pageY - 28) + "px");
+
+                 })
+
+          .on("mouseout", function(d) {
+              div.transition()
+                 .duration(500)
+                 .style("opacity", 0);
+          });
       }
       else {
+
+        function Description(locations){ //adding description for popup window over mouseove
+            var str = "";
+            for (var key in locations) {
+              if (locations.hasOwnProperty(key)) {
+                str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+              }
+            }
+            return str;
+          }
 
         svg.selectAll("circle")
           .data(valueArray).enter()
@@ -765,10 +955,42 @@ function renderChart(obj){
           .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
           .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
           .attr("r", 3)
-          .attr("fill", "Red")
+          .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
           .attr("opacity", .75)
-          .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+          .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
+          .on("mouseover", function(d) {
+
+
+
+
+            // var geographyData = _.find(obj.data, function (dataRow){
+            //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+            // });
+            //
+            // console.log(geographyData)
+            //
+            // var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+            // var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
+            //
+            // console.log(value);
+            // console.log(state);
+
+              div.transition()
+                   .duration(200)
+                   .style("opacity", .9)
+                     var descriptionText = Description(d[4])
+                   div.html(descriptionText)
+                     .style("left", (d3.event.pageX) + "px")
+                     .style("top", (d3.event.pageY - 28) + "px");
+
+                 })
+
+          .on("mouseout", function(d) {
+              div.transition()
+                 .duration(500)
+                 .style("opacity", 0);
+          });
 
       }
 

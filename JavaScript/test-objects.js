@@ -67,7 +67,7 @@ var testObjects =
 		            "tileType": "Open Street Maps",
 		            "tileUrl": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
 		        },
-		        "geographyBoundariesFlag": true,
+		        "geographyBoundariesFlag": false,
 		        "geographyBoundaries": {
 		            "mapName": "US Map by State",
 		            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
@@ -253,7 +253,7 @@ var testObjects =
 		            "latColumn": "LatitudeLocation",
 		            "longColumn": "LongitudeLocation",
 		            "categoryFlag": true,
-		            "magnitudeFlag": false,
+		            "magnitudeFlag": true,
 		            "displayOptions": "none",
 		            "attributeColumns": {
 		                "category": "Make",
