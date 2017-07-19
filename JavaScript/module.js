@@ -10,7 +10,19 @@ function emptyMapContents(){
 
 
 
+var counter = 0;
+
 function renderChart(obj){
+
+  function Description(locations){ //adding description for popup window over mouseove
+      var str = "";
+      for (var key in locations) {
+        if (locations.hasOwnProperty(key)) {
+          str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
+        }
+      }
+      return str;
+    }
 
   var colorScale1 = d3.scaleOrdinal()
         .range(['#C0C0C0', '#808080', '#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
@@ -100,7 +112,7 @@ function renderChart(obj){
                     opacity:1,
                     color: 'darkgrey',
                     dashArray: '1',
-                    fillOpacity: .7
+                    fillOpacity: .2
                   };
                 }
 
@@ -283,6 +295,7 @@ function renderChart(obj){
 
       //draw geographical boundries if not already drawn by sumbyArea
       if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas){
+        console.log("we inside this bid")
         d3.queue() //used to ensure that all data is loaded into the program before execution
           .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
           .await(ready)
@@ -309,7 +322,8 @@ function renderChart(obj){
     }
     //discretes loop
       for(var i=0; i < obj.vizualizationConfiguration.discretes.length; i++){
-          console.log("valid for loop")
+
+        console.log("valid for loop")
 
         var discreteConfig = obj.vizualizationConfiguration.discretes[i]
 
@@ -351,7 +365,6 @@ function renderChart(obj){
         }
 
         else{ //colored bubbles
-
               if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true)
               {
                 var categorykey = discreteConfig.attributeColumns.category;
@@ -377,14 +390,15 @@ function renderChart(obj){
                     var circle = L.circle(valueArray[j], {
                       color: colorScale(obj.discreteData[i][j][categorykey]),
                       fillColor: colorScale(obj.discreteData[i][j][categorykey]),
-                      fillOpacity: 1,
+                      fillOpacity: .5,
                       radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
                   }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
                         this.openPopup();
                       }).on('mouseout', function (e) {
                             this.closePopup();
-                          }).addTo(map);
+                          }).bringToFront().addTo(map);
                 }
+
 
               }
 
@@ -441,9 +455,9 @@ function renderChart(obj){
                   console.log("false True")
                   for(var j = 0; j < valueArray.length; j++){
                     var circle = L.circle(valueArray[j], {
-                      color: 'red',
-                      fillColor: '#f03',
-                      fillOpacity: 1,
+                      color: discreteConfig.colorScheme,
+                      fillColor: discreteConfig.colorScheme,
+                      fillOpacity: .7,
                       radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
                   }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
                         this.openPopup();
@@ -468,8 +482,8 @@ function renderChart(obj){
                   console.log("False False")
                   for(var j = 0; j < valueArray.length; j++){
                     var circle = L.circle(valueArray[j], {
-                      color: 'red',
-                      fillColor: '#f03',
+                      color: discreteConfig.colorScheme,
+                      fillColor: discreteConfig.colorScheme,
                       fillOpacity: 1,
                       radius: 15,
                   }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
@@ -720,7 +734,9 @@ function renderChart(obj){
 
       console.log(obj.vizualizationConfiguration.discretes.length)
 
-      for(var i = 0; i < obj.vizualizationConfiguration.discretes.length; i++){
+
+      if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas){
+        console.log("here")
         svg.selectAll("path") //assign the projected map to the svg in HTML
           .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
           .enter()
@@ -729,12 +745,15 @@ function renderChart(obj){
           .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
           .attr("fill","lightgrey")
+        }
+
+      for(var i = 0; i < obj.vizualizationConfiguration.discretes.length; i++){
 
         var discreteConfig = obj.vizualizationConfiguration.discretes[i];
 
         var valueArray = [];
         var magnitude = [];
-        var attributesArray = [];
+
 
         console.log(discreteConfig.attributeColumns.category)
 
@@ -748,8 +767,6 @@ function renderChart(obj){
 
           valueArray.push([+dataRow[discreteConfig.longColumn], +dataRow[discreteConfig.latColumn], dataRow[discreteConfig.attributeColumns.category], +dataRow[discreteConfig.attributeColumns.magnitude], attributes])
           magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
-
-
 
         })
 
@@ -769,20 +786,11 @@ function renderChart(obj){
 
       if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false){
 
-        function Description(locations){ //adding description for popup window over mouseove
-            var str = "";
-            for (var key in locations) {
-              if (locations.hasOwnProperty(key)) {
-                str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
-              }
-            }
-            return str;
-          }
-
-
         console.log("true false")
         svg.selectAll("circle")
-          .data(valueArray).enter()
+          .data(valueArray, function(d){
+            return d;
+          }).enter()
           .append("circle")
           .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
           .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
@@ -792,9 +800,6 @@ function renderChart(obj){
           .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
           .on("mouseover", function(d) {
-
-
-
 
             // var geographyData = _.find(obj.data, function (dataRow){
             //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
@@ -827,18 +832,12 @@ function renderChart(obj){
       else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true){
         console.log("False True")
 
-        function Description(locations){ //adding description for popup window over mouseove
-            var str = "";
-            for (var key in locations) {
-              if (locations.hasOwnProperty(key)) {
-                str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
-              }
-            }
-            return str;
-          }
+
 
         svg.selectAll("circle")
-          .data(valueArray).enter()
+          .data(valueArray, function(d){
+            return d;
+          }).enter()
           .append("circle")
           .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
           .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
@@ -884,29 +883,21 @@ function renderChart(obj){
       else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true){
         console.log("True True")
 
-        function Description(locations){ //adding description for popup window over mouseove
-            var str = "";
-            for (var key in locations) {
-              if (locations.hasOwnProperty(key)) {
-                str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
-              }
-            }
-            return str;
-          }
+        console.log(valueArray)
 
         svg.selectAll("circle")
-          .data(valueArray).enter()
+          .data(valueArray, function(d){
+            return d;
+          }).enter()
           .append("circle")
           .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
           .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
           .attr("r", function(d){ console.log(d[3] + " translates to " + rScale(d[3])); return rScale(d[3])})
           .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
-          .attr("opacity", .75)
+          .attr("opacity", .4)
           .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
           .on("mouseover", function(d) {
-
-
 
 
             // var geographyData = _.find(obj.data, function (dataRow){
@@ -939,18 +930,10 @@ function renderChart(obj){
       }
       else {
 
-        function Description(locations){ //adding description for popup window over mouseove
-            var str = "";
-            for (var key in locations) {
-              if (locations.hasOwnProperty(key)) {
-                str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>"
-              }
-            }
-            return str;
-          }
-
         svg.selectAll("circle")
-          .data(valueArray).enter()
+          .data(valueArray, function(d){
+            return d;
+          }).enter()
           .append("circle")
           .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
           .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
@@ -960,9 +943,6 @@ function renderChart(obj){
           .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
           .on("mouseover", function(d) {
-
-
-
 
             // var geographyData = _.find(obj.data, function (dataRow){
             //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
@@ -994,6 +974,8 @@ function renderChart(obj){
 
       }
 
+      counter++;
+      console.log("loop Count: " + counter)
       }//end of discretes loop
 
     }//end of ready function
@@ -1033,6 +1015,21 @@ document.getElementById("2-slippy-area").addEventListener('click', function(){
 })
 
 
+document.getElementById("5-slippy-area-discrete").addEventListener('click', function(){
+
+  emptyMapContents()
+
+  jsonData = "5-slippy-area-discrete"
+
+  var div = document.createElement("div");
+  div.setAttribute("id", "mapid");
+// as an example add it to the body
+  document.getElementById("mapContents").appendChild(div);
+
+  renderChart(testObjects[jsonData])
+})
+
+
 
 document.getElementById("3-svg-area").addEventListener('click', function(){
   console.log(d3.select("svg"))
@@ -1053,6 +1050,17 @@ document.getElementById("4-svg-discrete").addEventListener('click', function(){
 
   jsonData = "4-svg-discrete"
   renderChart(testObjects[jsonData])
+})
+
+document.getElementById("6-svg-area-discrete").addEventListener('click', function(){
+  console.log(d3.select("svg"))
+
+    emptyMapContents()
+
+
+    jsonData = "6-svg-area-discrete"
+
+    renderChart(testObjects[jsonData])
 })
 
 
