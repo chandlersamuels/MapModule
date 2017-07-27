@@ -819,36 +819,30 @@ function renderChart(obj){
 
         var valueArray = [];
         var magnitude = [];
-        var categoryArray = [];
         var magnitudeArray = [];
 
         var latColumn = _.find(obj.discreteData[i].columns, function(col){return col.dbColumn == discreteConfig.latColumn}).field;
         var longColumn = _.find(obj.discreteData[i].columns, function(col){return col.dbColumn == discreteConfig.longColumn}).field;
 
-        var magnitudeColumn = {};
 
+        console.log(latColumn);
+        console.log(longColumn);
+
+        var magnitudeColumn = {};
         if(discreteConfig.magnitudeFlag) {
-          magnitudeColumn = _.find(obj.discreteData[i].column, function(col){return col.dbColumn == discreteConfig.attributeColumns.magnitude});
+          console.log("magnitude Flag set")
+          magnitudeColumn = _.find(obj.discreteData[i].columns, function(col){return col.dbColumn == discreteConfig.attributeColumns.magnitude});
         }
 
         var categoryColumn = {};
         if(discreteConfig.categoryFlag) {
-          categoryColumn = _.find(obj.discreteData[i].column, function(col){return col.dbColumn == discreteConfig.attributeColumns.category});
+          categoryColumn = _.find(obj.discreteData[i].columns, function(col){return col.dbColumn == discreteConfig.attributeColumns.category});
         }
 
+        console.log(categoryColumn);
 
-        _.each(obj.discreteData[i], function(dataRow) {
 
-          valueArray.push([+dataRow[longColumn], +dataRow[latColumn]])
-
-          if(discreteConfig.categoryFlag){
-            categoryArray.push([dataRow[categoryColumn.field]]);
-          }
-
-          if(discreteConfig.magnitudeFlag){
-            magnitudeArray.push([+dataRow[magnitudeArray.field]])
-          }
-
+        _.each(obj.discreteData[i].rows, function(dataRow) {
           var attributes = {};
 
           if(discreteConfig.categoryFlag){
@@ -864,19 +858,16 @@ function renderChart(obj){
             attributes[column.title] = dataRow[column.field]
           }
 
-          console.log(attributes)
-
-          valueArray.push([categoryArray, magnitudeArray, attributes])
-
+          valueArray.push([+dataRow[latColumn], +dataRow[longColumn], dataRow[categoryColumn.field], +dataRow[magnitudeColumn.field], attributes]);
+          magnitudeArray.push([+dataRow[magnitudeColumn.field]]);
           //valueArray.push([+dataRow[discreteConfig.longColumn], +dataRow[discreteConfig.latColumn], dataRow[discreteConfig.attributeColumns.category], +dataRow[discreteConfig.attributeColumns.magnitude], attributes])
-          magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
 
         })
 
         console.log(valueArray)
 
-        var max = d3.max(magnitude, function(d) { return d;});
-        var min = d3.min(magnitude, function(d) { return d;});
+        var max = d3.max(magnitudeArray, function(d) { return d;});
+        var min = d3.min(magnitudeArray, function(d) { return d;});
 
         var rScale = d3.scaleLinear();
         rScale.domain([max, min]).range([discreteConfig.minBubbleSize, discreteConfig.maxBubbleSize]); //reverse min max for proper magnitude distribution for bubble sizes.
@@ -1021,9 +1012,7 @@ function renderChart(obj){
           });
 
       }
-
-      counter++;
-      console.log("loop Count: " + counter)
+      
       }//end of discretes loop
 
     }//end of ready function

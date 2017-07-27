@@ -2106,8 +2106,8 @@ var testObjects =
 				"colorScheme": "Red",
 				"latColumn": "OLAT",
 				"longColumn": "OLON",
-				"categoryFlag": false,
-				"magnitudeFlag": false,
+				"categoryFlag": true,
+				"magnitudeFlag": true,
 				"displayOptions": "none",
 				"attributeColumns": {
 						"category": "OMODELTYPE",
