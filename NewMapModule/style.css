@@ -1,0 +1,37 @@
+ #mapid{
+    padding-top: 30px;
+    height: 600px;
+    width: 100%;
+  }
+
+  .info {
+      padding: 6px 8px;
+      font: 14px/16px Arial, Helvetica, sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+  }
+  .info h4 {
+      margin: 0 0 5px;
+      color: #777;
+  }
+
+
+  body{
+    padding:20px
+  }
+
+
+  div.tooltip {
+      position: absolute;
+      text-align: center;
+      width: 150px;
+      height: 35px;
+      padding: 2px;
+      font: 12px sans-serif;
+      background: lightgrey;
+      border: 0px;
+      border-radius: 8px;
+      pointer-events: none;
+  }

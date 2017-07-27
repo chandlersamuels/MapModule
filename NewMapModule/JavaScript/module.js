@@ -1,16 +1,10 @@
-function emptyMapContents(){
+function emptyMapContents() {
 
   var node = document.getElementById("mapContents")
     while (node.hasChildNodes()) {
         node.removeChild(node.lastChild);
     }
 }
-
-
-
-
-
-var counter = 0;
 
 function renderChart(obj){
 
@@ -30,7 +24,7 @@ function renderChart(obj){
         .range(['#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
 
 
-  if(obj.vizualizationConfiguration.defaultMapType == "slippy"){
+  if(obj.vizualizationConfiguration.defaultMapType == "slippy") {
   console.log("inside of slippy");
 
       // initialize Slippy Map
@@ -39,21 +33,23 @@ function renderChart(obj){
       Latitude =obj.vizualizationConfiguration.slippy.defaultLatitude,
       Longitude =obj.vizualizationConfiguration.slippy.defaultLongitude;
 
-      if(Latitude.toString().length>0 && Longitude.toString().length>0){
+      if(Latitude.toString().length>0 && Longitude.toString().length>0) {
         //AddingMap
         var map = L.map('mapid').setView([Latitude, Longitude], zoomLevel);
         L.tileLayer(tileDisplay).addTo(map);
         //might need if condition to deal with latitdue and longitude being empty
-      }
-      else{
+      } else{
         console.log("Incorrect Lat/Long input - reverting to standard view")
         var map = L.map('mapid').setView([39.7392, -104.9903], 4);
         L.tileLayer(tileDisplay).addTo(map);
       }
 
 
-      if(obj.vizualizationConfiguration.sumAreas){
+      if(obj.vizualizationConfiguration.sumAreas) {
         console.log("MapFace: SumByArea");
+
+        console.log(obj.dataConfiguration.columns[0].title)
+
 
         d3.queue() //used to ensure that all data is loaded into the program before execution
           .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
@@ -64,26 +60,31 @@ function renderChart(obj){
             var dataArray = [];
 
             //Adding the data from
-            _.each(data.features, function(feature){
-              var geographyData = _.find(obj.data, function (dataRow){
-                return (feature.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+            _.each(data.features, function(feature) {
+              var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
+                return (feature.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
               });
-              if(geographyData){
-                feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn] = geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
-                dataArray.push(geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn])
+
+              console.log(geographyData);
+              if(geographyData) {
+                feature.properties[obj.dataConfiguration.columns[0].title] = geographyData[2];
+                dataArray.push(geographyData[2])
             }
               else{
-                feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn] = 0;
+                feature.properties[obj.dataConfiguration.columns[0].title] = 0;
               }
             })
+
 
 
             var statesData = data;
             console.log(statesData)
             var geojson;
 
-            if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false){
+            if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false) {
               console.log("ColorSchemeSplitFlag: False")
+
+              console.log(dataArray)
 
               var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
               var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
@@ -93,8 +94,15 @@ function renderChart(obj){
 
               var income_color={};
 
-              var max = d3.max(dataArray, function(d){return d;});
-              var min = d3.min(dataArray, function(d){return d;})
+              var result = dataArray.map(Number)
+
+              console.log(result);
+
+              var max = d3.max(result, function(d){return d;});
+              var min = d3.min(result, function(d){return d;});
+
+              console.log(max);
+              console.log(min);
 
               var income_domain = [];
               income_domain = range(max, min, colorRange);
@@ -105,15 +113,28 @@ function renderChart(obj){
                 .domain(income_domain)
                 .range(colorbrewer[colorScheme][colorRange]);
 
-                function style(feature){
-                  return{
-                    fillColor: income_color(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn]),
-                    weight:1,
-                    opacity:1,
-                    color: 'darkgrey',
-                    dashArray: '1',
-                    fillOpacity: .2
-                  };
+                function style(feature) {
+                  if(feature.properties[obj.dataConfiguration.columns[0].title] == 0) {
+                    return{
+                      fillColor: "white",
+                      weight:1,
+                      opacity:1,
+                      color: 'darkgrey',
+                      dashArray: '1',
+                      fillOpacity: .5
+                    };
+                  } else {
+                    return {
+                      fillColor: income_color(feature.properties[obj.dataConfiguration.columns[0].title]),
+                      weight:1,
+                      opacity:1,
+                      color: 'darkgrey',
+                      dashArray: '1',
+                      fillOpacity: .5
+                    };
+                  }
+
+
                 }
 
                 function highlightFeature(e) {
@@ -132,7 +153,7 @@ function renderChart(obj){
 
                     info.update(layer.feature.properties);
                 }
-       
+
                 function resetHighlight(e) { //highlight the area selected
                     geojson.resetStyle(e.target);
                     info.update();
@@ -149,7 +170,7 @@ function renderChart(obj){
                     });
                 }
 
-                geojson = L.geoJson(statesData,{
+                geojson = L.geoJson(statesData, {
                   style:style,
                   onEachFeature: onEachFeature
                 }).addTo(map);
@@ -171,14 +192,15 @@ function renderChart(obj){
 
                 info.addTo(map);
 
-
             }
-            else if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == true){
+            else if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == true) {
               var income_domainPOS = []
               var income_domainNEG = []
 
-              var max = d3.max(dataArray, function(d){return d;});
-              var min = d3.min(dataArray, function(d){return d;});
+              var result = dataArray.map(Number)
+
+              var max = d3.max(result, function(d){return d;});
+              var min = d3.min(result, function(d){return d;});
 
               var colorSchemePOS= obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
               var colorSchemeNEG= obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
@@ -197,36 +219,36 @@ function renderChart(obj){
                 .domain(income_domainNEG)
                 .range(colorbrewer[colorSchemeNEG][colorRange]);
 
-              function style(feature){
-                if(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn] == undefined){
+              function style(feature) {
+                if(feature.properties[obj.dataConfiguration.columns[0].title] == undefined) {
                    return {
-                       fillColor: "grey", //conf
+                       fillColor: "blue", //conf
                        weight: 2,
                        opacity: 1,
                        color: 'darkgrey',
                        dashArray: '1',
                        fillOpacity: .2
-                   };}
-                   else{
-                     colorScheme = "Reds"
-                     if(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn] < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint){
+                   };
+                 } else{
+                     if(feature.properties[obj.dataConfiguration.columns[0].title] < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint) {
                        return {
-                           fillColor: income_colorNEG(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn]), //conf
+                           fillColor: income_colorNEG(feature.properties[obj.dataConfiguration.columns[0].title]), //conf
                            weight: 2,
                            opacity: 1,
                            color: 'darkgrey',
                            dashArray: '1',
                            fillOpacity: 1
-                       };}
-                     else {
+                       };
+                     } else {
                        return {
-                           fillColor: income_colorPOS(feature.properties[obj.vizualizationConfiguration.sumAreas.valueColumn]), //conf
+                           fillColor: income_colorPOS(feature.properties[obj.dataConfiguration.columns[0].title]), //conf
                            weight: 2,
                            opacity: 1,
                            color: 'darkgrey',
                            dashArray: '1',
                            fillOpacity: 1
-                         };}
+                         };
+                       }
                    }
                  }
 
@@ -263,7 +285,7 @@ function renderChart(obj){
                    });
                }
 
-                geojson = L.geoJson(statesData,{
+                geojson = L.geoJson(statesData, {
                   style: style,
                   onEachFeature: onEachFeature
                 }).addTo(map);
@@ -278,9 +300,8 @@ function renderChart(obj){
 
                 // method that we will use to update the control based on feature properties passed
                 info.update = function (props) {
-                    console.log(props)
-                    this._div.innerHTML = '<h4>Total Sales by state</h4>' +  (props ?
-                        '<b>' + props.NAME + '</b><br />' + props.Sales + ' total sales '
+                    this._div.innerHTML = obj.dataConfiguration.columns[0].dbColumnTitle +  (props ?
+                        '<b>' + props.NAME + '</b><br />' + props[obj.dataConfiguration.columns[0].title] + obj.dataConfiguration.columns[0].columnType
                         : 'Hover over a state'); //Things that goes inside the pop-up window.
                 };
                 info.addTo(map);
@@ -294,13 +315,13 @@ function renderChart(obj){
       }
 
       //draw geographical boundries if not already drawn by sumbyArea
-      if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas){
+      if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas) {
         console.log("we inside this bid")
         d3.queue() //used to ensure that all data is loaded into the program before execution
           .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
           .await(ready)
 
-          function style(feature){
+          function style(feature) {
             return{
               fillColor: "lightgrey",
               weight:1,
@@ -311,49 +332,86 @@ function renderChart(obj){
             };
           }
 
-          function ready(error, data){
+          function ready(error, data) {
 
             var statesData = data;
             var geojson;
-            geojson = L.geoJson(statesData,{
+            geojson = L.geoJson(statesData, {
               style:style
             }).addTo(map);
       }
     }
     //discretes loop
-      for(var i=0; i < obj.vizualizationConfiguration.discretes.length; i++){
+      for(var i=0; i < obj.vizualizationConfiguration.discretes.length; i++) {
 
         console.log("valid for loop")
 
         var discreteConfig = obj.vizualizationConfiguration.discretes[i]
 
         var valueArray = [];
-        var magnitude = [];
+        var categoryArray = [];
         var attributesArray = [];
-
+        var magnitudeArray= [];
 
         console.log(discreteConfig);
 
-        _.each(obj.discreteData[i], function(dataRow){
-          valueArray.push([+dataRow[discreteConfig.latColumn], +dataRow[discreteConfig.longColumn]])
-          magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
-          var attributes={};
-          attributes[discreteConfig.attributeColumns.category] = dataRow[discreteConfig.attributeColumns.category];
-          attributes[discreteConfig.attributeColumns.magnitude] = dataRow[discreteConfig.attributeColumns.magnitude];
+        var latColumn = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.latColumn}).field; //bf
+        var longColumn = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.longColumn}).field;//bg
 
-          for(var x =0; x< discreteConfig.attributeColumns.additional.length; x++){
-            attributes[discreteConfig.attributeColumns.additional[x]] = dataRow[discreteConfig.attributeColumns.additional[x]]
+        var magnitudeColumn = {}
+        if(discreteConfig.magnitudeFlag)
+        {
+            magnitudeColumn = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.attributeColumns.magnitude});
+        }
+
+        var categoryColumn= {}
+        if(discreteConfig.categoryFlag)
+        {
+            categoryColumn = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.attributeColumns.category});
+        }
+
+
+        console.log(longColumn);
+        console.log(categoryColumn);
+        console.log(magnitudeColumn);
+
+        _.each(obj.discreteData[i].rows, function(dataRow) {
+          valueArray.push([+dataRow[longColumn], +dataRow[latColumn]]);
+          if(discreteConfig.categoryFlag) {
+            categoryArray.push([dataRow[categoryColumn.field]]);
+          }
+          if(discreteConfig.magnitudeFlag) {
+            magnitudeArray.push([dataRow[magnitudeColumn.field]]);
           }
 
-          console.log(attributes)
-          attributesArray.push(attributes)
-        })
 
-        console.log(attributesArray);
+          var attributes={};
+          if(discreteConfig.categoryFlag) {
+            attributes[categoryColumn.title] = dataRow[categoryColumn.field];
+          }
+
+          if(discreteConfig.magnitudeFlag) {
+            attributes[magnitudeColumn.title] = dataRow[magnitudeColumn.field];
+          }
+
+          for(var x =0; x< discreteConfig.attributeColumns.additional.length; x++){
+            var column = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.attributeColumns.additional[x]})
+            attributes[column.title] = dataRow[column.field]
+          }
+
+          console.log(attributes);
+          attributesArray.push(attributes);
+
+      });
+
+        //console.log(attributesArray);
+
         console.log(valueArray);
-        console.log(magnitude);
+        console.log(categoryArray);
+        console.log(magnitudeArray);
+        console.log(attributesArray)
 
-        if(discreteConfig.continuousFlag == true){
+        if(discreteConfig.continuousFlag == true) {
 
           var heat = L.heatLayer(valueArray,{
 										 radius: 20,
@@ -370,7 +428,7 @@ function renderChart(obj){
                 var categorykey = discreteConfig.attributeColumns.category;
                 var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
-                function getRadius(data, i){
+                function getRadius(data, i) {
                   return data;
                 }
 
@@ -386,26 +444,24 @@ function renderChart(obj){
                 }
 
                   console.log("True True")
-                  for(var j = 0; j < valueArray.length; j++){
+                  for(var j = 0; j < valueArray.length; j++) {
                     var circle = L.circle(valueArray[j], {
-                      color: colorScale(obj.discreteData[i][j][categorykey]),
-                      fillColor: colorScale(obj.discreteData[i][j][categorykey]),
+                      color: colorScale(categoryArray[j]),
+                      fillColor: colorScale(categoryArray[j]),
                       fillOpacity: .5,
-                      radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
+                      radius: getRadius(magnitudeArray[j],j),
                   }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
                         this.openPopup();
                       }).on('mouseout', function (e) {
                             this.closePopup();
                           }).bringToFront().addTo(map);
                 }
-
-
               }
 
               else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false)
               {
 
-                function Description(locations){ //adding description for popup window over mouseove
+                function Description(locations) { //adding description for popup window over mouseove
                   var str = "";
                   for (var key in locations) {
                     if (locations.hasOwnProperty(key)) {
@@ -420,10 +476,10 @@ function renderChart(obj){
                   console.log("True False")
                   for(var j = 0; j < valueArray.length; j++){
                     var circle = L.circle(valueArray[j], {
-                      color: colorScale(obj.discreteData[i][j][categorykey]),
-                      fillColor: colorScale(obj.discreteData[i][j][categorykey]),
-                      fillOpacity: 1,
-                      radius: 100,
+                      color: colorScale(categoryArray[j]),
+                      fillColor: colorScale(categoryArray[j]),
+                      fillOpacity: .5,
+                      radius: 25,
                   }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
                         this.openPopup();
                       }).on('mouseout', function (e) {
@@ -440,7 +496,7 @@ function renderChart(obj){
                     return data;
                   }
 
-                  function Description(locations){ //adding description for popup window over mouseove
+                  function Description(locations) { //adding description for popup window over mouseove
                     var str = "";
                     for (var key in locations) {
                       if (locations.hasOwnProperty(key)) {
@@ -453,12 +509,12 @@ function renderChart(obj){
                   var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
                   console.log("false True")
-                  for(var j = 0; j < valueArray.length; j++){
+                  for(var j = 0; j < valueArray.length; j++) {
                     var circle = L.circle(valueArray[j], {
                       color: discreteConfig.colorScheme,
                       fillColor: discreteConfig.colorScheme,
                       fillOpacity: .7,
-                      radius: getRadius(obj.discreteData[i][j][magnitudekey],j),
+                      radius: getRadius(magnitudeArray[j],j),
                   }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
                         this.openPopup();
                       }).on('mouseout', function (e) {
@@ -469,7 +525,8 @@ function renderChart(obj){
 
               else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == false)
               {
-                function Description(locations){ //adding description for popup window over mouseove
+                console.log("we in false false  ")
+                function Description(locations) { //adding description for popup window over mouseover
                   var str = "";
                   for (var key in locations) {
                     if (locations.hasOwnProperty(key)) {
@@ -485,12 +542,15 @@ function renderChart(obj){
                       color: discreteConfig.colorScheme,
                       fillColor: discreteConfig.colorScheme,
                       fillOpacity: 1,
-                      radius: 15,
-                  }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                      radius: 1000,
+                  }).bindPopup(Description(attributesArray)).on('mouseover', function (e) {
                         this.openPopup();
                       }).on('mouseout', function (e) {
                             this.closePopup();
                           }).addTo(map);
+
+
+
                 }
               }
 
@@ -500,7 +560,7 @@ function renderChart(obj){
 
   }  //End of Slippy
 
-  else if(obj.vizualizationConfiguration.defaultMapType == "svg"){
+  else if(obj.vizualizationConfiguration.defaultMapType == "svg") {
     console.log("Inside SVG")
 
     var svg = d3.select("div").append("svg")
@@ -512,7 +572,7 @@ function renderChart(obj){
       .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.topoJsonUrl)
       .await(ready)
 
-      function ready(error, data){
+      function ready(error, data) {
         if(error) throw error;
 
         console.log("loaded the data: " + data)
@@ -534,25 +594,35 @@ function renderChart(obj){
           .attr("class", "tooltip")
           .style("opacity", 0);
       //draw map here
-      if(obj.vizualizationConfiguration.sumAreas){
+      if(obj.vizualizationConfiguration.sumAreas) {
         console.log("MapFace: SumByArea");
 
-          if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false){
+          if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false) {
             console.log("colorSchemeSplitFlag is set to false");
 
             var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
             var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
 
             var valueArray= [];
-            _.each(obj.data, function(dataRow){
-              valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
+            _.each(obj.data.pivot[0].data, function(dataRow) {
+              valueArray.push(dataRow[2])
             })
 
+            console.log("HEEEEERRRREEEEE")
+            console.log(valueArray);
 
-            var max = d3.max(valueArray, function(d) { return d;});
-            var min = d3.min(valueArray, function(d) { return d;});
+            var result = valueArray.map(Number);
+            console.log(result)
+
+            var max = d3.max(result, function(d) { return d;});
+            var min = d3.min(result, function(d) { return d;});
+
+            console.log(max)
+            console.log(min)
 
             var income_domain = range(max, min, colorRange)
+
+            console.log(income_domain)
 
             var income_color = d3.scaleLinear() //scaleLinear for D3.V4
               .domain(income_domain)
@@ -567,15 +637,14 @@ function renderChart(obj){
               .style("stroke", "#808080") //These two lines are used to create the outline of regions on the map whether its states or counties... etc
               .style("stroke-width", "2")
               .attr("fill", function(d){
-                var geographyData = _.find(obj.data, function (dataRow){
-                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
+                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
                 });
 
-                if(geographyData){
-                    var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                if(geographyData) {
+                    var value = +geographyData[2];
                     return income_color(value);
-                }
-                else{
+                }else{
                   console.log("No geography data defined")
                   return "Grey"
                 }
@@ -583,13 +652,13 @@ function renderChart(obj){
                 console.log(d.properties[obj.vizualizationConfiguration.sumAreas.mapField]); //might have to
               }).on("mouseover", function(d) {
 
-                var geographyData = _.find(obj.data, function (dataRow){
-                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                var geographyData = _.find(obj.data.pivot[0].data, function (dataRow){
+                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
                 });
 
                 console.log(geographyData)
 
-                var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                var value = +geographyData[2];
                 var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
 
                 console.log(value);
@@ -603,8 +672,7 @@ function renderChart(obj){
                        div.html(text)
                          .style("left", (d3.event.pageX) + "px")
                          .style("top", (d3.event.pageY - 28) + "px");
-                }
-                else{
+                } else{
                   div.transition()
                   	   .duration(200)
                        .style("opacity", .9)
@@ -636,14 +704,14 @@ function renderChart(obj){
 
             var valueArray= [];
 
-            _.each(obj.data, function(dataRow){
-              valueArray.push(+dataRow[obj.vizualizationConfiguration.sumAreas.valueColumn])
+            _.each(obj.data.pivot[0].data, function(dataRow) {
+              valueArray.push(+dataRow[2]);
             })
 
-            console.log(valueArray);
+            var result = valueArray.map(Number);
 
-            var max = d3.max(valueArray, function(d) { return d;});
-            var min = d3.min(valueArray, function(d) { return d;});
+            var max = d3.max(result, function(d) { return d;});
+            var min = d3.min(result, function(d) { return d;});
 
             //returns an array of integers
             income_domainPOS = range(max, 0, colorRange);
@@ -657,7 +725,6 @@ function renderChart(obj){
               .domain(income_domainNEG)
               .range(colorbrewer[colorSchemeNEG][colorRange]);
 
-
             svg.selectAll("path") //assign the projected map to the svg in HTML
               .data(usMap.features)//.data is given from the argument from the ready function, includes features on the map
               .enter()
@@ -667,14 +734,14 @@ function renderChart(obj){
               .style("stroke-width", "2")
               .attr("fill", function(d){
                 //feature.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]
-                var geographyData = _.find(obj.data, function (dataRow){
-                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                var geographyData = _.find(obj.data.pivot[0].data, function (dataRow){
+                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
                 });
 
                 console.log(geographyData)
 
                 if(geographyData){
-                    var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                    var value = +geographyData[2];
                     if(value < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint)
                     {
                       return(income_colorNEG(value));
@@ -691,13 +758,13 @@ function renderChart(obj){
                 }
               }).on("mouseover", function(d) {
 
-                var geographyData = _.find(obj.data, function (dataRow){
-                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
+                var geographyData = _.find(obj.data.pivot[0].data, function (dataRow){
+                  return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
                 });
 
                 console.log(geographyData)
 
-                var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
+                var value = +geographyData[2];
                 var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
 
                 console.log(value);
@@ -734,7 +801,6 @@ function renderChart(obj){
 
       console.log(obj.vizualizationConfiguration.discretes.length)
 
-
       if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas){
         console.log("here")
         svg.selectAll("path") //assign the projected map to the svg in HTML
@@ -747,25 +813,62 @@ function renderChart(obj){
           .attr("fill","lightgrey")
         }
 
-      for(var i = 0; i < obj.vizualizationConfiguration.discretes.length; i++){
+      for(var i = 0; i < obj.vizualizationConfiguration.discretes.length; i++) {
 
         var discreteConfig = obj.vizualizationConfiguration.discretes[i];
 
         var valueArray = [];
         var magnitude = [];
+        var categoryArray = [];
+        var magnitudeArray = [];
+
+        var latColumn = _.find(obj.discreteData[i].columns, function(col){return col.dbColumn == discreteConfig.latColumn}).field;
+        var longColumn = _.find(obj.discreteData[i].columns, function(col){return col.dbColumn == discreteConfig.longColumn}).field;
+
+        var magnitudeColumn = {};
+
+        if(discreteConfig.magnitudeFlag) {
+          magnitudeColumn = _.find(obj.discreteData[i].column, function(col){return col.dbColumn == discreteConfig.attributeColumns.magnitude});
+        }
+
+        var categoryColumn = {};
+        if(discreteConfig.categoryFlag) {
+          categoryColumn = _.find(obj.discreteData[i].column, function(col){return col.dbColumn == discreteConfig.attributeColumns.category});
+        }
 
 
-        console.log(discreteConfig.attributeColumns.category)
+        _.each(obj.discreteData[i], function(dataRow) {
 
-        _.each(obj.discreteData[i], function(dataRow){
+          valueArray.push([+dataRow[longColumn], +dataRow[latColumn]])
+
+          if(discreteConfig.categoryFlag){
+            categoryArray.push([dataRow[categoryColumn.field]]);
+          }
+
+          if(discreteConfig.magnitudeFlag){
+            magnitudeArray.push([+dataRow[magnitudeArray.field]])
+          }
 
           var attributes = {};
-          attributes[discreteConfig.attributeColumns.category] = dataRow[discreteConfig.attributeColumns.category];
-          attributes[discreteConfig.attributeColumns.magnitude] = dataRow[discreteConfig.attributeColumns.magnitude];
+
+          if(discreteConfig.categoryFlag){
+            attributes[categoryColumn.title] = dataRow[categoryColumn.field];
+          }
+
+          if(discreteConfig.magnitudeFlag){
+            attributes[magnitudeColumn.title] = dataRow[magnitudeColumn.field];
+          }
+
+          for(var x = 0; x<discreteConfig.attributeColumns.additional.length; x++){
+            var column = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.attributeColumns.additional[x]});
+            attributes[column.title] = dataRow[column.field]
+          }
 
           console.log(attributes)
 
-          valueArray.push([+dataRow[discreteConfig.longColumn], +dataRow[discreteConfig.latColumn], dataRow[discreteConfig.attributeColumns.category], +dataRow[discreteConfig.attributeColumns.magnitude], attributes])
+          valueArray.push([categoryArray, magnitudeArray, attributes])
+
+          //valueArray.push([+dataRow[discreteConfig.longColumn], +dataRow[discreteConfig.latColumn], dataRow[discreteConfig.attributeColumns.category], +dataRow[discreteConfig.attributeColumns.magnitude], attributes])
           magnitude.push([+dataRow[discreteConfig.attributeColumns.magnitude]]);
 
         })
@@ -784,7 +887,7 @@ function renderChart(obj){
         console.log("max "+max)
         console.log("min "+min)
 
-      if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false){
+      if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false) {
 
         console.log("true false")
         svg.selectAll("circle")
@@ -800,18 +903,6 @@ function renderChart(obj){
           .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
           .on("mouseover", function(d) {
-
-            // var geographyData = _.find(obj.data, function (dataRow){
-            //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
-            // });
-            //
-            // console.log(geographyData)
-            //
-            // var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
-            // var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
-            //
-            // console.log(value);
-            // console.log(state);
 
               div.transition()
                    .duration(200)
@@ -829,7 +920,7 @@ function renderChart(obj){
                  .style("opacity", 0);
           });
       }
-      else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true){
+      else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true) {
         console.log("False True")
 
 
@@ -847,22 +938,6 @@ function renderChart(obj){
           .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
           .on("mouseover", function(d) {
-
-
-
-
-            // var geographyData = _.find(obj.data, function (dataRow){
-            //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
-            // });
-            //
-            // console.log(geographyData)
-            //
-            // var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
-            // var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
-            //
-            // console.log(value);
-            // console.log(state);
-
               div.transition()
                    .duration(200)
                    .style("opacity", .9)
@@ -878,11 +953,9 @@ function renderChart(obj){
                  .duration(500)
                  .style("opacity", 0);
           });
-
       }
-      else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true){
+      else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true) {
         console.log("True True")
-
         console.log(valueArray)
 
         svg.selectAll("circle")
@@ -898,19 +971,6 @@ function renderChart(obj){
           .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
           .style("stroke-width", "2")
           .on("mouseover", function(d) {
-
-
-            // var geographyData = _.find(obj.data, function (dataRow){
-            //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
-            // });
-            //
-            // console.log(geographyData)
-            //
-            // var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
-            // var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
-            //
-            // console.log(value);
-            // console.log(state);
 
               div.transition()
                    .duration(200)
@@ -944,18 +1004,6 @@ function renderChart(obj){
           .style("stroke-width", "2")
           .on("mouseover", function(d) {
 
-            // var geographyData = _.find(obj.data, function (dataRow){
-            //   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[obj.vizualizationConfiguration.sumAreas.mapColumns[0]]);
-            // });
-            //
-            // console.log(geographyData)
-            //
-            // var value = +geographyData[obj.vizualizationConfiguration.sumAreas.valueColumn];
-            // var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
-            //
-            // console.log(value);
-            // console.log(state);
-
               div.transition()
                    .duration(200)
                    .style("opacity", .9)
@@ -985,8 +1033,21 @@ function renderChart(obj){
 }//end of renderChart
 
 
-document.getElementById("1-slippy-discrete-two").addEventListener('click', function (){
-  jsonData = "1-slippy-discrete-two"
+// document.getElementById("1-slippy-discrete-two").addEventListener('click', function (){
+//   jsonData = "1-slippy-discrete-two"
+//
+//   emptyMapContents()
+//
+//   var div = document.createElement("div");
+//   div.setAttribute("id", "mapid");
+// // as an example add it to the body
+//   document.getElementById("mapContents").appendChild(div);
+//
+//   renderChart(testObjects[jsonData])
+// })
+
+document.getElementById("1-slippy-discrete-new").addEventListener('click', function (){
+  jsonData = "1-slippy-discrete-new"
 
   emptyMapContents()
 
@@ -1000,11 +1061,41 @@ document.getElementById("1-slippy-discrete-two").addEventListener('click', funct
 
 
 
-document.getElementById("2-slippy-area").addEventListener('click', function(){
+//
+// document.getElementById("2-slippy-area").addEventListener('click', function(){
+//
+//   emptyMapContents()
+//
+//   jsonData = "2-slippy-area"
+//
+//   var div = document.createElement("div");
+//   div.setAttribute("id", "mapid");
+// // as an example add it to the body
+//   document.getElementById("mapContents").appendChild(div);
+//
+//   renderChart(testObjects[jsonData])
+// })
+
+
+// document.getElementById("5-slippy-area-discrete").addEventListener('click', function(){
+//
+//   emptyMapContents()
+//
+//   jsonData = "5-slippy-area-discrete"
+//
+//   var div = document.createElement("div");
+//   div.setAttribute("id", "mapid");
+// // as an example add it to the body
+//   document.getElementById("mapContents").appendChild(div);
+//
+//   renderChart(testObjects[jsonData])
+// })
+
+document.getElementById("2-slippy-area-new").addEventListener('click', function(){
 
   emptyMapContents()
 
-  jsonData = "2-slippy-area"
+  jsonData = "2-slippy-area-new"
 
   var div = document.createElement("div");
   div.setAttribute("id", "mapid");
@@ -1015,55 +1106,61 @@ document.getElementById("2-slippy-area").addEventListener('click', function(){
 })
 
 
-document.getElementById("5-slippy-area-discrete").addEventListener('click', function(){
 
-  emptyMapContents()
+// document.getElementById("3-svg-area").addEventListener('click', function(){
+//   console.log(d3.select("svg"))
+//
+//     emptyMapContents()
+//
+//
+//     jsonData = "3-svg-area"
+//
+//     renderChart(testObjects[jsonData])
+// })
 
-  jsonData = "5-slippy-area-discrete"
-
-  var div = document.createElement("div");
-  div.setAttribute("id", "mapid");
-// as an example add it to the body
-  document.getElementById("mapContents").appendChild(div);
-
-  renderChart(testObjects[jsonData])
-})
-
-
-
-document.getElementById("3-svg-area").addEventListener('click', function(){
+document.getElementById("3-svg-area-new").addEventListener('click', function(){
   console.log(d3.select("svg"))
 
     emptyMapContents()
 
 
-    jsonData = "3-svg-area"
+    jsonData = "3-svg-area-new"
 
     renderChart(testObjects[jsonData])
 })
 
-
-
-document.getElementById("4-svg-discrete").addEventListener('click', function(){
-
-  emptyMapContents()
-
-  jsonData = "4-svg-discrete"
-  renderChart(testObjects[jsonData])
-})
-
-document.getElementById("6-svg-area-discrete").addEventListener('click', function(){
+document.getElementById("8-svg-discrete-new").addEventListener('click', function(){
   console.log(d3.select("svg"))
 
     emptyMapContents()
 
 
-    jsonData = "6-svg-area-discrete"
+    jsonData = "8-svg-discrete-new"
 
     renderChart(testObjects[jsonData])
 })
 
+//
+// document.getElementById("4-svg-discrete").addEventListener('click', function(){
+//
+//   emptyMapContents()
+//
+//   jsonData = "4-svg-discrete"
+//   renderChart(testObjects[jsonData])
+// })
+//
+// document.getElementById("6-svg-area-discrete").addEventListener('click', function(){
+//   console.log(d3.select("svg"))
+//
+//     emptyMapContents()
+//
+//
+//     jsonData = "6-svg-area-discrete"
+//
+//     renderChart(testObjects[jsonData])
+// })
 
 
 
-renderChart(testObjects["3-svg-area"]);
+
+renderChart(testObjects["8-svg-discrete-new"]);

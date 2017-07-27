@@ -611,7 +611,7 @@ var testObjects =
 					}
 			]
 
-		}
+		},
 
 		"2-slippy-area-new": {
         "vizualizationConfiguration": {
@@ -632,13 +632,13 @@ var testObjects =
             },
             "discretes": [],
             "sumAreas": {
-                "colorScheme": "Greys",
+                "colorScheme": "Greens",
                 "colorRange": 3,
                 "PopupInfoName": "NAME",
                 "colorSchemeAdditional": {
                     "colorSchemeSplitFlag": true,
                     "breakpoint": 0,
-                    "positiveColorScheme": "Dark2",
+                    "positiveColorScheme": "Greens",
                     "negativeColorScheme": "Reds"
                 },
                 "mapField": "STUSPS",
@@ -653,10 +653,10 @@ var testObjects =
         "dataConfiguration": {
             "columns": [{
                 "id": 1,
-                "columnType": "Count",
+                "columnType": " total sales",
                 "dbColumnName": "WOBILLINGSTATE",
-                "dbColumnTitle": " Billing State (Order)",
-                "title": "Count",
+                "dbColumnTitle": " Billing State: ",
+                "title": "Count",//Make Title
                 "filter": {},
                 "target": "",
                 "targetOperand": "",
@@ -694,7 +694,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "MN",
-                    "129",
+                    "-129",
                     19801,
                     "A",
                     0
@@ -702,7 +702,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "WV",
-                    "16",
+                    "-16",
                     19801,
                     "A",
                     0
@@ -1159,6 +1159,549 @@ var testObjects =
         }]}
     },
 
+		"3-svg-area-new": {
+			"vizualizationConfiguration": {
+					"defaultMapType": "svg",
+					"svg": {
+						"jsonType":"GeometryCollection"
+					},
+					"slippy": {},
+					"geographyBoundariesFlag": true,
+					"geographyBoundaries": {
+							"mapName": "US Map by State",
+							"topoJsonUrl": "Maps/USbyState/USMap.topojson",
+							"geoJsonUrl": "blah/blah/blah/USStates.geojson"
+					},
+					"discretes": [],
+					"sumAreas": {
+							"colorScheme": "Greens",
+							"colorRange": 3,
+							"popupTextDescription":" Total Sales: ",
+							"colorSchemeAdditional": {
+									"colorSchemeSplitFlag": true,
+									"breakpoint": 0,
+									"positiveColorScheme": "Greens",
+									"negativeColorScheme": "Reds"
+							},
+							"mapField": "STUSPS",
+							"mapColumns": [
+									"State",
+									"County"
+							],
+							"valueColumn": "Sales",
+							"attributeColumns": []
+					}
+			},
+        "dataConfiguration": {
+            "columns": [{
+                "id": 1,
+                "columnType": " total sales",
+                "dbColumnName": "WOBILLINGSTATE",
+                "dbColumnTitle": " Billing State: ",
+                "title": "Count",//Make Title
+                "filter": {},
+                "target": "",
+                "targetOperand": "",
+                "tolerance": "",
+                "numberFormat": "1,234",
+                "dbColumnNameSummed": "",
+                "endOfPivotColumn": true
+            }],
+            "anchorColumn": {
+                "title": " Billing State (Order)",
+                "frequency": "Daily",
+                "dbColumnName": "WOBILLINGSTATE",
+                "dbColumnTitle": " Billing State (Order)",
+                "filter": {"filter": ""},
+                "filterOwnerUserId": "",
+                "showAll": true
+            },
+            "collector": "Sales Transactions Current",
+            "snapshotConfig": {
+                "type": "specific one",
+                "snapshotId": 19801
+            }
+        },
+        "data": {"pivot": [{ //...data.pivot[0].data[0][1]
+            "id": 1,
+            "data": [
+                [
+                    "2017-06-25T23:59:59",
+                    "NJ",
+                    "-56",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "MN",
+                    "129",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "WV",
+                    "16",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "NUL",
+                    "532",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "OK",
+                    "11",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "AK",
+                    "4",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "SD",
+                    "1",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "CA",
+                    "478",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "ND",
+                    "23",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "AL",
+                    "114",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "WY",
+                    "4",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "WI",
+                    "63",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "VA",
+                    "67",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "MA",
+                    "40",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "NM",
+                    "10",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "AR",
+                    "6",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "MD",
+                    "1542",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "OH",
+                    "290",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "TN",
+                    "25",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "NE",
+                    "14",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "MI",
+                    "72",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "GA",
+                    "125",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "ON",
+                    "8",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "IL",
+                    "639",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "KS",
+                    "14",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "UT",
+                    "9",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "ME",
+                    "28",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "NH",
+                    "2",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "MB",
+                    "1",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "DC",
+                    "278",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "NY",
+                    "135",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "CO",
+                    "42",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "IA",
+                    "412",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "DE",
+                    "12",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "SC",
+                    "10",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "MT",
+                    "5",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "RI",
+                    "8",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "QC",
+                    "2",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "MO",
+                    "29",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "NV",
+                    "21",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "IN",
+                    "31",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "VT",
+                    "2",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "LA",
+                    "12",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "TX",
+                    "193",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "FL",
+                    "571",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "WA",
+                    "16",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "HI",
+                    "6",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "MS",
+                    "8",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "CT",
+                    "16",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "ID",
+                    "1",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "PA",
+                    "-219",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "KY",
+                    "42",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "OR",
+                    "-3",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "AZ",
+                    "68",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "NC",
+                    "108",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "AB",
+                    "5",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "BC",
+                    "3",
+                    19801,
+                    "A",
+                    0
+                ],
+                [
+                    "2017-06-25T23:59:59",
+                    "SK",
+                    "1",
+                    19801,
+                    "A",
+                    0
+                ]
+            ],
+            "statistics": {
+                "total": "6582",
+                "minimum": "1",
+                "maximum": "1542",
+                "nbritems": "58",
+                "average": "113.48",
+                "median": "18.5"
+            }
+        }]}
+    },
+
+
 		// "7-test-object":{
 		// 	"vizualizationConfiguration": {
 		// 			"defaultMapType": "", //Can only be either svg or slippy
@@ -1223,6 +1766,643 @@ var testObjects =
 		// 	},
 		//
 		// }
+		"1-slippy-discrete-new": {
+    "vizualizationConfiguration": {
+        "defaultMapType": "slippy",
+        "defaultMapFace": "discrete",
+        "slippy": {
+            "defaultLatitude": 40.558034, //default to altoona pennsylvania
+            "defaultLongitude": -78.478437,
+            "zoomLevel": 10,
+            "tileType": "Open Street Maps",
+            "tileUrl": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+        },
+        "geographyBoundariesFlag": false,
+        "geographyBoundaries": {
+            "mapName": "US Map by State",
+            "topoJsonUrl": "Maps/USbyState/USMap.topojson",
+            "geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
+        },
+        "discretes": [{
+            "continousFlag": false,
+            "colorScheme": "Red",
+            "latColumn": "OLAT",
+            "longColumn": "OLON",
+            "categoryFlag": true,
+            "magnitudeFlag": false,
+            "displayOptions": "none",
+            "attributeColumns": {
+                "category": "OMODELTYPE",
+                "magnitude": "OREVENUE",
+                "label": "OSUBSCRIBERNAME",
+                "additional": [
+										"OSUBSCRIBERID",
+                    "OBILLLINE1ST",
+                    "OBILLCITY",
+                    "OBILLSTATE",
+                    "OSERVICEPLANDESC"
+                ]
+            }
+        }]
+    },
+    "discreteData":[{
+        "columns": [
+						{
+								"field": "z",
+								"title": "Handset Revenue",
+								"level": "Customer Delta Monthly - Official",
+								"dbColumn": "OREVENUE",
+								"type": "character"
+						},
+            {
+                "field": "g",
+                "title": "Subscriber ID",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OSUBSCRIBERID",
+                "type": "character"
+            },
+            {
+                "field": "s", //this will help index in the feild below
+                "title": "Subscriber Name",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OSUBSCRIBERNAME",//label of the point
+                "type": "character"
+            },
+            {
+                "field": "al",
+                "title": "Bill Line 1st",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OBILLLINE1ST",
+                "type": "character"
+            },
+            {
+                "field": "am",
+                "title": "Bill Line 2nd",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OBILLLINE2ND",
+                "type": "character"
+            },
+            {
+                "field": "an",
+                "title": "Bill City",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OBILLCITY",
+                "type": "character"
+            },
+            {
+                "field": "ao",
+                "title": "Bill State",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OBILLSTATE",
+                "type": "character"
+            },
+            {
+                "field": "ap",
+                "title": "Bill ZipCode",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OBILLZIPCODE",
+                "type": "character"
+            },
+            {
+                "field": "aw",
+                "title": "Model Type",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OMODELTYPE",
+                "type": "character"
+            },
+            {
+                "field": "bd",
+                "title": "Service Plan",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OSERVICEPLAN",
+                "type": "character"
+            },
+            {
+                "field": "be",
+                "title": "Service Plan Desc",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OSERVICEPLANDESC",
+                "type": "character"
+            },
+            {
+                "field": "bf",
+                "title": "Latitude",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OLAT",
+                "type": "character"
+            },
+            {
+                "field": "bg",
+                "title": "Longitude",
+                "level": "Customer Delta Monthly - Official",
+                "dbColumn": "OLON",
+                "type": "character"
+            }
+        ],
+        "rows": [
+            {
+								"z": "500",
+                "g": "00665717121",
+                "s": "CHRISTIAN HORTON",//name
+                "al": "684 SICKLES CORNER BACK RD",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "Boost ZTE N9519", //
+                "bd": "BSFLH30",
+                "be": "$30 Unl Talk/Txt/1GB 4GLTEData",
+                "bf": "-78.262605",
+                "bg": "40.561890"
+            },
+            {
+								"z": "800",
+                "g": "15563518121",
+                "s": "NICOLE ALTMANSOFER",
+                "al": "4120 BEALE AVE",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "BST LG Tribute HD",
+                "bd": "BSFLH50",
+                "be": "$50 Unl Talk/Txt/Data",
+                "bf": "-78.422441",
+                "bg": "40.484896"
+            },
+            {
+								"z": "100",
+                "g": "22517218121",
+                "s": "MARCELL ELLIS",
+                "al": "1411 23RD ST",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "BST Alcatel DAWN",
+                "bd": "BSFLH50",
+                "be": "$50 Unl Talk/Txt/Data",
+                "bf": "-78.41599",
+                "bg": "40.510609"
+            },
+            {
+								"z": "230",
+                "g": "29511608121",
+                "s": "MARQUIS ESTERLY",
+                "al": "106 E BEECH CT",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "BST Samsung Galaxy J3",
+                "bd": "BSFLH50",
+                "be": "$50 Unl Talk/Txt/Data",
+                "bf": "-78.39806",
+                "bg": "40.528610"
+            },
+            {
+								"z": "300",
+                "g": "29961018121",
+                "s": "SHAWN BROWN",
+                "al": "911 GREEN AVE",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "Boost ZTE Warp Elite",
+                "bd": "BSFLH50",
+                "be": "$50 Unl Talk/Txt/Data",
+                "bf": "-78.398161",
+                "bg": "40.517328"
+            },
+            {
+								"z": "650",
+                "g": "55584118121",
+                "s": "MACKENZIE JOHNSON",
+                "al": "1910 15TH AVE",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "VMU LG Tribute HD",
+                "bd": "VMU551LTE",
+                "be": "$45 UNL w/ 10GB HiSpeed Data",
+                "bf": "-78.412366",
+                "bg": "40.513813"
+            },
+            {
+								"z": "500",
+                "g": "70293526121",
+                "s": "CHARLES DAUGHENBAUGH",
+                "al": "1904 11TH ST APT 2",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "BST Alcatel Touch Elevate",
+                "bd": "BSC2LH35",
+                "be": "$35 2.5GB GrowData/$30 ReBoost",
+                "bf": "-78.4059",
+                "bg": "40.522017"
+            },
+            {
+								"z": "300",
+                "g": "79266518121",
+                "s": "JOSEPH ICKES",
+                "al": "911 GREEN AVE APT 1010",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "Boost LG K3",
+                "bd": "BSFLH50",
+                "be": "$50 Unl Talk/Txt/Data",
+                "bf": "-78.398161",
+                "bg": "40.517328"
+            },
+            {
+								"z": "800",
+                "g": "87851218121",
+                "s": "MARY ANN SILVIAS",
+                "al": "507 N 5TH ST",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "BST LG Tribute HD",
+                "bd": "BSFLH50",
+                "be": "$50 Unl Talk/Txt/Data",
+                "bf": "-78.384458",
+                "bg": "40.536916"
+            },
+            {
+								"z": "800",
+                "g": "87877707121",
+                "s": "DALTON SNYDER",
+                "al": "411 22ND AVE FL 1",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "Boost Nokia Lumia",
+                "bd": "BSFLH50",
+                "be": "$50 Unl Talk/Txt/Data",
+                "bf": "-78.404652",
+                "bg": "40.527002"
+            },
+            {
+								"z": "800",
+                "g": "97700718121",
+                "s": "MIRANDA SPARKMAN",
+                "al": "517 N 3RD ST",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "VMU ZTE MAX XL",
+                "bd": "VMU550LTE",
+                "be": "$35 UNL w/ 5GB HiSpeed Data",
+                "bf": "-78.386492",
+                "bg": "40.535148"
+            },
+            {
+								"z": "800",
+                "g": "97756518121",
+                "s": "CALEB STEVENS",
+                "al": "1807 N 11TH AVE",
+                "am": "",
+                "an": "ALTOONA",
+                "ao": "PA",
+                "ap": "16601",
+                "aw": "BST Sam Galaxy J3 Emerge",
+                "bd": "BOFLH35",
+                "be": "$35 Unl Talk/Txt/3GB 4GLTEData",
+                "bf": "-78.380485",
+                "bg": "40.552666"
+            }
+        ]
+    }]
+},
+"8-svg-discrete-new": {
+	"vizualizationConfiguration": {
+			"defaultMapType": "svg",
+			"defaultMapFace": "discrete",
+			"slippy": {
+					"defaultLatitude": 37.4316,
+					"defaultLongitude": -78.6569,
+					"zoomLevel": 6,
+					"tileType": "Open Street Maps",
+					"tileUrl": "https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png"
+			},
+			"geographyBoundariesFlag": true,
+			"geographyBoundaries": {
+					"mapName": "US Map by State",
+					"topoJsonUrl": "Maps/USbyState/USMap.topojson",
+					"geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
+			},
+		"discretes": [{
+				"minBubbleSize": 3,
+				"maxBubbleSize": 15,
+				"colorScheme": "Red",
+				"latColumn": "OLAT",
+				"longColumn": "OLON",
+				"categoryFlag": false,
+				"magnitudeFlag": false,
+				"displayOptions": "none",
+				"attributeColumns": {
+						"category": "OMODELTYPE",
+						"magnitude": "OREVENUE",
+						"label": "OSUBSCRIBERNAME",
+						"additional": [
+							"OSUBSCRIBERID",
+							"OBILLLINE1ST",
+							"OBILLCITY",
+							"OBILLSTATE",
+							"OSERVICEPLANDESC"
+						]
+				}
+		}],
+
+},
+"discreteData":[{
+		"columns": [
+				{
+						"field": "z",
+						"title": "Handset Revenue",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OREVENUE",
+						"type": "character"
+				},
+				{
+						"field": "g",
+						"title": "Subscriber ID",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OSUBSCRIBERID",
+						"type": "character"
+				},
+				{
+						"field": "s", //this will help index in the feild below
+						"title": "Subscriber Name",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OSUBSCRIBERNAME",//label of the point
+						"type": "character"
+				},
+				{
+						"field": "al",
+						"title": "Bill Line 1st",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OBILLLINE1ST",
+						"type": "character"
+				},
+				{
+						"field": "am",
+						"title": "Bill Line 2nd",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OBILLLINE2ND",
+						"type": "character"
+				},
+				{
+						"field": "an",
+						"title": "Bill City",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OBILLCITY",
+						"type": "character"
+				},
+				{
+						"field": "ao",
+						"title": "Bill State",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OBILLSTATE",
+						"type": "character"
+				},
+				{
+						"field": "ap",
+						"title": "Bill ZipCode",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OBILLZIPCODE",
+						"type": "character"
+				},
+				{
+						"field": "aw",
+						"title": "Model Type",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OMODELTYPE",
+						"type": "character"
+				},
+				{
+						"field": "bd",
+						"title": "Service Plan",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OSERVICEPLAN",
+						"type": "character"
+				},
+				{
+						"field": "be",
+						"title": "Service Plan Desc",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OSERVICEPLANDESC",
+						"type": "character"
+				},
+				{
+						"field": "bf",
+						"title": "Latitude",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OLAT",
+						"type": "character"
+				},
+				{
+						"field": "bg",
+						"title": "Longitude",
+						"level": "Customer Delta Monthly - Official",
+						"dbColumn": "OLON",
+						"type": "character"
+				}
+		],
+		"rows": [
+				{
+						"z": "500",
+						"g": "00665717121",
+						"s": "CHRISTIAN HORTON",//name
+						"al": "684 SICKLES CORNER BACK RD",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "Boost ZTE N9519", //
+						"bd": "BSFLH30",
+						"be": "$30 Unl Talk/Txt/1GB 4GLTEData",
+						"bf": "-78.262605",
+						"bg": "40.561890"
+				},
+				{
+						"z": "800",
+						"g": "15563518121",
+						"s": "NICOLE ALTMANSOFER",
+						"al": "4120 BEALE AVE",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "BST LG Tribute HD",
+						"bd": "BSFLH50",
+						"be": "$50 Unl Talk/Txt/Data",
+						"bf": "-78.422441",
+						"bg": "40.484896"
+				},
+				{
+						"z": "100",
+						"g": "22517218121",
+						"s": "MARCELL ELLIS",
+						"al": "1411 23RD ST",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "BST Alcatel DAWN",
+						"bd": "BSFLH50",
+						"be": "$50 Unl Talk/Txt/Data",
+						"bf": "-78.41599",
+						"bg": "40.510609"
+				},
+				{
+						"z": "230",
+						"g": "29511608121",
+						"s": "MARQUIS ESTERLY",
+						"al": "106 E BEECH CT",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "BST Samsung Galaxy J3",
+						"bd": "BSFLH50",
+						"be": "$50 Unl Talk/Txt/Data",
+						"bf": "-78.39806",
+						"bg": "40.528610"
+				},
+				{
+						"z": "300",
+						"g": "29961018121",
+						"s": "SHAWN BROWN",
+						"al": "911 GREEN AVE",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "Boost ZTE Warp Elite",
+						"bd": "BSFLH50",
+						"be": "$50 Unl Talk/Txt/Data",
+						"bf": "-78.398161",
+						"bg": "40.517328"
+				},
+				{
+						"z": "650",
+						"g": "55584118121",
+						"s": "MACKENZIE JOHNSON",
+						"al": "1910 15TH AVE",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "VMU LG Tribute HD",
+						"bd": "VMU551LTE",
+						"be": "$45 UNL w/ 10GB HiSpeed Data",
+						"bf": "-78.412366",
+						"bg": "40.513813"
+				},
+				{
+						"z": "500",
+						"g": "70293526121",
+						"s": "CHARLES DAUGHENBAUGH",
+						"al": "1904 11TH ST APT 2",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "BST Alcatel Touch Elevate",
+						"bd": "BSC2LH35",
+						"be": "$35 2.5GB GrowData/$30 ReBoost",
+						"bf": "-78.4059",
+						"bg": "40.522017"
+				},
+				{
+						"z": "300",
+						"g": "79266518121",
+						"s": "JOSEPH ICKES",
+						"al": "911 GREEN AVE APT 1010",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "Boost LG K3",
+						"bd": "BSFLH50",
+						"be": "$50 Unl Talk/Txt/Data",
+						"bf": "-78.398161",
+						"bg": "40.517328"
+				},
+				{
+						"z": "800",
+						"g": "87851218121",
+						"s": "MARY ANN SILVIAS",
+						"al": "507 N 5TH ST",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "BST LG Tribute HD",
+						"bd": "BSFLH50",
+						"be": "$50 Unl Talk/Txt/Data",
+						"bf": "-78.384458",
+						"bg": "40.536916"
+				},
+				{
+						"z": "800",
+						"g": "87877707121",
+						"s": "DALTON SNYDER",
+						"al": "411 22ND AVE FL 1",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "Boost Nokia Lumia",
+						"bd": "BSFLH50",
+						"be": "$50 Unl Talk/Txt/Data",
+						"bf": "-78.404652",
+						"bg": "40.527002"
+				},
+				{
+						"z": "800",
+						"g": "97700718121",
+						"s": "MIRANDA SPARKMAN",
+						"al": "517 N 3RD ST",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "VMU ZTE MAX XL",
+						"bd": "VMU550LTE",
+						"be": "$35 UNL w/ 5GB HiSpeed Data",
+						"bf": "-78.386492",
+						"bg": "40.535148"
+				},
+				{
+						"z": "800",
+						"g": "97756518121",
+						"s": "CALEB STEVENS",
+						"al": "1807 N 11TH AVE",
+						"am": "",
+						"an": "ALTOONA",
+						"ao": "PA",
+						"ap": "16601",
+						"aw": "BST Sam Galaxy J3 Emerge",
+						"bd": "BOFLH35",
+						"be": "$35 Unl Talk/Txt/3GB 4GLTEData",
+						"bf": "-78.380485",
+						"bg": "40.552666"
+				}
+		]
+}]
+}
+
 
 
 
