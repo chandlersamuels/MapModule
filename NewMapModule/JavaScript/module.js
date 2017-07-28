@@ -237,7 +237,7 @@ function renderChart(obj){
                            opacity: 1,
                            color: 'darkgrey',
                            dashArray: '1',
-                           fillOpacity: 1
+                           fillOpacity: .5
                        };
                      } else {
                        return {
@@ -246,7 +246,7 @@ function renderChart(obj){
                            opacity: 1,
                            color: 'darkgrey',
                            dashArray: '1',
-                           fillOpacity: 1
+                           fillOpacity: .5
                          };
                        }
                    }
@@ -865,6 +865,7 @@ function renderChart(obj){
         })
 
         console.log(valueArray)
+        console.log(magnitudeArray)
 
         var max = d3.max(magnitudeArray, function(d) { return d;});
         var min = d3.min(magnitudeArray, function(d) { return d;});
@@ -1012,7 +1013,7 @@ function renderChart(obj){
           });
 
       }
-      
+
       }//end of discretes loop
 
     }//end of ready function
@@ -1047,6 +1048,8 @@ document.getElementById("1-slippy-discrete-new").addEventListener('click', funct
 
   renderChart(testObjects[jsonData])
 })
+
+
 
 
 
@@ -1094,6 +1097,29 @@ document.getElementById("2-slippy-area-new").addEventListener('click', function(
   renderChart(testObjects[jsonData])
 })
 
+document.getElementById("10-slippy-discrete-area-new").addEventListener('click', function(){
+  emptyMapContents()
+  jsonData = "10-slippy-discrete-area-new"
+
+  var div = document.createElement("div");
+  div.setAttribute("id", "mapid");
+// as an example add it to the body
+  document.getElementById("mapContents").appendChild(div);
+
+  renderChart(testObjects[jsonData])
+})
+
+document.getElementById("slippy-discrete-multiple").addEventListener('click', function(){
+  emptyMapContents()
+  jsonData = "slippy-discrete-multiple"
+
+  var div = document.createElement("div");
+  div.setAttribute("id", "mapid");
+// as an example add it to the body
+  document.getElementById("mapContents").appendChild(div);
+
+  renderChart(testObjects[jsonData])
+})
 
 
 // document.getElementById("3-svg-area").addEventListener('click', function(){
@@ -1129,6 +1155,27 @@ document.getElementById("8-svg-discrete-new").addEventListener('click', function
     renderChart(testObjects[jsonData])
 })
 
+document.getElementById("9-svg-discrete-new").addEventListener('click', function(){
+  console.log(d3.select("svg"))
+
+    emptyMapContents()
+
+
+    jsonData = "9-svg-discrete-new"
+
+    renderChart(testObjects[jsonData])
+})
+
+document.getElementById("svg-discrete-multiple").addEventListener('click', function(){
+  console.log(d3.select("svg"))
+
+    emptyMapContents()
+
+    jsonData = "svg-discrete-multiple"
+
+    renderChart(testObjects[jsonData])
+})
+
 //
 // document.getElementById("4-svg-discrete").addEventListener('click', function(){
 //
@@ -1152,4 +1199,4 @@ document.getElementById("8-svg-discrete-new").addEventListener('click', function
 
 
 
-renderChart(testObjects["8-svg-discrete-new"]);
+renderChart(testObjects["10-slippy-discrete-area-new"]);
