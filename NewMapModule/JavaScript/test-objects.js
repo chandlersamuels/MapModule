@@ -1788,8 +1788,9 @@ var testObjects =
             "colorScheme": "Red",
             "latColumn": "OLAT",
             "longColumn": "OLON",
+						"shapeFlag": "rectangle",
             "categoryFlag": true,
-            "magnitudeFlag": false,
+            "magnitudeFlag": true,
             "displayOptions": "none",
             "attributeColumns": {
                 "category": "OMODELTYPE",
@@ -2108,6 +2109,7 @@ var testObjects =
 				"longColumn": "OLON",
 				"categoryFlag": true,
 				"magnitudeFlag": true,
+				"shapeForm" : "rectangle",
 				"displayOptions": "none",
 				"attributeColumns": {
 						"category": "OMODELTYPE",
@@ -4112,7 +4114,8 @@ var testObjects =
 				"latColumn": "OLAT",
 				"longColumn": "OLON",
 				"categoryFlag": true,
-				"magnitudeFlag": false,
+				"magnitudeFlag": true,
+				"shapeFlag": "rectangle",
 				"displayOptions": "none",
 				"attributeColumns": {
 						"category": "OMODELTYPE",
@@ -4134,6 +4137,7 @@ var testObjects =
 				"longColumn": "OLON",
 				"categoryFlag": true,
 				"magnitudeFlag": true,
+				"shapeFlag": "circle",
 				"displayOptions": "none",
 				"attributeColumns": {
 						"category": "OMODELTYPE",
@@ -4534,8 +4538,8 @@ var testObjects =
 						"aw": "Boost ZTE N9519", //
 						"bd": "BSFLH30",
 						"be": "$30 Unl Talk/Txt/1GB 4GLTEData",
-						"bf": "-98.4842",
-						"bg": "39.0119"
+						"bf": "-104.9903",
+						"bg": "39.7392"
 				},
 				{
 						"z": "800",
@@ -4549,8 +4553,8 @@ var testObjects =
 						"aw": "BST LG Tribute HD",
 						"bd": "BSFLH50",
 						"be": "$50 Unl Talk/Txt/Data",
-						"bf": "-98.4842",
-						"bg": "39.0119"
+						"bf": "-104.9903",
+						"bg": "39.7392"
 				},
 				{
 						"z": "100",

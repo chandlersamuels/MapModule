@@ -404,8 +404,16 @@ function renderChart(obj){
 
       });
 
-        //console.log(attributesArray);
 
+        //console.log(attributesArray);
+        if(discreteConfig.shapeFlag == "rectangle"){
+          var newValueArray = [];
+          for (var z = 0; z < valueArray.length; z++) {
+            newValueArray[z] = [valueArray[z], [valueArray[z][0] - .003, valueArray[z][1] - .005]]
+          }
+        }
+
+        console.log(newValueArray);
         console.log(valueArray);
         console.log(categoryArray);
         console.log(magnitudeArray);
@@ -422,9 +430,11 @@ function renderChart(obj){
           console.log("do continuous")
         }
 
+
         else{ //colored bubbles
               if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true)
               {
+
                 var categorykey = discreteConfig.attributeColumns.category;
                 var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
@@ -444,6 +454,8 @@ function renderChart(obj){
                 }
 
                   console.log("True True")
+
+                if(discreteConfig.shapeFlag == "circle"){
                   for(var j = 0; j < valueArray.length; j++) {
                     var circle = L.circle(valueArray[j], {
                       color: colorScale(categoryArray[j]),
@@ -455,7 +467,25 @@ function renderChart(obj){
                       }).on('mouseout', function (e) {
                             this.closePopup();
                           }).bringToFront().addTo(map);
+                  }
                 }
+
+              if(discreteConfig.shapeFlag == "rectangle"){
+                for(var j=0; j < valueArray.length; j++) {
+                  var rectangle = L.rectangle(newValueArray[j], {
+                      color: colorScale(categoryArray[j]),
+                      fillColor: colorScale(categoryArray[j]),
+                      fillOpacity: .6,
+                      weight: 2
+                  }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                          this.openPopup();
+                        }).on('mouseout', function (e) {
+                              this.closePopup();
+                            }).bringToFront().addTo(map);
+                }
+              }
+
+
               }
 
               else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false)
@@ -474,17 +504,34 @@ function renderChart(obj){
                 var categorykey = discreteConfig.attributeColumns.category;
 
                   console.log("True False")
-                  for(var j = 0; j < valueArray.length; j++){
-                    var circle = L.circle(valueArray[j], {
-                      color: colorScale(categoryArray[j]),
-                      fillColor: colorScale(categoryArray[j]),
-                      fillOpacity: .5,
-                      radius: 25,
-                  }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
-                        this.openPopup();
-                      }).on('mouseout', function (e) {
-                            this.closePopup();
-                          }).addTo(map);
+                  if(discreteConfig.shapeFlag == "circle"){
+                    for(var j = 0; j < valueArray.length; j++) {
+                      var circle = L.circle(valueArray[j], {
+                        color: colorScale(categoryArray[j]),
+                        fillColor: colorScale(categoryArray[j]),
+                        fillOpacity: .5,
+                        radius: 25,
+                    }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                          this.openPopup();
+                        }).on('mouseout', function (e) {
+                              this.closePopup();
+                            }).bringToFront().addTo(map);
+                    }
+                  }
+
+                if(discreteConfig.shapeFlag == "rectangle"){
+                  for(var j=0; j < valueArray.length; j++) {
+                    var rectangle = L.rectangle(newValueArray[j], {
+                        color: colorScale(categoryArray[j]),
+                        fillColor: colorScale(categoryArray[j]),
+                        fillOpacity: .6,
+                        weight: 2
+                    }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                            this.openPopup();
+                          }).on('mouseout', function (e) {
+                                this.closePopup();
+                              }).bringToFront().addTo(map);
+                  }
                 }
 
               }
@@ -509,23 +556,40 @@ function renderChart(obj){
                   var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
                   console.log("false True")
-                  for(var j = 0; j < valueArray.length; j++) {
-                    var circle = L.circle(valueArray[j], {
-                      color: discreteConfig.colorScheme,
-                      fillColor: discreteConfig.colorScheme,
-                      fillOpacity: .7,
-                      radius: getRadius(magnitudeArray[j],j),
-                  }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
-                        this.openPopup();
-                      }).on('mouseout', function (e) {
-                            this.closePopup();
-                          }).addTo(map);
+                  if(discreteConfig.shapeFlag == "circle"){
+                    for(var j = 0; j < valueArray.length; j++) {
+                      var circle = L.circle(valueArray[j], {
+                        color: discreteConfig.colorScheme,
+                        fillColor: discreteConfig.colorScheme,
+                        fillOpacity: .7,
+                        radius: getRadius(magnitudeArray[j],j),
+                    }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                          this.openPopup();
+                        }).on('mouseout', function (e) {
+                              this.closePopup();
+                            }).bringToFront().addTo(map);
+                    }
+                  }
+
+                if(discreteConfig.shapeFlag == "rectangle"){
+                  for(var j=0; j < valueArray.length; j++) {
+                    var rectangle = L.rectangle(newValueArray[j], {
+                        color: discreteConfig.colorScheme,
+                        fillColor: discreteConfig.colorScheme,
+                        fillOpacity: .6,
+                        weight: 2
+                    }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                            this.openPopup();
+                          }).on('mouseout', function (e) {
+                                this.closePopup();
+                              }).bringToFront().addTo(map);
+                  }
                 }
               }
 
               else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == false)
               {
-                console.log("we in false false  ")
+
                 function Description(locations) { //adding description for popup window over mouseover
                   var str = "";
                   for (var key in locations) {
@@ -537,20 +601,34 @@ function renderChart(obj){
                 }
 
                   console.log("False False")
-                  for(var j = 0; j < valueArray.length; j++){
-                    var circle = L.circle(valueArray[j], {
-                      color: discreteConfig.colorScheme,
-                      fillColor: discreteConfig.colorScheme,
-                      fillOpacity: 1,
-                      radius: 1000,
-                  }).bindPopup(Description(attributesArray)).on('mouseover', function (e) {
-                        this.openPopup();
-                      }).on('mouseout', function (e) {
-                            this.closePopup();
-                          }).addTo(map);
+                  if(discreteConfig.shapeFlag == "circle"){
+                    for(var j = 0; j < valueArray.length; j++) {
+                      var circle = L.circle(valueArray[j], {
+                        color: discreteConfig.colorScheme,
+                        fillColor: discreteConfig.colorScheme,
+                        fillOpacity: .7,
+                        radius: 25,
+                    }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                          this.openPopup();
+                        }).on('mouseout', function (e) {
+                              this.closePopup();
+                            }).bringToFront().addTo(map);
+                    }
+                  }
 
-
-
+                if(discreteConfig.shapeFlag == "rectangle"){
+                  for(var j=0; j < valueArray.length; j++) {
+                    var rectangle = L.rectangle(newValueArray[j], {
+                        color: discreteConfig.colorScheme,
+                        fillColor: discreteConfig.colorScheme,
+                        fillOpacity: .6,
+                        weight: 2
+                    }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
+                            this.openPopup();
+                          }).on('mouseout', function (e) {
+                                this.closePopup();
+                              }).bringToFront().addTo(map);
+                  }
                 }
               }
 
@@ -950,35 +1028,72 @@ function renderChart(obj){
         console.log("True True")
         console.log(valueArray)
 
-        svg.selectAll("circle")
-          .data(valueArray, function(d){
-            return d;
-          }).enter()
-          .append("circle")
-          .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
-          .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
-          .attr("r", function(d){ console.log(d[3] + " translates to " + rScale(d[3])); return rScale(d[3])})
-          .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
-          .attr("opacity", .4)
-          .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
-          .style("stroke-width", "2")
-          .on("mouseover", function(d) {
+        if(discreteConfig.shapeForm == "rectangle") {
 
-              div.transition()
-                   .duration(200)
-                   .style("opacity", .9)
-                     var descriptionText = Description(d[4])
-                   div.html(descriptionText)
-                     .style("left", (d3.event.pageX) + "px")
-                     .style("top", (d3.event.pageY - 28) + "px");
+            svg.selectAll("rectangle")
+              .data(valueArray, function(d){
+                return d;
+              }).enter()
+              .append("rect")
+              .attr("x", function(d){ return projection(d)[0]})
+              .attr("y", function(d){ return projection(d)[1]})
+              .attr("width", 10)
+              .attr("height", 10)
+              .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .attr("opacity", .4)
+              .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+              .style("stroke-width", "2")
+              .on("mouseover", function(d) {
 
-                 })
+                  div.transition()
+                       .duration(200)
+                       .style("opacity", .9)
+                         var descriptionText = Description(d[4])
+                       div.html(descriptionText)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
 
-          .on("mouseout", function(d) {
-              div.transition()
-                 .duration(500)
-                 .style("opacity", 0);
-          });
+                     })
+
+              .on("mouseout", function(d) {
+                  div.transition()
+                     .duration(500)
+                     .style("opacity", 0);
+              });
+        }
+
+        if(discreteConfig.shapeForm == "circle") {
+
+            svg.selectAll("circle")
+              .data(valueArray, function(d){
+                return d;
+              }).enter()
+              .append("circle")
+              .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+              .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+              .attr("r", function(d){ console.log(d[3] + " translates to " + rScale(d[3])); return rScale(d[3])})
+              .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .attr("opacity", .4)
+              .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+              .style("stroke-width", "2")
+              .on("mouseover", function(d) {
+
+                  div.transition()
+                       .duration(200)
+                       .style("opacity", .9)
+                         var descriptionText = Description(d[4])
+                       div.html(descriptionText)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
+
+                     })
+
+              .on("mouseout", function(d) {
+                  div.transition()
+                     .duration(500)
+                     .style("opacity", 0);
+              });
+          }
       }
       else {
 
