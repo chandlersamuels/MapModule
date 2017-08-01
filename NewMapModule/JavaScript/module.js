@@ -960,69 +960,139 @@ function renderChart(obj){
       if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false) {
 
         console.log("true false")
-        svg.selectAll("circle")
-          .data(valueArray, function(d){
-            return d;
-          }).enter()
-          .append("circle")
-          .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
-          .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
-          .attr("r", "2px")
-          .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
-          .attr("opacity", .75)
-          .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
-          .style("stroke-width", "2")
-          .on("mouseover", function(d) {
+        if(discreteConfig.shapeForm == "rectangle") {
 
-              div.transition()
-                   .duration(200)
-                   .style("opacity", .9)
-                     var descriptionText = Description(d[4])
-                   div.html(descriptionText)
-                     .style("left", (d3.event.pageX) + "px")
-                     .style("top", (d3.event.pageY - 28) + "px");
+            svg.selectAll("rectangle")
+              .data(valueArray, function(d){
+                return d;
+              }).enter()
+              .append("rect")
+              .attr("x", function(d){ return projection(d)[0]})
+              .attr("y", function(d){ return projection(d)[1]})
+              .attr("width", 10)
+              .attr("height", 10)
+              .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .attr("opacity", .4)
+              .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+              .style("stroke-width", "2")
+              .on("mouseover", function(d) {
 
-                 })
+                  div.transition()
+                       .duration(200)
+                       .style("opacity", .9)
+                         var descriptionText = Description(d[4])
+                       div.html(descriptionText)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
 
-          .on("mouseout", function(d) {
-              div.transition()
-                 .duration(500)
-                 .style("opacity", 0);
-          });
+                     })
+
+              .on("mouseout", function(d) {
+                  div.transition()
+                     .duration(500)
+                     .style("opacity", 0);
+              });
+        }
+
+        if(discreteConfig.shapeForm == "circle") {
+          svg.selectAll("circle")
+            .data(valueArray, function(d){
+              return d;
+            }).enter()
+            .append("circle")
+            .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+            .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+            .attr("r", "2px")
+            .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+            .attr("opacity", .75)
+            .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])}) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+            .style("stroke-width", "2")
+            .on("mouseover", function(d) {
+
+                div.transition()
+                     .duration(200)
+                     .style("opacity", .9)
+                       var descriptionText = Description(d[4])
+                     div.html(descriptionText)
+                       .style("left", (d3.event.pageX) + "px")
+                       .style("top", (d3.event.pageY - 28) + "px");
+
+                   })
+
+            .on("mouseout", function(d) {
+                div.transition()
+                   .duration(500)
+                   .style("opacity", 0);
+            });
+          }
       }
       else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true) {
         console.log("False True")
 
+        if(discreteConfig.shapeForm == "rectangle") {
 
+            svg.selectAll("rectangle")
+              .data(valueArray, function(d){
+                return d;
+              }).enter()
+              .append("rect")
+              .attr("x", function(d){ return projection(d)[0]})
+              .attr("y", function(d){ return projection(d)[1]})
+              .attr("width", 10)
+              .attr("height", 10)
+              .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
+              .attr("opacity", .4)
+              .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+              .style("stroke-width", "2")
+              .on("mouseover", function(d) {
 
-        svg.selectAll("circle")
-          .data(valueArray, function(d){
-            return d;
-          }).enter()
-          .append("circle")
-          .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
-          .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
-          .attr("r", function(d){ console.log(rScale(d[3])); return rScale(d[3])})
-          .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
-          .attr("opacity", .75)
-          .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
-          .style("stroke-width", "2")
-          .on("mouseover", function(d) {
-              div.transition()
-                   .duration(200)
-                   .style("opacity", .9)
-                     var descriptionText = Description(d[4])
-                   div.html(descriptionText)
-                     .style("left", (d3.event.pageX) + "px")
-                     .style("top", (d3.event.pageY - 28) + "px");
+                  div.transition()
+                       .duration(200)
+                       .style("opacity", .9)
+                         var descriptionText = Description(d[4])
+                       div.html(descriptionText)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
 
-                 })
+                     })
 
-          .on("mouseout", function(d) {
-              div.transition()
-                 .duration(500)
-                 .style("opacity", 0);
-          });
+              .on("mouseout", function(d) {
+                  div.transition()
+                     .duration(500)
+                     .style("opacity", 0);
+              });
+        }
+
+        if(discreteConfig.shapeForm == "circle") {
+          svg.selectAll("circle")
+            .data(valueArray, function(d){
+              return d;
+            }).enter()
+            .append("circle")
+            .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+            .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+            .attr("r", function(d){ console.log(rScale(d[3])); return rScale(d[3])})
+            .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
+            .attr("opacity", .75)
+            .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+            .style("stroke-width", "2")
+            .on("mouseover", function(d) {
+                div.transition()
+                     .duration(200)
+                     .style("opacity", .9)
+                       var descriptionText = Description(d[4])
+                     div.html(descriptionText)
+                       .style("left", (d3.event.pageX) + "px")
+                       .style("top", (d3.event.pageY - 28) + "px");
+
+                   })
+
+            .on("mouseout", function(d) {
+                div.transition()
+                   .duration(500)
+                   .style("opacity", 0);
+            });
+        }
       }
       else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true) {
         console.log("True True")
@@ -1097,37 +1167,73 @@ function renderChart(obj){
       }
       else {
 
-        svg.selectAll("circle")
-          .data(valueArray, function(d){
-            return d;
-          }).enter()
-          .append("circle")
-          .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
-          .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
-          .attr("r", 3)
-          .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
-          .attr("opacity", .75)
-          .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
-          .style("stroke-width", "2")
-          .on("mouseover", function(d) {
+        if(discreteConfig.shapeForm == "rectangle") {
 
-              div.transition()
-                   .duration(200)
-                   .style("opacity", .9)
-                     var descriptionText = Description(d[4])
-                   div.html(descriptionText)
-                     .style("left", (d3.event.pageX) + "px")
-                     .style("top", (d3.event.pageY - 28) + "px");
+            svg.selectAll("rectangle")
+              .data(valueArray, function(d){
+                return d;
+              }).enter()
+              .append("rect")
+              .attr("x", function(d){ return projection(d)[0]})
+              .attr("y", function(d){ return projection(d)[1]})
+              .attr("width", 10)
+              .attr("height", 10)
+              .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
+              .attr("opacity", .4)
+              .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme)//These two lines are used to create the outline of regions on the map whether its states or counties... etc
+              .style("stroke-width", "2")
+              .on("mouseover", function(d) {
 
-                 })
+                  div.transition()
+                       .duration(200)
+                       .style("opacity", .9)
+                         var descriptionText = Description(d[4])
+                       div.html(descriptionText)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
 
-          .on("mouseout", function(d) {
-              div.transition()
-                 .duration(500)
-                 .style("opacity", 0);
-          });
+                     })
 
-      }
+              .on("mouseout", function(d) {
+                  div.transition()
+                     .duration(500)
+                     .style("opacity", 0);
+              });
+        }
+
+        if(discreteConfig.shapeForm == "circle") {
+          svg.selectAll("circle")
+            .data(valueArray, function(d){
+              return d;
+            }).enter()
+            .append("circle")
+            .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
+            .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+            .attr("r", 3)
+            .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
+            .attr("opacity", .75)
+            .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme) //These two lines are used to create the outline of regions on the map whether its states or counties... etc
+            .style("stroke-width", "2")
+            .on("mouseover", function(d) {
+
+                div.transition()
+                     .duration(200)
+                     .style("opacity", .9)
+                       var descriptionText = Description(d[4])
+                     div.html(descriptionText)
+                       .style("left", (d3.event.pageX) + "px")
+                       .style("top", (d3.event.pageY - 28) + "px");
+
+                   })
+
+            .on("mouseout", function(d) {
+                div.transition()
+                   .duration(500)
+                   .style("opacity", 0);
+            });
+
+        }
+    }
 
       }//end of discretes loop
 
