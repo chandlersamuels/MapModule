@@ -1788,7 +1788,7 @@ var testObjects =
             "colorScheme": "Red",
             "latColumn": "OLAT",
             "longColumn": "OLON",
-						"shapeFlag": "rectangle",
+						"shapeForm": "rectangle",
             "categoryFlag": true,
             "magnitudeFlag": true,
             "displayOptions": "none",
@@ -4109,13 +4109,13 @@ var testObjects =
 				"geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
 		},
 		"discretes": [{
-				"continousFlag": false,
+				"continuousFlag": true,
 				"colorScheme": "Red",
 				"latColumn": "OLAT",
 				"longColumn": "OLON",
 				"categoryFlag": true,
 				"magnitudeFlag": true,
-				"shapeFlag": "rectangle",
+				"shapeForm": "rectangle",
 				"displayOptions": "none",
 				"attributeColumns": {
 						"category": "OMODELTYPE",
@@ -4131,13 +4131,13 @@ var testObjects =
 				}
 		},
 		{
-				"continousFlag": false,
+				"continuousFlag": false,
 				"colorScheme": "Red",
 				"latColumn": "OLAT",
 				"longColumn": "OLON",
 				"categoryFlag": true,
 				"magnitudeFlag": true,
-				"shapeFlag": "circle",
+				"shapeForm": "circle",
 				"displayOptions": "none",
 				"attributeColumns": {
 						"category": "OMODELTYPE",
@@ -4736,6 +4736,7 @@ var testObjects =
 				"longColumn": "OLON",
 				"categoryFlag": true,
 				"magnitudeFlag": true,
+				"shapeForm": "circle",
 				"displayOptions": "none",
 				"attributeColumns": {
 						"category": "OMODELTYPE",
@@ -4758,6 +4759,7 @@ var testObjects =
 				"longColumn": "OLON",
 				"categoryFlag": true,
 				"magnitudeFlag": true,
+				"shapeForm": "rectangle",
 				"displayOptions": "none",
 				"attributeColumns": {
 						"category": "OMODELTYPE",
@@ -5189,7 +5191,7 @@ var testObjects =
 						"aw": "BST Alcatel DAWN",
 						"bd": "BSFLH50",
 						"be": "$50 Unl Talk/Txt/Data",
-						"bf": "-98.4842",
+						"bf": "-102.4842",
 						"bg": "39.0119"
 				},
 				{

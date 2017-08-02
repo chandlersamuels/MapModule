@@ -406,7 +406,7 @@ function renderChart(obj){
 
 
         //console.log(attributesArray);
-        if(discreteConfig.shapeFlag == "rectangle"){
+        if(discreteConfig.shapeForm == "rectangle"){
           var newValueArray = [];
           for (var z = 0; z < valueArray.length; z++) {
             newValueArray[z] = [valueArray[z], [valueArray[z][0] - .003, valueArray[z][1] - .005]]
@@ -420,11 +420,12 @@ function renderChart(obj){
         console.log(attributesArray)
 
         if(discreteConfig.continuousFlag == true) {
+          console.log("do continuous")
 
           var heat = L.heatLayer(valueArray,{
-										 radius: 20,
+										 radius: 15,
 										 blur: 5,
-										 maxZoom: 10,
+										 maxZoom: 15,
 								 }).addTo(map);
 
           console.log("do continuous")
@@ -455,7 +456,7 @@ function renderChart(obj){
 
                   console.log("True True")
 
-                if(discreteConfig.shapeFlag == "circle"){
+                if(discreteConfig.shapeForm == "circle"){
                   for(var j = 0; j < valueArray.length; j++) {
                     var circle = L.circle(valueArray[j], {
                       color: colorScale(categoryArray[j]),
@@ -470,7 +471,7 @@ function renderChart(obj){
                   }
                 }
 
-              if(discreteConfig.shapeFlag == "rectangle"){
+              if(discreteConfig.shapeForm == "rectangle"){
                 for(var j=0; j < valueArray.length; j++) {
                   var rectangle = L.rectangle(newValueArray[j], {
                       color: colorScale(categoryArray[j]),
@@ -504,7 +505,7 @@ function renderChart(obj){
                 var categorykey = discreteConfig.attributeColumns.category;
 
                   console.log("True False")
-                  if(discreteConfig.shapeFlag == "circle"){
+                  if(discreteConfig.shapeForm == "circle"){
                     for(var j = 0; j < valueArray.length; j++) {
                       var circle = L.circle(valueArray[j], {
                         color: colorScale(categoryArray[j]),
@@ -519,7 +520,7 @@ function renderChart(obj){
                     }
                   }
 
-                if(discreteConfig.shapeFlag == "rectangle"){
+                if(discreteConfig.shapeForm == "rectangle"){
                   for(var j=0; j < valueArray.length; j++) {
                     var rectangle = L.rectangle(newValueArray[j], {
                         color: colorScale(categoryArray[j]),
@@ -556,7 +557,7 @@ function renderChart(obj){
                   var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
                   console.log("false True")
-                  if(discreteConfig.shapeFlag == "circle"){
+                  if(discreteConfig.shapeForm == "circle"){
                     for(var j = 0; j < valueArray.length; j++) {
                       var circle = L.circle(valueArray[j], {
                         color: discreteConfig.colorScheme,
@@ -571,7 +572,7 @@ function renderChart(obj){
                     }
                   }
 
-                if(discreteConfig.shapeFlag == "rectangle"){
+                if(discreteConfig.shapeForm == "rectangle"){
                   for(var j=0; j < valueArray.length; j++) {
                     var rectangle = L.rectangle(newValueArray[j], {
                         color: discreteConfig.colorScheme,
@@ -601,7 +602,7 @@ function renderChart(obj){
                 }
 
                   console.log("False False")
-                  if(discreteConfig.shapeFlag == "circle"){
+                  if(discreteConfig.shapeForm == "circle"){
                     for(var j = 0; j < valueArray.length; j++) {
                       var circle = L.circle(valueArray[j], {
                         color: discreteConfig.colorScheme,
@@ -616,7 +617,7 @@ function renderChart(obj){
                     }
                   }
 
-                if(discreteConfig.shapeFlag == "rectangle"){
+                if(discreteConfig.shapeForm == "rectangle"){
                   for(var j=0; j < valueArray.length; j++) {
                     var rectangle = L.rectangle(newValueArray[j], {
                         color: discreteConfig.colorScheme,
