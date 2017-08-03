@@ -1,0 +1,34 @@
+{"addresses": [
+    {
+        "street": "123 Main St.",
+        "city": "Anywhere",
+        "state": "FL",
+        "zip": "16923",
+        "latitude":11,
+        "longitude":22
+    },
+    {
+        "street": "123 Main St.",
+        "city": "Anywhere",
+        "state": "FL",
+        "zip": "16923",
+        "latitude":11,
+        "longitude":22
+    },
+    {
+        "street": "123 Main St.",
+        "city": "Anywhere",
+        "state": "FL",
+        "zip": "16923",
+        "latitude":11,
+        "longitude":22
+    },
+    {
+        "street": "123 Main St.",
+        "city": "Anywhere",
+        "state": "FL",
+        "zip": "16923",
+        "latitude":11,
+        "longitude":22
+    }
+]}
