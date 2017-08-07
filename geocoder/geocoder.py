@@ -30,13 +30,14 @@ for addresses in inputFile["addresses"]:
         try:
             addresses['Latitude'] = responseData["result"]["addressMatches"][0]["coordinates"]["y"]
             addresses['Longitude'] = responseData["result"]["addressMatches"][0]["coordinates"]["x"]
-
+            addresses['geoCodeStatus'] = "Success"
 
         except IndexError:
             invalidDataEntry.append(counter)
             status = False
             addresses['Latitude'] = ""
             addresses['Longitude'] = ""
+            addresses['geoCodeStatus'] = "Failure"
 
     else:
         print("Response error code: " + str(r.status_code))

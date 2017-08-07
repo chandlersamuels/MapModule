@@ -1,1 +1,1 @@
-{'addresses': [{'street': '4600 Silver Hill Rd', 'city': 'Suitland', 'state': 'D', 'zip': '20746', 'Latitude': '', 'Longitude': ''}, {'street': '816 Tremont Drive', 'city': 'Downingtown', 'state': 'P', 'zip': '19335', 'Latitude': '', 'Longitude': ''}]}
+{'addresses': [{'street': '4600 Silver Hill Rd', 'city': 'Suitland', 'state': 'M', 'zip': '20746', 'Latitude': '', 'Longitude': '', 'geoCodeStatus': 'Failure'}, {'street': '816 Tremont Drive', 'city': 'Downingtown', 'state': 'PA', 'zip': '19335', 'Latitude': 40.03552, 'Longitude': -75.70222, 'geoCodeStatus': 'Success'}]}
