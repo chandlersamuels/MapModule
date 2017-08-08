@@ -106,6 +106,7 @@ function renderChart(obj){
 
               var income_domain = [];
               income_domain = range(max, min, colorRange);
+              legendText = income_domain.map(String).reverse()
 
               console.log(income_domain)
 
@@ -186,11 +187,35 @@ function renderChart(obj){
                 info.update = function (props) {
                     console.log(props)
                     this._div.innerHTML = '<h4>Total Sales by state</h4>' +  (props ?
-                        '<b>' + props.NAME + '</b><br />' + props.Sales + ' total sales '
+                        '<b>' + props.NAME + '</b><br />' + props[obj.dataConfiguration.columns[0].title] + obj.dataConfiguration.columns[0].columnType
                         : 'Hover over a state'); //Things that goes inside the pop-up window.
                 };
 
                 info.addTo(map);
+
+                if(obj.vizualizationConfiguration.legend.legendFlag == true){
+
+                  var legend = L.control({position: obj.vizualizationConfiguration.legend.legendPosition}); //
+
+                  legend.onAdd = function (map) {
+
+                      var div = L.DomUtil.create('div', 'info legend'),
+                          labels = [];
+
+                    div.innerHTML += '<h4>'+obj.vizualizationConfiguration.legend.legendTitle+'</h4>'
+
+                      // loop through our density intervals and generate a label with a colored square for each interval
+                      for (var i = 0; i < legendText.length; i++) {
+                          div.innerHTML +=
+                              '<i style="background:' + income_color(legendText[i]) + '"></i> ' +
+                              legendText[i] + (legendText[i + 1] ? '&ndash;' + '<br>' : '-');
+                      }
+
+                      return div;
+                  };
+
+                  legend.addTo(map);
+              }
 
             }
             else if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == true) {
@@ -210,6 +235,9 @@ function renderChart(obj){
               var income_domain = [];
               income_domainNEG = rangeNEG(0, min, colorRange);
               income_domainPOS = range(max, 0, colorRange);
+
+              legendText1 = income_domainPOS.map(String).reverse()
+              legendText2 = income_domainNEG.map(String).reverse()
 
               income_colorPOS = d3.scaleLinear() //scaleLinear for D3.V4
                 .domain(income_domainPOS)
@@ -305,6 +333,52 @@ function renderChart(obj){
                         : 'Hover over a state'); //Things that goes inside the pop-up window.
                 };
                 info.addTo(map);
+
+                if(obj.vizualizationConfiguration.legend.legendFlag == true){
+
+                  var legendPOS = L.control({position: obj.vizualizationConfiguration.legend.legendPosition}); //
+
+                  legendPOS.onAdd = function (map) {
+
+                      var div = L.DomUtil.create('div', 'info legend'),
+                          labels = [];
+
+                    div.innerHTML += '<h4>'+obj.vizualizationConfiguration.legend.legendTitle+'</h4>'
+
+                      // loop through our density intervals and generate a label with a colored square for each interval
+                      for (var i = 0; i < legendText1.length; i++) {
+                          div.innerHTML +=
+                              '<i style="background:' + income_colorPOS(legendText1[i]) + '"></i> ' +
+                              legendText1[i] + (legendText1[i + 1] ? '&ndash;' + '<br>' : '-');
+                      }
+
+                      return div;
+                  };
+
+                  legendPOS.addTo(map);
+
+
+                  var legendNEG = L.control({position: obj.vizualizationConfiguration.legend.legend2Position}); //
+
+                  legendNEG.onAdd = function (map) {
+
+                      var div = L.DomUtil.create('div', 'info legend'),
+                          labels = [];
+
+                    div.innerHTML += '<h4>'+obj.vizualizationConfiguration.legend.legend2Title+'</h4>'
+
+                      // loop through our density intervals and generate a label with a colored square for each interval
+                      for (var i = 0; i < legendText2.length; i++) {
+                          div.innerHTML +=
+                              '<i style="background:' + income_colorNEG(legendText2[i]) + '"></i> ' +
+                              legendText2[i] + (legendText2[i + 1] ? '&ndash;' + '<br>' : '-');
+                      }
+
+                      return div;
+                  };
+
+                  legendNEG.addTo(map);
+              }
             }
 
             else{
@@ -632,6 +706,28 @@ function renderChart(obj){
                   }
                 }
               }
+
+              if(obj.vizualizationConfiguration.legend.legendFlag == true){
+
+              var legend = L.control({position: obj.vizualizationConfiguration.legend.legendPosition}); //
+
+              legend.onAdd = function (map) {
+                  var div = L.DomUtil.create('div', 'info legend');
+
+                  div.innerHTML += '<h4>' +obj.vizualizationConfiguration.legend.legendTitle+ '</h4>'
+
+                  // loop through our density intervals and generate a label with a colored square for each interval
+                  for (var i = 0; i < valueArray.length; i++) {
+                      div.innerHTML +=
+                          '<i style="background:' + colorScale(categoryArray[i]) + '"></i> ' +
+                          categoryArray[i] + (categoryArray[i] ? '' + '<br>' : '+');
+                  }
+
+                  return div;
+              };
+
+              legend.addTo(map);
+            }
 
           }//end of else continuous flag
 

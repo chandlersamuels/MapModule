@@ -166,7 +166,7 @@ var testObjects =
 								"PopupInfoName": "NAME",
 							  "PopupInfoName": "Sales",
 		            "colorSchemeAdditional": {
-		                "colorSchemeSplitFlag": true,
+		                "colorSchemeSplitFlag": false,
 		                "breakpoint": 0,
 		                "positiveColorScheme": "Dark2",
 		                "negativeColorScheme": "Reds"
@@ -183,7 +183,7 @@ var testObjects =
 		    "data": [
 		        {
 		            "State": "AL",
-		            "Sales": -10
+		            "Sales": 10
 		        },
 		        {
 		            "State": "FL",
@@ -191,11 +191,11 @@ var testObjects =
 		        },
 		        {
 		            "State": "IL",
-		            "Sales": -20
+		            "Sales": 20
 		        },
 						{
 							 "State": "PA",
-							 "Sales": -40
+							 "Sales": 40
 					 },
 					 {
 							"State": "TX",
@@ -630,6 +630,13 @@ var testObjects =
                 "topoJsonUrl": "blah/blah/blah/USStates.topojson",
                 "geoJsonUrl": "Maps/USbyState/USMap.geojson"
             },
+						"legend": {
+							"legendFlag": true,
+							"legendTitle": "Total Sales",
+							"legend2Title": "Total Sales",
+							"legendPosition": "bottomright",
+							"legend2Position": "bottomright"
+						},
             "discretes": [],
             "sumAreas": {
                 "colorScheme": "Greens",
@@ -646,7 +653,7 @@ var testObjects =
                     "State",
                     "County"
                 ],
-                "valueColumn": "Sales",
+                "valueColumn": "Count",
                 "attributeColumns": []
             }
         },
@@ -686,7 +693,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "NJ",
-                    "56",
+                    "-56",
                     19801,
                     "A",
                     0
@@ -3264,6 +3271,13 @@ var testObjects =
 						"topoJsonUrl": "blah/blah/blah/USStates.topojson",
 						"geoJsonUrl": "Maps/USbyState/USMap.geojson"
 				},
+				"legend": {
+					"legendFlag": true,
+					"legendTitle": "Total Sales",
+					"legend2Title": "Total Sales",
+					"legendPosition": "bottomright",
+					"legend2Position": "bottomright"
+				},
 				"discretes": [{
             "continousFlag": false,
             "colorScheme": "Red",
@@ -4096,6 +4110,7 @@ var testObjects =
 		"defaultMapType": "slippy",
 		"defaultMapFace": "discrete",
 		"slippy": {
+			//allow user to change tile
 				"defaultLatitude": 40.558034, //default to altoona pennsylvania
 				"defaultLongitude": -78.478437,
 				"zoomLevel": 10,
@@ -4108,8 +4123,14 @@ var testObjects =
 				"topoJsonUrl": "Maps/USbyState/USMap.topojson",
 				"geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
 		},
+		"legend": {
+			"legendFlag" : true,
+			"legendTitle" : "Service Type",
+			"legendPosition" : "bottomleft"
+			//bottom-right //top-right //top-left //Outside-right
+		},
 		"discretes": [{
-				"continuousFlag": true,
+				"continuousFlag": false,
 				"colorScheme": "Red",
 				"latColumn": "OLAT",
 				"longColumn": "OLON",
