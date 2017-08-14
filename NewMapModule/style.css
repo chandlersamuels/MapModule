@@ -44,3 +44,17 @@
       border-radius: 8px;
       pointer-events: none;
   }
+
+#legend-container {
+  fill: white;
+  opacity: .4;
+  stroke: grey;
+  stroke-width: 2;
+}
+
+#legend-container2 {
+  fill: white;
+  opacity: .9;
+  stroke: grey;
+  stroke-width: 2;
+}

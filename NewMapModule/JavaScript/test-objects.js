@@ -634,7 +634,7 @@ var testObjects =
 							"legendFlag": true,
 							"legendTitle": "Total Sales",
 							"legend2Title": "Total Sales",
-							"legendPosition": "bottomright",
+							"legendPosition": "bottomleft",
 							"legend2Position": "bottomright"
 						},
             "discretes": [],
@@ -1179,10 +1179,17 @@ var testObjects =
 							"topoJsonUrl": "Maps/USbyState/USMap.topojson",
 							"geoJsonUrl": "blah/blah/blah/USStates.geojson"
 					},
+					"legend": {
+						"legendFlag" : true,
+						"legendText": "Total Sales",
+						"legendText2": "Total Sales",
+						"legendPosition": "topright",
+						"legendPosition2": "bottomright"
+					},
 					"discretes": [],
 					"sumAreas": {
 							"colorScheme": "Greens",
-							"colorRange": 3,
+							"colorRange": 6,
 							"popupTextDescription":" Total Sales: ",
 							"colorSchemeAdditional": {
 									"colorSchemeSplitFlag": true,
@@ -1243,7 +1250,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "MN",
-                    "129",
+                    "-129",
                     19801,
                     "A",
                     0
@@ -1251,7 +1258,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "WV",
-                    "16",
+                    "-16",
                     19801,
                     "A",
                     0
@@ -1635,7 +1642,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "PA",
-                    "-219",
+                    "219",
                     19801,
                     "A",
                     0
@@ -1651,7 +1658,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "OR",
-                    "-3",
+                    "3",
                     19801,
                     "A",
                     0
@@ -1790,6 +1797,11 @@ var testObjects =
             "topoJsonUrl": "Maps/USbyState/USMap.topojson",
             "geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
         },
+				"legend":{
+					"legendFlag" : true,
+					"legendTitle" : "Service Type",
+					"legendPosition" : "bottomleft"
+				},
         "discretes": [{
             "continousFlag": false,
             "colorScheme": "Red",
@@ -4748,6 +4760,11 @@ var testObjects =
 					"mapName": "US Map by State",
 					"topoJsonUrl": "Maps/USbyState/USMap.topojson",
 					"geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
+			},
+			"legend":{
+				"legendFlag": true,
+				"legendPosition": "topleft",
+				"legendText": "Service Types"
 			},
 		"discretes": [{
 				"minBubbleSize": 3,

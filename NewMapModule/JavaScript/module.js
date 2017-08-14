@@ -743,6 +743,7 @@ function renderChart(obj){
        .attr("height", 800)
        .attr("id", "svg")
 
+
     d3.queue() //used to ensure that all data is loaded into the program before execution
       .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.topoJsonUrl)
       .await(ready)
@@ -796,6 +797,7 @@ function renderChart(obj){
             console.log(min)
 
             var income_domain = range(max, min, colorRange)
+            var legendText = income_domain.map(String);
 
             console.log(income_domain)
 
@@ -863,7 +865,114 @@ function renderChart(obj){
                      .style("opacity", 0);
               });
 
-          }
+              if(obj.vizualizationConfiguration.legend.legendFlag == true){
+                console.log("Legend goes here")
+
+                if(obj.vizualizationConfiguration.legend.legendPosition == "topleft"){
+                  var legendContainerSettings = {
+                    x: 50 * 0.03,
+                    y: 50 * 0.82,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                }
+
+                else if(obj.vizualizationConfiguration.legend.legendPosition == "topright"){
+                  var legendContainerSettings = {
+                    x: 50 * 0.03 + 500,
+                    y: 50 * 0.82,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                }
+                else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomright"){
+                  var legendContainerSettings = {
+                    x: 50 * 0.03 + 500,
+                    y: 50 * 0.82 + 350,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                }
+                else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomleft"){
+                  var legendContainerSettings = {
+                    x: 50 * 0.03,
+                    y: 50 * 0.82 + 350,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                }
+                else{
+                  var legendContainerSettings = {
+                    x: 50 * 0.03,
+                    y: 50 * 0.82,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                  console.log("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
+                }
+
+                var legendContainer = svg.append("rect")
+                  .attr('x', legendContainerSettings.x)
+                  .attr('y', legendContainerSettings.y)
+                  .attr('rx', legendContainerSettings.roundX)
+                  .attr('ry', legendContainerSettings.roundY)
+                  .attr('width', legendContainerSettings.width)
+                  .attr('height', legendContainerSettings.height)
+                  .attr('id', 'legend-container')
+
+
+              var legendBoxSetting = {
+                width: 50,
+                height: 15,
+                y: legendContainerSettings.y + 55
+              };
+
+              var legend = svg.selectAll('g.legend')
+                .data(income_domain)
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+
+                legend.append("text")
+                  .attr('x', legendContainerSettings.x + 150)
+                  .attr('y', legendBoxSetting.y - 30)
+                  .style('font-size', 15)
+                  .text(obj.vizualizationConfiguration.legend.legendText)
+
+              legend.append("rect")
+                  .attr('x', function(d,i){
+                    return legendContainerSettings.x + 52 * i + 20;
+                  })
+                  .attr('y', legendBoxSetting.y)
+                  .attr('width', legendBoxSetting.width)
+                  .attr('height', legendBoxSetting.height)
+                  .attr('fill', function(d){
+                    return income_color(d)
+                  })
+                  .attr('opacity', .9)
+
+              legend.append("text")
+                .attr('x', function(d,i){
+                  return legendContainerSettings.x + 52 * i + 20;
+                })
+                .attr('y', legendBoxSetting.y - 5)
+                .style('font-size', 12)
+                .text(function(d,i){
+                  return "> " + legendText[i]
+                })
+              }
+
+        }
           else{
             console.log("colorsccheme split flag is set to true")
 
@@ -891,6 +1000,9 @@ function renderChart(obj){
             //returns an array of integers
             income_domainPOS = range(max, 0, colorRange);
             income_domainNEG = rangeNEG(0, min, colorRange);
+
+            var legendTextPOS = income_domainPOS.map(String);
+            var legendTextNEG = income_domainNEG.map(String);
 
             var income_colorPOS = d3.scaleLinear() //scaleLinear for D3.V4
               .domain(income_domainPOS)
@@ -969,9 +1081,219 @@ function renderChart(obj){
                      .duration(500)
                      .style("opacity", 0);
               });
+
+              if(obj.vizualizationConfiguration.legend.legendFlag == true){
+                console.log("Legend goes here")
+
+                if(obj.vizualizationConfiguration.legend.legendPosition == "topleft"){
+                  var legendContainerSettings = {
+                    x: 50 * 0.03,
+                    y: 50 * 0.82,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                }
+
+                else if(obj.vizualizationConfiguration.legend.legendPosition == "topright"){
+                  var legendContainerSettings = {
+                    x: 50 * 0.03 + 500,
+                    y: 50 * 0.82,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                }
+                else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomright"){
+                  var legendContainerSettings = {
+                    x: 50 * 0.03 + 500,
+                    y: 50 * 0.82 + 350,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                }
+                else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomleft"){
+                  var legendContainerSettings = {
+                    x: 50 * 0.03,
+                    y: 50 * 0.82 + 350,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                }
+                else{
+                  var legendContainerSettings = {
+                    x: 50 * 0.03,
+                    y: 50 * 0.82,
+                    width: 350,
+                    height: 90,
+                    roundX: 10,
+                    roundY: 10
+                  }
+                  console.log("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
+                }
+
+                var legendContainer = svg.append("rect")
+                  .attr('x', legendContainerSettings.x)
+                  .attr('y', legendContainerSettings.y)
+                  .attr('rx', legendContainerSettings.roundX)
+                  .attr('ry', legendContainerSettings.roundY)
+                  .attr('width', legendContainerSettings.width)
+                  .attr('height', legendContainerSettings.height)
+                  .attr('id', 'legend-container')
+
+
+              var legendBoxSetting = {
+                width: 50,
+                height: 15,
+                y: legendContainerSettings.y + 55
+              };
+
+              var legend = svg.selectAll('g.legend')
+                .data(income_domainPOS)
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
+
+                legend.append("text")
+                  .attr('x', legendContainerSettings.x + 150)
+                  .attr('y', legendBoxSetting.y - 30)
+                  .style('font-size', 15)
+                  .text(obj.vizualizationConfiguration.legend.legendText)
+
+              legend.append("rect")
+                  .attr('x', function(d,i){
+                    return legendContainerSettings.x + 52 * i + 20;
+                  })
+                  .attr('y', legendBoxSetting.y)
+                  .attr('width', legendBoxSetting.width)
+                  .attr('height', legendBoxSetting.height)
+                  .attr('fill', function(d){
+                    return income_colorPOS(d)
+                  })
+                  .attr('opacity', .9)
+
+              legend.append("text")
+                .attr('x', function(d,i){
+                  return legendContainerSettings.x + 52 * i + 20;
+                })
+                .attr('y', legendBoxSetting.y - 5)
+                .style('font-size', 12)
+                .text(function(d,i){
+                  return "> " + legendTextPOS[i]
+                })
+
+//--------LegendNeg---------------------------------------------------------------------------
+
+                  if(obj.vizualizationConfiguration.legend.legendPosition2 == "topleft"){
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+
+                  else if(obj.vizualizationConfiguration.legend.legendPosition2 == "topright"){
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03 + 500,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+                  else if(obj.vizualizationConfiguration.legend.legendPosition2 == "bottomright"){
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03 + 500,
+                      y: 50 * 0.82 + 350,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+                  else if(obj.vizualizationConfiguration.legend.legendPosition2 == "bottomleft"){
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82 + 350,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+                  else{
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                    console.log("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
+                  }
+
+                  var legendContainer2 = svg.append("rect")
+                    .attr('x', legendContainerSettings2.x)
+                    .attr('y', legendContainerSettings2.y)
+                    .attr('rx', legendContainerSettings2.roundX)
+                    .attr('ry', legendContainerSettings2.roundY)
+                    .attr('width', legendContainerSettings2.width)
+                    .attr('height', legendContainerSettings2.height)
+                    .attr('id', 'legend-container2')
+
+
+                var legendBoxSetting2 = {
+                  width: 50,
+                  height: 15,
+                  y: legendContainerSettings2.y + 55
+                };
+
+                var legend2 = svg.selectAll('g.legend2')
+                  .data(income_domainNEG)
+                  .enter()
+                  .append('g')
+                  .attr('class', 'legend2')
+
+                  legend2.append("text")
+                    .attr('x', legendContainerSettings2.x + 150)
+                    .attr('y', legendBoxSetting2.y - 30)
+                    .style('font-size', 15)
+                    .text(obj.vizualizationConfiguration.legend.legendText2)
+
+                legend2.append("rect")
+                    .attr('x', function(d,i){
+                      return legendContainerSettings2.x + 52 * i + 20;
+                    })
+                    .attr('y', legendBoxSetting2.y)
+                    .attr('width', legendBoxSetting2.width)
+                    .attr('height', legendBoxSetting2.height)
+                    .attr('fill', function(d){
+                      return income_colorNEG(d)
+                    })
+                    .attr('opacity', .9)
+
+                legend2.append("text")
+                  .attr('x', function(d,i){
+                    return legendContainerSettings2.x + 52 * i + 20;
+                  })
+                  .attr('y', legendBoxSetting2.y - 5)
+                  .style('font-size', 12)
+                  .text(function(d,i){
+                    return "> " + legendTextNEG[i]
+                  })
+                }
           }
-
-
       }
 
       console.log(obj.vizualizationConfiguration.discretes.length)
@@ -1331,6 +1653,114 @@ function renderChart(obj){
 
         }
     }
+
+    if(obj.vizualizationConfiguration.legend.legendFlag == true){
+      console.log("Legend goes here")
+
+      if(obj.vizualizationConfiguration.legend.legendPosition == "topleft"){
+        var legendContainerSettings = {
+          x: 50 * 0.03,
+          y: 50 * 0.82,
+          width: 250,
+          height: 515,
+          roundX: 10,
+          roundY: 10
+        }
+      }
+
+      else if(obj.vizualizationConfiguration.legend.legendPosition == "topright"){
+        var legendContainerSettings = {
+          x: 50 * 0.03 + 650,
+          y: 50 * 0.82,
+          width: 250,
+          height: 515,
+          roundX: 10,
+          roundY: 10
+        }
+      }
+      // else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomright"){
+      //   var legendContainerSettings = {
+      //     x: 50 * 0.03 + 650,
+      //     y: 50 * 0.82,
+      //     width: 250,
+      //     height: 500,
+      //     roundX: 10,
+      //     roundY: 10
+      //   }
+      // }
+      // else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomleft"){
+      //   var legendContainerSettings = {
+      //     x: 50 * 0.03,
+      //     y: 50 * 0.82 + 350,
+      //     width: 250,
+      //     height: 500,
+      //     roundX: 10,
+      //     roundY: 10
+      //   }
+      // }
+      else{
+        var legendContainerSettings = {
+          x: 50 * 0.03,
+          y: 50 * 0.82,
+          width: 250,
+          height: 515,
+          roundX: 10,
+          roundY: 10
+        }
+        console.log("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
+      }
+
+      var legendContainer = svg.append("rect")
+        .attr('x', legendContainerSettings.x)
+        .attr('y', legendContainerSettings.y)
+        .attr('rx', legendContainerSettings.roundX)
+        .attr('ry', legendContainerSettings.roundY)
+        .attr('width', legendContainerSettings.width)
+        .attr('height', legendContainerSettings.height)
+        .attr('id', 'legend-container')
+
+
+    var legendBoxSetting = {
+      width: 15,
+      height: 15,
+      y: legendContainerSettings.y
+    };
+
+    var legend = svg.selectAll('g.legend')
+      .data(valueArray, function(d){
+        return d;
+      })
+      .enter()
+      .append('g')
+      .attr('class', 'legend')
+
+      legend.append("text")
+        .attr('x', legendContainerSettings.x + 80)
+        .attr('y', legendBoxSetting.y + 20)
+        .style('font-size', 15)
+        .text(obj.vizualizationConfiguration.legend.legendText)
+
+    legend.append("rect")
+        .attr('x', legendContainerSettings.x + 5)
+        .attr('y', function(d,i){
+          return legendContainerSettings.y * i + 70})
+        .attr('width', legendBoxSetting.width)
+        .attr('height', legendBoxSetting.height)
+        .attr('fill', function(d){
+          return colorScale(d[2])
+        })
+        .attr('opacity', .9)
+
+    legend.append("text")
+    .attr('x', legendContainerSettings.x + 30)
+    .attr('y', function(d,i){
+      return legendContainerSettings.y * i + 80})
+      .style('font-size', 12)
+      .text(function(d,i){
+        return d[2];
+      })
+    }
+
 
       }//end of discretes loop
 
