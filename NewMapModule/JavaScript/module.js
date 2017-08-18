@@ -6,11 +6,18 @@ The module supports both Slippy and SVG map face functionality.
 The module is capable of handling summarized by area, discrete, and heat maps.
 */
 
+const debugFlag = false;
+
 function emptyMapContents() {
   var node = document.getElementById("mapContents")
   while (node.hasChildNodes()) {
     node.removeChild(node.lastChild);
   }
+}
+
+//make global call to change all logDebug to logDebug
+function logDebug(obj) {
+  if (debugFlag) console.log(obj);
 }
 
 /**
@@ -28,14 +35,14 @@ function renderChart(obj) {
         str += "<b>" + key + "</b>" + " : " + locations[key] + "<br>";
       }
     }
-      return str;
-    }
+    return str;
+  }
 
     //These are colorbrewer color scales.
   var colorScale1 = d3.scaleOrdinal()
-        .range(['#C0C0C0', '#808080', '#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
+    .range(['#C0C0C0', '#808080', '#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
   var colorScale = d3.scaleOrdinal()
-        .range(['#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
+    .range(['#FF0000', '#800000', '#FFFF00', '#808000', '#00FF00', '#008000', '#00FFFF', '#008080', '#0000FF','#000080','#FF00FF','#800080','#CD5C5C','#F08080','#E9967A','#34495E','#5DADE2','#AF7AC5']);
 
 
 /*
@@ -49,7 +56,7 @@ function renderChart(obj) {
 
   //The defaultMapType is set to slippy
   if(obj.vizualizationConfiguration.defaultMapType == "slippy") {
-    console.log("inside of slippy");
+    logDebug("inside of slippy");
 
     // initialize Slippy Map
     var tileDisplay = obj.vizualizationConfiguration.slippy.tileUrl,
@@ -64,7 +71,7 @@ function renderChart(obj) {
       //adding tileLayer to map
       L.tileLayer(tileDisplay).addTo(map);
     } else {
-      console.log("Incorrect Lat/Long input - reverting to standard view")
+      logDebug("Incorrect Lat/Long input - reverting to standard view")
       var map = L.map('mapid').setView([39.7392, -104.9903], 4);
       L.tileLayer(tileDisplay).addTo(map);
     }
@@ -78,11 +85,9 @@ function renderChart(obj) {
 
       It is necessary to have the boundries drawn before you color any part of the map.
     */
-
-
     if(obj.vizualizationConfiguration.sumAreas) {
-      console.log("MapFace: SumByArea");
-      console.log(obj.dataConfiguration.columns[0].title)
+      logDebug("MapFace: SumByArea");
+      logDebug(obj.dataConfiguration.columns[0].title);
 
       //used to ensure that all data is loaded into the program before execution
       d3.queue()
@@ -95,18 +100,18 @@ function renderChart(obj) {
         _.each(data.features, function(feature) {
           var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
             return (feature.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
-          });
+        });
         //If There is a match - add data to the object. This data will usually be what you are color coding the map based on.
         if (geographyData) {
           feature.properties[obj.dataConfiguration.columns[0].title] = geographyData[2];
-          dataArray.push(geographyData[2])
+          dataArray.push(geographyData[2]);
         } else {
             feature.properties[obj.dataConfiguration.columns[0].title] = 0;
           }
         })
 
         var statesData = data;
-        console.log(statesData)
+        logDebug(statesData);
         var geojson;
 
         /**
@@ -121,43 +126,43 @@ function renderChart(obj) {
 
         //The user doesn't want to have multiple color schemes
         if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false) {
-          console.log("ColorSchemeSplitFlag: False")
-          console.log(dataArray)
+          logDebug("ColorSchemeSplitFlag: False");
+          logDebug(dataArray);
 
           var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
           var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
 
-          console.log(colorScheme)
-          console.log(colorRange)
+          logDebug(colorScheme);
+          logDebug(colorRange);
 
-          var income_color={};
+          var incomeColor={};
 
           //This is the data that is color coding the map
-          var result = dataArray.map(Number)
+          var result = dataArray.map(Number);
 
-          console.log(result);
+          logDebug(result);
 
           //max and min grabbed for external range function.
           var max = d3.max(result, function(d){return d;});
           var min = d3.min(result, function(d){return d;});
 
-          console.log(max);
-          console.log(min);
+          logDebug(max);
+          logDebug(min);
 
           //Holds range values decided for coloring the map and legendText
-          var income_domain = [];
+          var incomeDomain = [];
 
           //used to color the map
-          income_domain = range(max, min, colorRange);
+          incomeDomain = range(max, min, colorRange);
 
-          //income_domain converted to string for legend purposes
-          legendText = income_domain.map(String).reverse()
+          //incomeDomain converted to string for legend purposes
+          legendText = incomeDomain.map(String).reverse();
 
-          console.log(income_domain)
+          logDebug(incomeDomain);
 
           //colorbrewer example- takes in the ranges and adds colors to each color.
-          income_color = d3.scaleLinear()
-            .domain(income_domain)
+          incomeColor = d3.scaleLinear()
+            .domain(incomeDomain)
             .range(colorbrewer[colorScheme][colorRange]);
 
           function style(feature) {
@@ -173,8 +178,8 @@ function renderChart(obj) {
               };
             } else {
                 return {
-                  //if the boundry data is not equal to 0 call income_color and color the region.
-                  fillColor: income_color(feature.properties[obj.dataConfiguration.columns[0].title]),
+                  //if the boundry data is not equal to 0 call incomeColor and color the region.
+                  fillColor: incomeColor(feature.properties[obj.dataConfiguration.columns[0].title]),
                   weight:1,
                   opacity:1,
                   color: 'darkgrey',
@@ -234,7 +239,7 @@ function renderChart(obj) {
 
           // adding info to the pop-up window.
           info.update = function (props) {
-            console.log(props);
+            logDebug(props);
             this._div.innerHTML = '<h4>Total Sales by state</h4>' +  (props ?
               '<b>' + props.NAME + '</b><br />' + props[obj.dataConfiguration.columns[0].title] + obj.dataConfiguration.columns[0].columnType
               : 'Hover over a state');
@@ -257,7 +262,7 @@ function renderChart(obj) {
               // loop through the legend text and generate a label with a colored square for each index
               for (var i = 0; i < legendText.length; i++) {
                   div.innerHTML +=
-                    '<i style="background:' + income_color(legendText[i]) + '"></i> ' +
+                    '<i style="background:' + incomeColor(legendText[i]) + '"></i> ' +
                     legendText[i] + (legendText[i + 1] ? '&ndash;' + '<br>' : '-');
                 }
               return div;
@@ -269,175 +274,174 @@ function renderChart(obj) {
         }
         //The user wants to have multiple color schemes
         else if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == true) {
+          var incomeDomainPOS = []
+          var incomeDomainNEG = []
 
-              var income_domainPOS = []
-              var income_domainNEG = []
-
-              //this is the data that is color coding the map
-              var result = dataArray.map(Number)
-
-
-              var max = d3.max(result, function(d){return d;});
-              var min = d3.min(result, function(d){return d;});
-
-              var colorSchemePOS= obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
-              var colorSchemeNEG= obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
-
-              var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
-
-              //holds different value scales one above breakpoint and one below breakpoint.
-              income_domainNEG = rangeNEG(0, min, colorRange);
-              income_domainPOS = range(max, 0, colorRange);
-
-              //convert to string for legend purposes
-              legendText1 = income_domainPOS.map(String).reverse()
-              legendText2 = income_domainNEG.map(String).reverse()
-
-              //assigning colors to range of values declared in incomeDomainPOS and incomeDomainNEG- Color Brewer
-              income_colorPOS = d3.scaleLinear() //scaleLinear for D3.V4
-                .domain(income_domainPOS)
-                .range(colorbrewer[colorSchemePOS][colorRange]);
-
-              income_colorNEG = d3.scaleLinear() //scaleLinear for D3.V4
-                .domain(income_domainNEG)
-                .range(colorbrewer[colorSchemeNEG][colorRange]);
+          //this is the data that is color coding the map
+          var result = dataArray.map(Number)
 
 
-                /**
-                  The following functions are used to assign colors to their corresponding data
-                   and add functionality such as popup windows and onHover capabilities
-                */
+          var max = d3.max(result, function(d){return d;});
+          var min = d3.min(result, function(d){return d;});
 
-              function style(feature) {
-                if(feature.properties[obj.dataConfiguration.columns[0].title] == undefined) {
-                  return {
-                    fillColor: "blue", //conf
-                    weight: 2,
-                    opacity: 1,
-                    color: 'darkgrey',
-                    dashArray: '1',
-                    fillOpacity: .2
-                  };
+          var colorSchemePOS= obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
+          var colorSchemeNEG= obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
+
+          var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
+
+          //holds different value scales one above breakpoint and one below breakpoint.
+          incomeDomainNEG = rangeNEG(0, min, colorRange);
+          incomeDomainPOS = range(max, 0, colorRange);
+
+          //convert to string for legend purposes
+          legendText1 = incomeDomainPOS.map(String).reverse()
+          legendText2 = incomeDomainNEG.map(String).reverse()
+
+          //assigning colors to range of values declared in incomeDomainPOS and incomeDomainNEG- Color Brewer
+          incomeColorPOS = d3.scaleLinear() //scaleLinear for D3.V4
+            .domain(incomeDomainPOS)
+            .range(colorbrewer[colorSchemePOS][colorRange]);
+
+          incomeColorNEG = d3.scaleLinear() //scaleLinear for D3.V4
+            .domain(incomeDomainNEG)
+            .range(colorbrewer[colorSchemeNEG][colorRange]);
+
+
+            /**
+              The following functions are used to assign colors to their corresponding data
+               and add functionality such as popup windows and onHover capabilities
+            */
+
+          function style(feature) {
+            if(feature.properties[obj.dataConfiguration.columns[0].title] == undefined) {
+              return {
+                fillColor: "blue", //conf
+                weight: 2,
+                opacity: 1,
+                color: 'darkgrey',
+                dashArray: '1',
+                fillOpacity: .2
+              };
+             } else {
+                 if(feature.properties[obj.dataConfiguration.columns[0].title] < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint) {
+                   return {
+                     fillColor: incomeColorNEG(feature.properties[obj.dataConfiguration.columns[0].title]), //conf
+                     weight: 2,
+                     opacity: 1,
+                     color: 'darkgrey',
+                     dashArray: '1',
+                     fillOpacity: .5
+                   };
                  } else {
-                     if(feature.properties[obj.dataConfiguration.columns[0].title] < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint) {
-                       return {
-                         fillColor: income_colorNEG(feature.properties[obj.dataConfiguration.columns[0].title]), //conf
-                         weight: 2,
-                         opacity: 1,
-                         color: 'darkgrey',
-                         dashArray: '1',
-                         fillOpacity: .5
-                       };
-                     } else {
-                         return {
-                           fillColor: income_colorPOS(feature.properties[obj.dataConfiguration.columns[0].title]), //conf
-                           weight: 2,
-                           opacity: 1,
-                           color: 'darkgrey',
-                           dashArray: '1',
-                           fillOpacity: .5
-                         };
-                       }
-                   }
-                 }
-
-              function highlightFeature(e) {
-                var layer = e.target;
-                layer.setStyle({
-                  weight: 3,
-                  color: '#000',
-                  dashArray: '',
-                });
-                if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                  layer.bringToFront();
-                }
-                  info.update(layer.feature.properties);
+                     return {
+                       fillColor: incomeColorPOS(feature.properties[obj.dataConfiguration.columns[0].title]), //conf
+                       weight: 2,
+                       opacity: 1,
+                       color: 'darkgrey',
+                       dashArray: '1',
+                       fillOpacity: .5
+                     };
+                  }
                }
+          }
 
-               function resetHighlight(e) { //highlight the area selected
-                 geojson.resetStyle(e.target);
-                 info.update();
-               }
-
-               function zoomToFeature(e) { //when you click on the state the map will zoom.
-                 map.fitBounds(e.target.getBounds());
-               }
-
-               function onEachFeature(feature, layer) {
-                 layer.on({
-                   mouseover: highlightFeature,
-                   mouseout: resetHighlight,
-                   click: zoomToFeature
-                  });
-               }
-
-               //adding color to each region, pop-up functionality, and on-hover capabilities
-                geojson = L.geoJson(statesData, {
-                  style: style,
-                  onEachFeature: onEachFeature
-                }).addTo(map);
-
-                //L means leaflet control is an attribute
-                var info = L.control();
-
-                // create a div with a class "info"
-                info.onAdd = function (map) {
-                    this._div = L.DomUtil.create('div', 'info');
-                    this.update();
-                    return this._div;
-                };
-
-                // method that we will use to update the control based on feature properties passed
-                info.update = function (props) {
-                  this._div.innerHTML = obj.dataConfiguration.columns[0].dbColumnTitle +  (props ?
-                    '<b>' + props.NAME + '</b><br />' + props[obj.dataConfiguration.columns[0].title] + obj.dataConfiguration.columns[0].columnType
-                      : 'Hover over a state');
-                };
-
-                info.addTo(map);
-
-                //Adding legends
-                if(obj.vizualizationConfiguration.legend.legendFlag == true) {
-                  var legendPOS = L.control({position: obj.vizualizationConfiguration.legend.legendPosition});
-                  legendPOS.onAdd = function (map) {
-                    var div = L.DomUtil.create('div', 'info legend'),
-                    labels = [];
-                    div.innerHTML += '<h4>'+obj.vizualizationConfiguration.legend.legendTitle+'</h4>'
-                    // loop through legendText and generate a label with a colored square for each interval
-                    for (var i = 0; i < legendText1.length; i++) {
-                      div.innerHTML +=
-                        '<i style="background:' + income_colorPOS(legendText1[i]) + '"></i> ' +
-                          legendText1[i] + (legendText1[i + 1] ? '&ndash;' + '<br>' : '-');
-                      }
-                    return div;
-                  };
-
-                  legendPOS.addTo(map);
-
-                //adding second legend for Neg values
-
-                  var legendNEG = L.control({position: obj.vizualizationConfiguration.legend.legend2Position}); //
-                  legendNEG.onAdd = function (map) {
-                    var div = L.DomUtil.create('div', 'info legend'),
-                    labels = [];
-                    div.innerHTML += '<h4>'+obj.vizualizationConfiguration.legend.legend2Title+'</h4>'
-                    // loop through our legend text and generate a label with a colored square for each interval
-                    for (var i = 0; i < legendText2.length; i++) {
-                      div.innerHTML +=
-                        '<i style="background:' + income_colorNEG(legendText2[i]) + '"></i> ' +
-                          legendText2[i] + (legendText2[i + 1] ? '&ndash;' + '<br>' : '-');
-                      }
-                      return div;
-                  };
-
-                  legendNEG.addTo(map);
-
-              } //end of Legend Flag
-            } //End of colorSchemeSplitFlag is true
-            else{
-              console.log("incorrect color splitFlag")
+          function highlightFeature(e) {
+            var layer = e.target;
+            layer.setStyle({
+              weight: 3,
+              color: '#000',
+              dashArray: '',
+            });
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+              layer.bringToFront();
             }
-          }//end of Ready Function
+              info.update(layer.feature.properties);
+           }
+
+           function resetHighlight(e) { //highlight the area selected
+             geojson.resetStyle(e.target);
+             info.update();
+           }
+
+           function zoomToFeature(e) { //when you click on the state the map will zoom.
+             map.fitBounds(e.target.getBounds());
+           }
+
+           function onEachFeature(feature, layer) {
+             layer.on({
+               mouseover: highlightFeature,
+               mouseout: resetHighlight,
+               click: zoomToFeature
+              });
+           }
+
+           //adding color to each region, pop-up functionality, and on-hover capabilities
+            geojson = L.geoJson(statesData, {
+              style: style,
+              onEachFeature: onEachFeature
+            }).addTo(map);
+
+            //L means leaflet control is an attribute
+            var info = L.control();
+
+            // create a div with a class "info"
+            info.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info');
+                this.update();
+                return this._div;
+            };
+
+            // method that we will use to update the control based on feature properties passed
+            info.update = function (props) {
+              this._div.innerHTML = obj.dataConfiguration.columns[0].dbColumnTitle +  (props ?
+                '<b>' + props.NAME + '</b><br />' + props[obj.dataConfiguration.columns[0].title] + obj.dataConfiguration.columns[0].columnType
+                  : 'Hover over a state');
+            };
+
+            info.addTo(map);
+
+            //Adding legends
+            if(obj.vizualizationConfiguration.legend.legendFlag == true) {
+              var legendPOS = L.control({position: obj.vizualizationConfiguration.legend.legendPosition});
+              legendPOS.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend'),
+                labels = [];
+                div.innerHTML += '<h4>'+obj.vizualizationConfiguration.legend.legendTitle+'</h4>'
+                // loop through legendText and generate a label with a colored square for each interval
+                for (var i = 0; i < legendText1.length; i++) {
+                  div.innerHTML +=
+                    '<i style="background:' + incomeColorPOS(legendText1[i]) + '"></i> ' +
+                      legendText1[i] + (legendText1[i + 1] ? '&ndash;' + '<br>' : '-');
+                  }
+                return div;
+              };
+
+              legendPOS.addTo(map);
+
+            //adding second legend for Neg values
+
+              var legendNEG = L.control({position: obj.vizualizationConfiguration.legend.legend2Position}); //
+              legendNEG.onAdd = function (map) {
+                var div = L.DomUtil.create('div', 'info legend'),
+                labels = [];
+                div.innerHTML += '<h4>'+obj.vizualizationConfiguration.legend.legend2Title+'</h4>'
+                // loop through our legend text and generate a label with a colored square for each interval
+                for (var i = 0; i < legendText2.length; i++) {
+                  div.innerHTML +=
+                    '<i style="background:' + incomeColorNEG(legendText2[i]) + '"></i> ' +
+                      legendText2[i] + (legendText2[i + 1] ? '&ndash;' + '<br>' : '-');
+                  }
+                  return div;
+              };
+
+              legendNEG.addTo(map);
+
+            } //end of Legend Flag
+          } //End of colorSchemeSplitFlag is true
+          else {
+            logDebug("incorrect color splitFlag")
+          }
+        }//end of Ready Function
       } //Summarized by Area code is complete
 
       /*
@@ -446,35 +450,35 @@ function renderChart(obj) {
         The code will also check to see if sumarized by area was drawn, if so then it wont redraw the map.
       */
 
-      if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas) {
-        //used to ensure that all data is loaded into the program before execution
-        d3.queue()
-          .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
-          .await(ready)
+    if(obj.vizualizationConfiguration.geographyBoundariesFlag == true && !obj.vizualizationConfiguration.sumAreas) {
+      //used to ensure that all data is loaded into the program before execution
+      d3.queue()
+        .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
+        .await(ready)
 
-        function style(feature) {
-          return{
-            fillColor: "lightgrey",
-            weight:1,
-            opacity:1,
-            color: 'darkgrey',
-            dashArray: '1',
-            fillOpacity: .2
-          };
-        }
-
-        function ready(error, data) {
-          var statesData = data;
-          var geojson;
-          geojson = L.geoJson(statesData, {
-            style:style
-          }).addTo(map);
-        }
+      function style(feature) {
+        return{
+          fillColor: "lightgrey",
+          weight:1,
+          opacity:1,
+          color: 'darkgrey',
+          dashArray: '1',
+          fillOpacity: .2
+        };
       }
+
+      function ready(error, data) {
+        var statesData = data;
+        var geojson;
+        geojson = L.geoJson(statesData, {
+          style:style
+        }).addTo(map);
+      }
+    }
 
     //Using a loop in order to deal with more than one discrete data set
     for(var i=0; i < obj.vizualizationConfiguration.discretes.length; i++) {
-      console.log("valid for loop")
+      logDebug("valid for loop")
 
       var discreteConfig = obj.vizualizationConfiguration.discretes[i]
 
@@ -483,7 +487,7 @@ function renderChart(obj) {
       var attributesArray = [];
       var magnitudeArray= [];
 
-      console.log(discreteConfig);
+      logDebug(discreteConfig);
 
       var latColumn = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.latColumn}).field; //bf
       var longColumn = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.longColumn}).field;//bg
@@ -498,9 +502,9 @@ function renderChart(obj) {
         categoryColumn = _.find(obj.discreteData[i].columns, function(col){ return col.dbColumn == discreteConfig.attributeColumns.category});
       }
 
-      console.log(longColumn);
-      console.log(categoryColumn);
-      console.log(magnitudeColumn);
+      logDebug(longColumn);
+      logDebug(categoryColumn);
+      logDebug(magnitudeColumn);
 
       _.each(obj.discreteData[i].rows, function(dataRow) {
         //populate valueArray
@@ -529,24 +533,25 @@ function renderChart(obj) {
           attributes[column.title] = dataRow[column.field]
         }
 
-        console.log(attributes);
+        logDebug(attributes);
         attributesArray.push(attributes);
 
-     });
-        // console.log(attributesArray);
-        // create square discrete points
-        if(discreteConfig.shapeForm == "rectangle") {
-          var newValueArray = [];
-          for (var z = 0; z < valueArray.length; z++) {
-            newValueArray[z] = [valueArray[z], [valueArray[z][0] - .003, valueArray[z][1] - .005]]
-          }
-        }
+      });
 
-        console.log(newValueArray);
-        console.log(valueArray);
-        console.log(categoryArray);
-        console.log(magnitudeArray);
-        console.log(attributesArray)
+        // logDebug(attributesArray);
+        // create square discrete points
+      if(discreteConfig.shapeForm == "rectangle") {
+        var newValueArray = [];
+        for (var z = 0; z < valueArray.length; z++) {
+          newValueArray[z] = [valueArray[z], [valueArray[z][0] - .003, valueArray[z][1] - .005]]
+        }
+      }
+
+      logDebug(newValueArray);
+      logDebug(valueArray);
+      logDebug(categoryArray);
+      logDebug(magnitudeArray);
+      logDebug(attributesArray);
 
         /**
           The next conditional statement checks to see if the discrete points
@@ -554,7 +559,7 @@ function renderChart(obj) {
         */
 
         if(discreteConfig.continuousFlag == true) {
-          console.log("do continuous")
+          logDebug("do continuous")
 
           var heat = L.heatLayer(valueArray,{
 										 radius: 15,
@@ -562,7 +567,7 @@ function renderChart(obj) {
 										 maxZoom: 15,
 								 }).addTo(map);
 
-          console.log("do continuous")
+          logDebug("do continuous")
 
         }  /**
           Since the user has different options for types of discrete points we use different conditional statements to deal with the varying possibilities
@@ -571,7 +576,7 @@ function renderChart(obj) {
         else {
           //If the user selects both categoryFlag and Magnitude Flag
           if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true) {
-            console.log("True True")
+            logDebug("True True")
             var categorykey = discreteConfig.attributeColumns.category;
             var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
@@ -630,7 +635,7 @@ function renderChart(obj) {
 
           // category flag is set to true while magnitude flag is set to false
           else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false) {
-            console.log("True False")
+            logDebug("True False")
             var categorykey = discreteConfig.attributeColumns.category;
 
             function Description(locations) {
@@ -686,7 +691,7 @@ function renderChart(obj) {
           There are two conditional if statement that are used to check to see if the user wants circle markers or rectangle markers.
         */
         else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true) {
-          console.log("false True")
+          logDebug("false True")
           var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
           function getRadius(data, i) {
@@ -743,7 +748,7 @@ function renderChart(obj) {
 
         else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == false)
         {
-          console.log("False False")
+          logDebug("False False")
           function Description(locations) {
             var str = "";
             for (var key in locations) {
@@ -821,7 +826,7 @@ function renderChart(obj) {
 
   //If default map type is SVG
   else if(obj.vizualizationConfiguration.defaultMapType == "svg") {
-    console.log("Inside SVG")
+    logDebug("Inside SVG")
 
     //dynamically build the canvas that our map will be displayed on
     var svg = d3.select("div").append("svg")
@@ -843,7 +848,7 @@ function renderChart(obj) {
     //Function ready will initiate once all Topojson data is loaded into the program
     function ready(error, data) {
       if(error) throw error;
-      console.log("loaded the data: " + data)
+      logDebug("loaded the data: " + data)
 
       /**
         The code below is crucial for building the map. For the geometries section you want to make sure that the path to get to the geometries IS ACCURATE.
@@ -857,7 +862,7 @@ function renderChart(obj) {
         geometries: data.objects.USMap.geometries
       });
 
-      console.log(usMap)
+      logDebug(usMap)
 
       //Setting the view point of the canvas. There are many options - we are using geoAlbersUsa.
       var projection = d3.geoAlbersUsa()
@@ -876,10 +881,10 @@ function renderChart(obj) {
         Therefore we make sure to be drawing a map.
       */
       if(obj.vizualizationConfiguration.sumAreas) {
-        console.log("MapFace: SumByArea");
+        logDebug("MapFace: SumByArea");
         //colorSchemeSplitFlag is set to false meaning there will only be one color.
         if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false) {
-          console.log("colorSchemeSplitFlag is set to false");
+          logDebug("colorSchemeSplitFlag is set to false");
 
           var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
           var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
@@ -889,29 +894,29 @@ function renderChart(obj) {
           _.each(obj.data.pivot[0].data, function(dataRow) {
             valueArray.push(dataRow[2])
           })
-          console.log(valueArray);
+          logDebug(valueArray);
 
           //convert our data into number form so that the external range function can work properly.
           var result = valueArray.map(Number);
-          console.log(result)
+          logDebug(result)
 
           //grabbing max and min from value array to be used as parameters in range function.
           var max = d3.max(result, function(d) { return d;});
-          console.log(max)
+          logDebug(max)
           var min = d3.min(result, function(d) { return d;});
-          console.log(min)
+          logDebug(min)
 
-          //income_domain is now populated with a range of numbers that factored in colorRange, max, and min.
-          //The amount of values in income_domain should be consistent with the colorRange
-          var income_domain = range(max, min, colorRange)
-          console.log(income_domain)
+          //incomeDomain is now populated with a range of numbers that factored in colorRange, max, and min.
+          //The amount of values in incomeDomain should be consistent with the colorRange
+          var incomeDomain = range(max, min, colorRange)
+          logDebug(incomeDomain)
 
           //converting to string for legend purposes
-          var legendText = income_domain.map(String);
+          var legendText = incomeDomain.map(String);
 
-          //colorbrewer is used to calculate color scheme for scaled values found in income_domain
-          var income_color = d3.scaleLinear() //scaleLinear for D3.V4
-            .domain(income_domain)
+          //colorbrewer is used to calculate color scheme for scaled values found in incomeDomain
+          var incomeColor = d3.scaleLinear() //scaleLinear for D3.V4
+            .domain(incomeDomain)
             .range(colorbrewer[colorScheme][colorRange]);
 
           /**
@@ -931,12 +936,12 @@ function renderChart(obj) {
               var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
                 return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
               });
-              //conditional to check to see if geographydata returns a value if so it calls income_color to return a color value.
+              //conditional to check to see if geographydata returns a value if so it calls incomeColor to return a color value.
               if(geographyData) {
                 var value = +geographyData[2];
-                return income_color(value);
+                return incomeColor(value);
               } else {
-                  console.log("No geography data defined")
+                  logDebug("No geography data defined")
                   return "Grey"
                 }
             //The next few portions of code are used to create the popup window. You will see .on("mouseover") and .on("mouseout")
@@ -944,12 +949,12 @@ function renderChart(obj) {
               var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
                 return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
               });
-              console.log(geographyData)
+              logDebug(geographyData)
 
               var value = +geographyData[2];
-              console.log(value);
+              logDebug(value);
               var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
-              console.log(state);
+              logDebug(state);
 
               if(geographyData) {
                 div.transition()
@@ -981,7 +986,7 @@ function renderChart(obj) {
             Each legend container is moved on an x and y axis depending on its position.
           */
           if(obj.vizualizationConfiguration.legend.legendFlag == true){
-            console.log("Legend goes here")
+            logDebug("Legend goes here")
 
             if(obj.vizualizationConfiguration.legend.legendPosition == "topleft") {
               //legendContainerSettings is an object to hold values to help build legend logistics.
@@ -1048,7 +1053,7 @@ function renderChart(obj) {
                 roundX: 10,
                 roundY: 10
               }
-              console.log("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
+              logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
             }
 
             //legendContainer pulls the contents of legendContainer settings defined in one of the conditionals above.
@@ -1071,7 +1076,7 @@ function renderChart(obj) {
 
             //inserts the data into the legend.
             var legend = svg.selectAll('g.legend')
-              .data(income_domain)
+              .data(incomeDomain)
               .enter()
               .append('g')
               .attr('class', 'legend')
@@ -1092,7 +1097,7 @@ function renderChart(obj) {
               .attr('width', legendBoxSetting.width)
               .attr('height', legendBoxSetting.height)
               .attr('fill', function(d){
-                return income_color(d)
+                return incomeColor(d)
               })
               .attr('opacity', .9)
 
@@ -1110,23 +1115,23 @@ function renderChart(obj) {
       }//colorschemesplitflag is false
           /**
             If colorscheme splitFlag is set to true we have to do everything twice. essentially we will build one map but will use
-            two different income_domain's and will have to build two seperate legends one that holds values above the breakpoint and another that
+            two different incomeDomain's and will have to build two seperate legends one that holds values above the breakpoint and another that
             holds values below the breakpoint.
 
           */
           else {
-            console.log("colorsccheme split flag is set to true")
+            logDebug("colorsccheme split flag is set to true")
 
             //used to store values that are above the colorSchemeSplitFlag
-            var income_domainPOS = []
-            var income_domainNEG = []
+            var incomeDomainPOS = []
+            var incomeDomainNEG = []
 
             var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange
             var colorSchemeNEG = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
             var colorSchemePOS = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
 
-            console.log(colorSchemePOS);
-            console.log(colorSchemeNEG);
+            logDebug(colorSchemePOS);
+            logDebug(colorSchemeNEG);
 
             //initially stores all values used to colorcode the map
             var valueArray= [];
@@ -1141,20 +1146,20 @@ function renderChart(obj) {
             var min = d3.min(result, function(d) { return d;});
 
             //colorschemeSplitFlag value should replace 0.
-            income_domainPOS = range(max, 0, colorRange);
-            income_domainNEG = rangeNEG(0, min, colorRange);
+            incomeDomainPOS = range(max, obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint, colorRange);
+            incomeDomainNEG = rangeNEG(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint, min, colorRange);
 
             //convert income domains to strings for legend purposes
-            var legendTextPOS = income_domainPOS.map(String);
-            var legendTextNEG = income_domainNEG.map(String);
+            var legendTextPOS = incomeDomainPOS.map(String);
+            var legendTextNEG = incomeDomainNEG.map(String);
 
             //colorbrewer used to assign colors to the map.
-            var income_colorPOS = d3.scaleLinear()
-              .domain(income_domainPOS)
+            var incomeColorPOS = d3.scaleLinear()
+              .domain(incomeDomainPOS)
               .range(colorbrewer[colorSchemePOS][colorRange]);
 
-            var income_colorNEG = d3.scaleLinear()
-              .domain(income_domainNEG)
+            var incomeColorNEG = d3.scaleLinear()
+              .domain(incomeDomainNEG)
               .range(colorbrewer[colorSchemeNEG][colorRange]);
 
             //building the map
@@ -1170,30 +1175,30 @@ function renderChart(obj) {
                   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
                 });
 
-                console.log(geographyData)
+                logDebug(geographyData)
                 //conditional used to color the boundries differently based on colorschemeSplitFlag
                 if(geographyData) {
                   var value = +geographyData[2];
                   if(value < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint) {
-                    return(income_colorNEG(value));
+                    return(incomeColorNEG(value));
                   } else {
-                      return(income_colorPOS(value));
+                      return(incomeColorPOS(value));
                     }
                 } else {
-                    console.log("No geography data defined")
+                    logDebug("No geography data defined")
                     return ("lightgrey");
                   }
               }).on("mouseover", function(d) {
                 var geographyData = _.find(obj.data.pivot[0].data, function (dataRow){
                   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
                 });
-                console.log(geographyData)
+                logDebug(geographyData)
 
                 var value = +geographyData[2];
                 var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
 
-                console.log(value);
-                console.log(state);
+                logDebug(value);
+                logDebug(state);
 
                 if(geographyData) {
                   div.transition()
@@ -1220,7 +1225,7 @@ function renderChart(obj) {
                 });
 
               if(obj.vizualizationConfiguration.legend.legendFlag == true) {
-                console.log("Legend goes here")
+                logDebug("Legend goes here")
                 if(obj.vizualizationConfiguration.legend.legendPosition == "topleft"){
                   var legendContainerSettings = {
                     x: 50 * 0.03,
@@ -1262,7 +1267,7 @@ function renderChart(obj) {
                   }
                 }
                 else if(obj.vizualizationConfiguration.legend.legendPosition == "right"){
-                  console.log("inside of legend container settings")
+                  logDebug("inside of legend container settings")
                   var legendContainerSettings = {
                     x: 50 * 0.03 + 675,
                     y: 50 * 0.82 + 175,
@@ -1281,7 +1286,7 @@ function renderChart(obj) {
                     roundX: 10,
                     roundY: 10
                   }
-                  console.log("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
+                  logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
                 }
 
                 var legendContainer = svg.append("rect")
@@ -1301,7 +1306,7 @@ function renderChart(obj) {
                 };
 
                 var legend = svg.selectAll('g.legend')
-                  .data(income_domainPOS)
+                  .data(incomeDomainPOS)
                   .enter()
                   .append('g')
                   .attr('class', 'legend')
@@ -1320,7 +1325,7 @@ function renderChart(obj) {
                   .attr('width', legendBoxSetting.width)
                   .attr('height', legendBoxSetting.height)
                   .attr('fill', function(d) {
-                    return income_colorPOS(d)
+                    return incomeColorPOS(d)
                   })
                   .attr('opacity', .9)
 
@@ -1376,7 +1381,7 @@ function renderChart(obj) {
                   }
                 }
                 else if(obj.vizualizationConfiguration.legend.legendPosition == "right"){
-                  console.log("inside of legend container settings")
+                  logDebug("inside of legend container settings")
                   var legendContainerSettings = {
                     x: 50 * 0.03 + 675,
                     y: 50 * 0.82 + 175,
@@ -1395,7 +1400,7 @@ function renderChart(obj) {
                     roundX: 10,
                     roundY: 10
                   }
-                  console.log("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
+                  logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT")
                 }
 
                 var legendContainer2 = svg.append("rect")
@@ -1415,7 +1420,7 @@ function renderChart(obj) {
                 };
 
                 var legend2 = svg.selectAll('g.legend2')
-                  .data(income_domainNEG)
+                  .data(incomeDomainNEG)
                   .enter()
                   .append('g')
                   .attr('class', 'legend2')
@@ -1434,7 +1439,7 @@ function renderChart(obj) {
                     .attr('width', legendBoxSetting2.width)
                     .attr('height', legendBoxSetting2.height)
                     .attr('fill', function(d){
-                      return income_colorNEG(d)
+                      return incomeColorNEG(d)
                     })
                     .attr('opacity', .9)
 
@@ -1451,7 +1456,7 @@ function renderChart(obj) {
             } //end of colorscheme split flag = true
           }//end of summarized by area
 
-      console.log(obj.vizualizationConfiguration.discretes.length)
+      logDebug(obj.vizualizationConfiguration.discretes.length)
 
 
       //This code ensures obj.vizualizationConfiguration.geographyBoundariesFlag == true &&
@@ -1489,24 +1494,24 @@ function renderChart(obj) {
 
         //grab lat/long field from data object
         var latColumn = _.find(obj.discreteData[i].columns, function(col) { return col.dbColumn == discreteConfig.latColumn}).field;
-        console.log(latColumn);
+        logDebug(latColumn);
         var longColumn = _.find(obj.discreteData[i].columns, function(col) { return col.dbColumn == discreteConfig.longColumn}).field;
-        console.log(longColumn);
+        logDebug(longColumn);
 
         //If magnitude flag is set to true grab information to assign bubble sizes
         var magnitudeColumn = {};
         if(discreteConfig.magnitudeFlag) {
-          console.log("magnitude Flag set")
+          logDebug("magnitude Flag set")
           magnitudeColumn = _.find(obj.discreteData[i].columns, function(col) { return col.dbColumn == discreteConfig.attributeColumns.magnitude});
         }
-        console.log(magnitudeColumn);
+        logDebug(magnitudeColumn);
 
         //If category flag is set to true grab information to assign bubble sizes
         var categoryColumn = {};
         if(discreteConfig.categoryFlag) {
           categoryColumn = _.find(obj.discreteData[i].columns, function(col) { return col.dbColumn == discreteConfig.attributeColumns.category});
         }
-        console.log(categoryColumn);
+        logDebug(categoryColumn);
 
         /**
           The following code is used to populate valueArray with the main details to draw discrete points onto the map.
@@ -1533,8 +1538,8 @@ function renderChart(obj) {
           magnitudeArray.push([+dataRow[magnitudeColumn.field]]);
         })
 
-        console.log(valueArray)
-        console.log(magnitudeArray)
+        logDebug(valueArray)
+        logDebug(magnitudeArray)
 
         //find max and min of magnitude array for rScale purposes.
         var max = d3.max(magnitudeArray, function(d) { return d;});
@@ -1544,11 +1549,11 @@ function renderChart(obj) {
         var rScale = d3.scaleLinear();
         rScale.domain([max, min]).range([discreteConfig.minBubbleSize, discreteConfig.maxBubbleSize]); //reverse min max for proper magnitude distribution for bubble sizes.
 
-        console.log("discreteConfig "+discreteConfig)
-        console.log("valueArray "+valueArray)
-        console.log("magnitude "+magnitude)
-        console.log("max "+max)
-        console.log("min "+min)
+        logDebug("discreteConfig "+discreteConfig)
+        logDebug("valueArray "+valueArray)
+        logDebug("magnitude "+magnitude)
+        logDebug("max "+max)
+        logDebug("min "+min)
 
       /**
         The next blocks of codes are going to be conditional statements that implement the variety of categoryFlag and magnitudeFlag being set to either true or false.
@@ -1556,7 +1561,7 @@ function renderChart(obj) {
       */
 
       if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false) {
-        console.log("true false")
+        logDebug("true false")
         if(discreteConfig.shapeForm == "rectangle") {
             svg.selectAll("rectangle")
               .data(valueArray, function(d){
@@ -1567,9 +1572,9 @@ function renderChart(obj) {
               .attr("y", function(d){ return projection(d)[1]})
               .attr("width", 10)
               .attr("height", 10)
-              .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .attr("fill", function(d){ logDebug(colorScale(d[2])); return colorScale(d[2])})
               .attr("opacity", .4)
-              .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .style("stroke", function(d){ logDebug(colorScale(d[2])); return colorScale(d[2])})
               .style("stroke-width", "2")
               .on("mouseover", function(d) {
                 div.transition()
@@ -1593,12 +1598,12 @@ function renderChart(obj) {
               return d;
             }).enter()
             .append("circle")
-            .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
-            .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+            .attr("cx", function (d) { logDebug(projection(d)[0]); return projection(d)[0]})
+            .attr("cy", function (d) { logDebug(d[1]); return projection(d)[1]})
             .attr("r", "2px")
-            .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+            .attr("fill", function(d){ logDebug(colorScale(d[2])); return colorScale(d[2])})
             .attr("opacity", .75)
-            .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+            .style("stroke", function(d){ logDebug(colorScale(d[2])); return colorScale(d[2])})
             .style("stroke-width", "2")
             .on("mouseover", function(d) {
               div.transition()
@@ -1617,7 +1622,7 @@ function renderChart(obj) {
           }
       }
       else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true) {
-        console.log("False True")
+        logDebug("False True")
         if(discreteConfig.shapeForm == "rectangle") {
           svg.selectAll("rectangle")
             .data(valueArray, function(d) {
@@ -1653,9 +1658,9 @@ function renderChart(obj) {
               return d;
             }).enter()
             .append("circle")
-            .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
-            .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
-            .attr("r", function(d){ console.log(rScale(d[3])); return rScale(d[3])})
+            .attr("cx", function (d) { logDebug(projection(d)[0]); return projection(d)[0]})
+            .attr("cy", function (d) { logDebug(d[1]); return projection(d)[1]})
+            .attr("r", function(d){ logDebug(rScale(d[3])); return rScale(d[3])})
             .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
             .attr("opacity", .75)
             .style("stroke", obj.vizualizationConfiguration.discretes[i].colorScheme)
@@ -1677,8 +1682,8 @@ function renderChart(obj) {
         }
       }
       else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == true) {
-        console.log("True True")
-        console.log(valueArray)
+        logDebug("True True")
+        logDebug(valueArray)
         if(discreteConfig.shapeForm == "rectangle") {
           svg.selectAll("rectangle")
             .data(valueArray, function(d) {
@@ -1689,9 +1694,9 @@ function renderChart(obj) {
               .attr("y", function(d){ return projection(d)[1]})
               .attr("width", 10)
               .attr("height", 10)
-              .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .attr("fill", function(d){ logDebug(colorScale(d[2])); return colorScale(d[2])})
               .attr("opacity", .4)
-              .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .style("stroke", function(d){ logDebug(colorScale(d[2])); return colorScale(d[2])})
               .style("stroke-width", "2")
               .on("mouseover", function(d) {
                 div.transition()
@@ -1714,12 +1719,12 @@ function renderChart(obj) {
               return d;
             }).enter()
               .append("circle")
-              .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
-              .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
-              .attr("r", function(d){ console.log(d[3] + " translates to " + rScale(d[3])); return rScale(d[3])})
-              .attr("fill", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .attr("cx", function (d) { logDebug(projection(d)[0]); return projection(d)[0]})
+              .attr("cy", function (d) { logDebug(d[1]); return projection(d)[1]})
+              .attr("r", function(d){ logDebug(d[3] + " translates to " + rScale(d[3])); return rScale(d[3])})
+              .attr("fill", function(d){ logDebug(colorScale(d[2])); return colorScale(d[2])})
               .attr("opacity", .4)
-              .style("stroke", function(d){ console.log(colorScale(d[2])); return colorScale(d[2])})
+              .style("stroke", function(d){ logDebug(colorScale(d[2])); return colorScale(d[2])})
               .style("stroke-width", "2")
               .on("mouseover", function(d) {
                 div.transition()
@@ -1773,8 +1778,8 @@ function renderChart(obj) {
               return d;
             }).enter()
             .append("circle")
-            .attr("cx", function (d) { console.log(projection(d)[0]); return projection(d)[0]})
-            .attr("cy", function (d) { console.log(d[1]); return projection(d)[1]})
+            .attr("cx", function (d) { logDebug(projection(d)[0]); return projection(d)[0]})
+            .attr("cy", function (d) { logDebug(d[1]); return projection(d)[1]})
             .attr("r", 3)
             .attr("fill", obj.vizualizationConfiguration.discretes[i].colorScheme)
             .attr("opacity", .75)
@@ -1797,9 +1802,9 @@ function renderChart(obj) {
         }
     }
 
-    //adding legend 
+    //adding legend
     if(obj.vizualizationConfiguration.legend.legendFlag == true){
-      console.log("Legend goes here")
+      logDebug("Legend goes here")
 
       if(obj.vizualizationConfiguration.legend.legendPosition == "topleft"){
         var legendContainerSettings = {
@@ -1892,176 +1897,3 @@ function renderChart(obj) {
 } //end of SVG
 
 }//end of renderChart
-
-
-// document.getElementById("1-slippy-discrete-two").addEventListener('click', function (){
-//   jsonData = "1-slippy-discrete-two"
-//
-//   emptyMapContents()
-//
-//   var div = document.createElement("div");
-//   div.setAttribute("id", "mapid");
-// // as an example add it to the body
-//   document.getElementById("mapContents").appendChild(div);
-//
-//   renderChart(testObjects[jsonData])
-// })
-
-document.getElementById("1-slippy-discrete-new").addEventListener('click', function (){
-  jsonData = "1-slippy-discrete-new"
-
-  emptyMapContents()
-
-  var div = document.createElement("div");
-  div.setAttribute("id", "mapid");
-// as an example add it to the body
-  document.getElementById("mapContents").appendChild(div);
-
-  renderChart(testObjects[jsonData])
-})
-
-
-//
-// document.getElementById("2-slippy-area").addEventListener('click', function(){
-//
-//   emptyMapContents()
-//
-//   jsonData = "2-slippy-area"
-//
-//   var div = document.createElement("div");
-//   div.setAttribute("id", "mapid");
-// // as an example add it to the body
-//   document.getElementById("mapContents").appendChild(div);
-//
-//   renderChart(testObjects[jsonData])
-// })
-
-
-// document.getElementById("5-slippy-area-discrete").addEventListener('click', function(){
-//
-//   emptyMapContents()
-//
-//   jsonData = "5-slippy-area-discrete"
-//
-//   var div = document.createElement("div");
-//   div.setAttribute("id", "mapid");
-// // as an example add it to the body
-//   document.getElementById("mapContents").appendChild(div);
-//
-//   renderChart(testObjects[jsonData])
-// })
-
-document.getElementById("2-slippy-area-new").addEventListener('click', function(){
-
-  emptyMapContents()
-
-  jsonData = "2-slippy-area-new"
-
-  var div = document.createElement("div");
-  div.setAttribute("id", "mapid");
-// as an example add it to the body
-  document.getElementById("mapContents").appendChild(div);
-
-  renderChart(testObjects[jsonData])
-})
-
-document.getElementById("10-slippy-discrete-area-new").addEventListener('click', function(){
-  emptyMapContents()
-  jsonData = "10-slippy-discrete-area-new"
-
-  var div = document.createElement("div");
-  div.setAttribute("id", "mapid");
-// as an example add it to the body
-  document.getElementById("mapContents").appendChild(div);
-
-  renderChart(testObjects[jsonData])
-})
-
-document.getElementById("slippy-discrete-multiple").addEventListener('click', function(){
-  emptyMapContents()
-  jsonData = "slippy-discrete-multiple"
-
-  var div = document.createElement("div");
-  div.setAttribute("id", "mapid");
-// as an example add it to the body
-  document.getElementById("mapContents").appendChild(div);
-
-  renderChart(testObjects[jsonData])
-})
-
-
-// document.getElementById("3-svg-area").addEventListener('click', function(){
-//   console.log(d3.select("svg"))
-//
-//     emptyMapContents()
-//
-//
-//     jsonData = "3-svg-area"
-//
-//     renderChart(testObjects[jsonData])
-// })
-
-document.getElementById("3-svg-area-new").addEventListener('click', function(){
-  console.log(d3.select("svg"))
-
-    emptyMapContents()
-
-
-    jsonData = "3-svg-area-new"
-
-    renderChart(testObjects[jsonData])
-})
-
-document.getElementById("8-svg-discrete-new").addEventListener('click', function(){
-  console.log(d3.select("svg"))
-
-    emptyMapContents()
-
-
-    jsonData = "8-svg-discrete-new"
-
-    renderChart(testObjects[jsonData])
-})
-
-document.getElementById("9-svg-discrete-new").addEventListener('click', function(){
-  console.log(d3.select("svg"))
-
-    emptyMapContents()
-
-
-    jsonData = "9-svg-discrete-new"
-
-    renderChart(testObjects[jsonData])
-})
-
-document.getElementById("svg-discrete-multiple").addEventListener('click', function(){
-  console.log(d3.select("svg"))
-
-    emptyMapContents()
-
-    jsonData = "svg-discrete-multiple"
-
-    renderChart(testObjects[jsonData])
-})
-
-
-// document.getElementById("4-svg-discrete").addEventListener('click', function(){
-//
-//   emptyMapContents()
-//
-//   jsonData = "4-svg-discrete"
-//   renderChart(testObjects[jsonData])
-// })
-//
-// document.getElementById("6-svg-area-discrete").addEventListener('click', function(){
-//   console.log(d3.select("svg"))
-//
-//     emptyMapContents()
-//
-//
-//     jsonData = "6-svg-area-discrete"
-//
-//     renderChart(testObjects[jsonData])
-// })
-
-renderChart(testObjects["10-slippy-discrete-area-new"]);

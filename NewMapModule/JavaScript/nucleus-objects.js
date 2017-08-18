@@ -1,4 +1,3 @@
-
 var testObjects =
 	{
 		"1-slippy-discrete": {
