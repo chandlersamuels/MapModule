@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>GeoSpatial Analytics for RI360 V3 platform</title>
+
+    <!-- d3 and Leaflet Libraries -->
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+		<script src="https://d3js.org/colorbrewer.v1.min.js"></script>
+		<script src ="https://d3js.org/topojson.v2.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script type="text/javascript" src="http://underscorejs.org/underscore.js"></script>
+    <script src="http://leaflet.github.io/Leaflet.heat/dist/leaflet-heat.js"></script>
+
+    <link rel="stylesheet" type = "text/css" href = "style.css">
+
+  </head>
+  <body>
+
+    <forum>
+      <input type="radio" name="colorRange" id="1-store-door-swings" value="slippy discrete"  /> 1-store-door-swings
+    </forum>
+
+    <div id= "mapContents"></div>
+    <script src ="JavaScript/shentel-objects.js"></script>
+    <script src ="JavaScript/helper.js"></script>
+    <script src ="JavaScript/module.js"></script>
+    <script src ="JavaScript/shentel.js"></script>
+
+  </body>
+</html>
