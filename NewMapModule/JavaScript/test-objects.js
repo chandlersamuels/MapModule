@@ -1183,7 +1183,7 @@ var testObjects =
 						"legendFlag" : true,
 						"legendText": "Total Sales",
 						"legendText2": "Total Sales",
-						"legendPosition": "topright",
+						"legendPosition": "right",
 						"legendPosition2": "bottomright"
 					},
 					"discretes": [],
@@ -1192,7 +1192,7 @@ var testObjects =
 							"colorRange": 6,
 							"popupTextDescription":" Total Sales: ",
 							"colorSchemeAdditional": {
-									"colorSchemeSplitFlag": true,
+									"colorSchemeSplitFlag": false,
 									"breakpoint": 0,
 									"positiveColorScheme": "Greens",
 									"negativeColorScheme": "Reds"
@@ -1242,7 +1242,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "NJ",
-                    "-56",
+                    "56",
                     19801,
                     "A",
                     0
@@ -1250,7 +1250,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "MN",
-                    "-129",
+                    "129",
                     19801,
                     "A",
                     0
@@ -1258,7 +1258,7 @@ var testObjects =
                 [
                     "2017-06-25T23:59:59",
                     "WV",
-                    "-16",
+                    "16",
                     19801,
                     "A",
                     0
@@ -2437,6 +2437,13 @@ var testObjects =
 					"mapName": "US Map by State",
 					"topoJsonUrl": "Maps/USbyState/USMap.topojson",
 					"geoJsonUrl": "Maps/4StateMap/shentelfourstates.geojson"
+			},
+			"legend": {
+				"legendFlag" : true,
+				"legendText": "Total Sales",
+				"legendText2": "Total Sales",
+				"legendPosition": "topright",
+				"legendPosition2": "bottomright"
 			},
 		"discretes": [{
 				"minBubbleSize": 3,
@@ -4763,7 +4770,7 @@ var testObjects =
 			},
 			"legend":{
 				"legendFlag": true,
-				"legendPosition": "topleft",
+				"legendPosition": "right",
 				"legendText": "Service Types"
 			},
 		"discretes": [{
