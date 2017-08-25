@@ -9,6 +9,10 @@ The module is capable of handling summarized by area, discrete, and heat maps.
 //show console logs in browser
 const debugFlag = false;
 
+/**
+  Empty map contents is used in the external file that calls renderChart. It is used
+  to empty all contents on the browsers canvas.
+*/
 function emptyMapContents() {
   var node = document.getElementById("mapContents");
   while (node.hasChildNodes()) {
@@ -16,7 +20,9 @@ function emptyMapContents() {
   }
 }
 
-//make global call to change all logDebug to logDebug
+/**
+  make global call to change all logDebug to logDebug
+*/
 function logDebug(obj) {
   if (debugFlag) console.log(obj);
 }
@@ -25,10 +31,11 @@ function logDebug(obj) {
   renderChart is the driving function of the module
   obj holds the object that contains all data to necessary to build the map dynamically
 */
-
 function renderChart(obj) {
 
-  //function to add descriptions easily to pop-up window
+  /**
+    Description takes in an array of locations and is used to display information on pop-up window.
+  */
   function Description(locations) {
     var str = "";
     for (var key in locations) {
@@ -87,6 +94,15 @@ function renderChart(obj) {
       It is necessary to have the boundries drawn before you color any part of the map.
     */
     if(obj.vizualizationConfiguration.sumAreas) {
+      if(obj.vizualizationConfiguration.sumAreas.bubble) {
+
+        /**
+          TODO: Figure out how to add bubble to the center of a state and adjust its size by given input.
+        */
+
+      }
+      else{
+
       logDebug("MapFace: SumByArea");
       logDebug(obj.dataConfiguration.columns[0].title);
 
@@ -95,6 +111,11 @@ function renderChart(obj) {
         .defer(d3.json, obj.vizualizationConfiguration.geographyBoundaries.geoJsonUrl)
         .await(ready)
 
+      /**
+        The ready function wraps the summarized by area block of code. In order to color code areas inside the map
+        the module needs to add information into the geojson. This is why it is critical to load the entire geojson object above before
+        the ready module is called.
+      */
       function ready(error, data) {
         var dataArray = [];
         //looping through the geojson object and matching on the cooresponding boundry region. ex. USPSP
@@ -166,6 +187,10 @@ function renderChart(obj) {
             .domain(incomeDomain)
             .range(colorbrewer[colorScheme][colorRange]);
 
+          /**
+            The style function takes in each region and colors a region based on a value.
+            The function calls an external function called incomeColor to color the region.
+          */
           function style(feature) {
             //if the boundry data is equal to 0 color the region white
             if(feature.properties[obj.dataConfiguration.columns[0].title] == 0) {
@@ -205,13 +230,13 @@ function renderChart(obj) {
             }
             info.update(layer.feature.properties);
           }
-
-          function resetHighlight(e) { //highlight the area selected
+           //highlight the area selected
+          function resetHighlight(e) {
             geojson.resetStyle(e.target);
             info.update();
           }
-
-          function zoomToFeature(e) { //when you click on the state the map will zoom.
+          //when you click on the state the map will zoom.
+          function zoomToFeature(e) {
             map.fitBounds(e.target.getBounds());
           }
 
@@ -223,7 +248,10 @@ function renderChart(obj) {
             });
           }
 
-          //Add color to the map and functionality like onhover and popup window to map.
+          /**
+            The following block of code is one of the most essential peices of code in this module.
+            The code adds color and onEachFeature abilities like tool tips and outline when hovering to the map.
+          */
           geojson = L.geoJson(statesData, {
             style:style,
             onEachFeature: onEachFeature
@@ -359,13 +387,13 @@ function renderChart(obj) {
             }
               info.update(layer.feature.properties);
            }
-
-           function resetHighlight(e) { //highlight the area selected
+           //highlight the area selected
+           function resetHighlight(e) {
              geojson.resetStyle(e.target);
              info.update();
            }
-
-           function zoomToFeature(e) { //when you click on the state the map will zoom.
+           //when you click on the state the map will zoom.
+           function zoomToFeature(e) {
              map.fitBounds(e.target.getBounds());
            }
 
@@ -421,7 +449,6 @@ function renderChart(obj) {
               legendPOS.addTo(map);
 
             //adding second legend for Neg values
-
               var legendNEG = L.control({position: obj.vizualizationConfiguration.legend.legend2Position}); //
               legendNEG.onAdd = function (map) {
                 var div = L.DomUtil.create('div', 'info legend'),
@@ -444,6 +471,7 @@ function renderChart(obj) {
             logDebug("incorrect color splitFlag");
           }
         }//end of Ready Function
+      }//end of bubble
       } //Summarized by Area code is complete
 
       /*
@@ -540,8 +568,8 @@ function renderChart(obj) {
 
       });
 
-        // logDebug(attributesArray);
-        // create square discrete points
+      // logDebug(attributesArray);
+      // create square discrete points
       if(discreteConfig.shapeForm == "rectangle") {
         var newValueArray = [];
         for (var z = 0; z < valueArray.length; z++) {
@@ -625,7 +653,7 @@ function renderChart(obj) {
                   color: colorScale(categoryArray[j]),
                   fillColor: colorScale(categoryArray[j]),
                   fillOpacity: .6,
-                  weight: 2
+                  weight: 2,
                   }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
                         this.openPopup();
                       }).on('mouseout', function (e) {
@@ -637,9 +665,12 @@ function renderChart(obj) {
 
           // category flag is set to true while magnitude flag is set to false
           else if(discreteConfig.categoryFlag == true && discreteConfig.magnitudeFlag == false) {
-            logDebug("True False")
+            logDebug("True False");
             var categorykey = discreteConfig.attributeColumns.category;
 
+            /**
+              Description takes in an array of locations and is used to display information on pop-up window.
+            */
             function Description(locations) {
               var str = "";
               for (var key in locations) {
@@ -676,7 +707,7 @@ function renderChart(obj) {
                 color: colorScale(categoryArray[j]),
                 fillColor: colorScale(categoryArray[j]),
                 fillOpacity: .6,
-                weight: 2
+                weight: 2,
                 }).bindPopup(Description(attributesArray[j])).on('mouseover', function (e) {
                       this.openPopup();
                     }).on('mouseout', function (e) {
@@ -692,13 +723,19 @@ function renderChart(obj) {
           There are two conditional if statement that are used to check to see if the user wants circle markers or rectangle markers.
         */
         else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == true) {
-          logDebug("false True")
+          logDebug("false True");
           var magnitudekey = discreteConfig.attributeColumns.magnitude;
 
+          /**
+            function used to return a data object.
+          */
           function getRadius(data, i) {
             return data;
           }
 
+          /**
+            Description takes in an array of locations and is used to display information on pop-up window.
+          */
           function Description(locations) {
             var str = "";
             for (var key in locations) {
@@ -750,6 +787,9 @@ function renderChart(obj) {
         else if(discreteConfig.categoryFlag == false && discreteConfig.magnitudeFlag == false)
         {
           logDebug("False False")
+          /**
+            Description takes in an array of locations and is used to display information on pop-up window.
+          */
           function Description(locations) {
             var str = "";
             for (var key in locations) {
@@ -883,47 +923,15 @@ function renderChart(obj) {
       */
       if(obj.vizualizationConfiguration.sumAreas) {
         logDebug("MapFace: SumByArea");
-        //colorSchemeSplitFlag is set to false meaning there will only be one color.
-        if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false) {
-          logDebug("colorSchemeSplitFlag is set to false");
 
-          var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
-          var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
-
-          //this grabs the data that we want to color code our map with.
-          var valueArray= [];
-          _.each(obj.data.pivot[0].data, function(dataRow) {
-            valueArray.push(dataRow[2]);
-          })
-          logDebug(valueArray);
-
-          //convert our data into number form so that the external range function can work properly.
-          var result = valueArray.map(Number);
-          logDebug(result);
-
-          //grabbing max and min from value array to be used as parameters in range function.
-          var max = d3.max(result, function(d) { return d;});
-          logDebug(max);
-          var min = d3.min(result, function(d) { return d;});
-          logDebug(min);
-
-          //incomeDomain is now populated with a range of numbers that factored in colorRange, max, and min.
-          //The amount of values in incomeDomain should be consistent with the colorRange
-          var incomeDomain = range(max, min, colorRange);
-          logDebug(incomeDomain);
-
-          //converting to string for legend purposes
-          var legendText = incomeDomain.map(String);
-
-          //colorbrewer is used to calculate color scheme for scaled values found in incomeDomain
-          var incomeColor = d3.scaleLinear() //scaleLinear for D3.V4
-            .domain(incomeDomain)
-            .range(colorbrewer[colorScheme][colorRange]);
+        if(obj.vizualizationConfiguration.sumAreas.bubble == true){
 
           /**
-            The following code actually draws the map. It uses the information gathered above to help drive the process.
-            We are calling our SVG and appending a "PATH" which is the physical geometric objects found in the topojson.
+            TODO: Figure out how to add bubbles to the center of each state.
+            Need to figure out how to use the centroid function for D3js V4.
           */
+
+          console.log("bubble is true")
           svg.selectAll("path")
           //data is given from the argument from the ready function, includes features on the map
             .data(usMap.features)
@@ -933,262 +941,85 @@ function renderChart(obj) {
             //These two lines are used to create the outline of regions on the map whether its states or counties... etc
             .style("stroke", "#808080")
             .style("stroke-width", "2")
-            .attr("fill", function(d) {
-              var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
-                return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
-              });
-              //conditional to check to see if geographydata returns a value if so it calls incomeColor to return a color value.
-              if(geographyData) {
-                var value = +geographyData[2];
-                return incomeColor(value);
-              } else {
-                  logDebug("No geography data defined");
-                  return ("Grey");
-                }
-            //The next few portions of code are used to create the popup window. You will see .on("mouseover") and .on("mouseout")
-            }).on("mouseover", function(d) {
-              var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
-                return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
-              });
-              logDebug(geographyData);
+            .attr("fill", "lightgrey");
 
-              var value = +geographyData[2];
-              logDebug(value);
-              var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
-              logDebug(state);
+          svg.append("g")
+            .attr("class", "bubble")
+            .selectAll("circle")
+            .data(usMap.features)
+            .enter()
+            .append("circle")
+            .attr("transform", function(d){
+              return "translate(" + geoPath.centroid(d) + ")";
+            })
+            .attr("r", 5)
+            .attr("fill", "red");
 
-              if(geographyData) {
-                div.transition()
-                  .duration(200)
-                  .style("opacity", .9)
-                   var text = "State: "+ state +"<br/>" + obj.vizualizationConfiguration.sumAreas.popupTextDescription + value;
-                   div.html(text)
-                  .style("left", (d3.event.pageX) + "px");
-                  .style("top", (d3.event.pageY - 28) + "px");
-                } else {
-                  div.transition()
-                    .duration(200)
-                    .style("opacity", .9)
-                     var text = "No data assigned";
-                     div.html(text)
-                       .style("left", (d3.event.pageX) + "px")
-                       .style("top", (d3.event.pageY - 28) + "px");
-                }
-          	  })
-              .on("mouseout", function(d) {
-                  div.transition()
-                     .duration(500)
-                     .style("opacity", 0);
-              });
-          /**
-          LEGEND
-            The following code uses a series of conditionals to help create the legend positions.
-            The legend positions are topleft topright bottomright bottomleft and Right.
-            Each legend container is moved on an x and y axis depending on its position.
-          */
-          if(obj.vizualizationConfiguration.legend.legendFlag == true){
-            logDebug("Legend goes here");
-
-            if(obj.vizualizationConfiguration.legend.legendPosition == "topleft") {
-              //legendContainerSettings is an object to hold values to help build legend logistics.
-              var legendContainerSettings = {
-                x: 50 * 0.03,
-                y: 50 * 0.82,
-                width: 350,
-                height: 90,
-                roundX: 10,
-                roundY: 10
-              }
-            }
-            else if(obj.vizualizationConfiguration.legend.legendPosition == "topright") {
-              //legendContainerSettings is an object to hold values to help build legend logistics.
-              var legendContainerSettings = {
-                x: 50 * 0.03 + 500,
-                y: 50 * 0.82,
-                width: 350,
-                height: 90,
-                roundX: 10,
-                roundY: 10
-              }
-            }
-            else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomright") {
-              //legendContainerSettings is an object to hold values to help build legend logistics.
-              var legendContainerSettings = {
-                x: 50 * 0.03 + 500,
-                y: 50 * 0.82 + 350,
-                width: 350,
-                height: 90,
-                roundX: 10,
-                roundY: 10
-              }
-            }
-            else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomleft") {
-              //legendContainerSettings is an object to hold values to help build legend logistics.
-              var legendContainerSettings = {
-                x: 50 * 0.03,
-                y: 50 * 0.82 + 350,
-                width: 350,
-                height: 90,
-                roundX: 10,
-                roundY: 10
-              }
-            }
-            else if(obj.vizualizationConfiguration.legend.legendPosition == "right") {
-              //legendContainerSettings is an object to hold values to help build legend logistics.
-              var legendContainerSettings = {
-                x: 50 * 0.03 + 675,
-                y: 50 * 0.82 + 175,
-                width: 350,
-                height: 90,
-                roundX: 10,
-                roundY: 10
-              }
-            }
-            else {
-              //legendContainerSettings is an object to hold values to help build legend logistics.
-              var legendContainerSettings = {
-                x: 50 * 0.03,
-                y: 50 * 0.82,
-                width: 350,
-                height: 90,
-                roundX: 10,
-                roundY: 10
-              }
-              logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT");
-            }
-
-            //legendContainer pulls the contents of legendContainer settings defined in one of the conditionals above.
-            //appending a rectangle to hold all of the legend information.
-            var legendContainer = svg.append("rect")
-              .attr('x', legendContainerSettings.x)
-              .attr('y', legendContainerSettings.y)
-              .attr('rx', legendContainerSettings.roundX)
-              .attr('ry', legendContainerSettings.roundY)
-              .attr('width', legendContainerSettings.width)
-              .attr('height', legendContainerSettings.height)
-              .attr('id', 'legend-container');
-
-            //This is an object that holds the dimensions of the boxes that are colorcoded next to the values.
-            var legendBoxSetting = {
-              width: 50,
-              height: 15,
-              y: legendContainerSettings.y + 55
-            };
-
-            //inserts the data into the legend.
-            var legend = svg.selectAll('g.legend')
-              .data(incomeDomain)
-              .enter()
-              .append('g')
-              .attr('class', 'legend')
-
-            //appending legend header
-            legend.append("text")
-              .attr('x', legendContainerSettings.x + 150)
-              .attr('y', legendBoxSetting.y - 30)
-              .style('font-size', 15)
-              .text(obj.vizualizationConfiguration.legend.legendText)
-
-            //appending the rectangles that will be used as a vizual tool for matching colors ect.
-            legend.append("rect")
-              .attr('x', function(d,i){
-                return legendContainerSettings.x + 52 * i + 20;
-              })
-              .attr('y', legendBoxSetting.y)
-              .attr('width', legendBoxSetting.width)
-              .attr('height', legendBoxSetting.height)
-              .attr('fill', function(d){
-                return incomeColor(d)
-              })
-              .attr('opacity', .9)
-
-            //appending legend data text ontop of each box
-            legend.append("text")
-              .attr('x', function(d,i){
-                return legendContainerSettings.x + 52 * i + 20;
-              })
-              .attr('y', legendBoxSetting.y - 5)
-              .style('font-size', 12)
-              .text(function(d,i){
-                return "> " + legendText[i]
-              })
         }
-      }   //colorschemesplitflag is false
-          /**
-            If colorscheme splitFlag is set to true we have to do everything twice. essentially we will build one map but will use
-            two different incomeDomain's and will have to build two seperate legends one that holds values above the breakpoint and another that
-            holds values below the breakpoint.
+        else {
+          //colorSchemeSplitFlag is set to false meaning there will only be one color.
+          if(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.colorSchemeSplitFlag == false) {
+            logDebug("colorSchemeSplitFlag is set to false");
 
-          */
-          else {
-            logDebug("colorsccheme split flag is set to true");
-
-            //used to store values that are above the colorSchemeSplitFlag
-            var incomeDomainPOS = [];
-            var incomeDomainNEG = [];
-
+            var colorScheme= obj.vizualizationConfiguration.sumAreas.colorScheme;
             var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
-            var colorSchemeNEG = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
-            var colorSchemePOS = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
 
-            logDebug(colorSchemePOS);
-            logDebug(colorSchemeNEG);
-
-            //initially stores all values used to colorcode the map
+            //this grabs the data that we want to color code our map with.
             var valueArray= [];
             _.each(obj.data.pivot[0].data, function(dataRow) {
-              valueArray.push(+dataRow[2]);
+              valueArray.push(dataRow[2]);
             })
+            logDebug(valueArray);
 
-            //convert value array to number for external Range function purposes
+            //convert our data into number form so that the external range function can work properly.
             var result = valueArray.map(Number);
+            logDebug(result);
 
+            //grabbing max and min from value array to be used as parameters in range function.
             var max = d3.max(result, function(d) { return d;});
+            logDebug(max);
             var min = d3.min(result, function(d) { return d;});
+            logDebug(min);
 
-            //colorschemeSplitFlag value should replace 0.
-            incomeDomainPOS = range(max, obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint, colorRange);
-            incomeDomainNEG = rangeNEG(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint, min, colorRange);
+            //incomeDomain is now populated with a range of numbers that factored in colorRange, max, and min.
+            //The amount of values in incomeDomain should be consistent with the colorRange
+            var incomeDomain = range(max, min, colorRange);
+            logDebug(incomeDomain);
 
-            //convert income domains to strings for legend purposes
-            var legendTextPOS = incomeDomainPOS.map(String);
-            var legendTextNEG = incomeDomainNEG.map(String);
+            //converting to string for legend purposes
+            var legendText = incomeDomain.map(String);
 
-            //colorbrewer used to assign colors to the map.
-            var incomeColorPOS = d3.scaleLinear()
-              .domain(incomeDomainPOS)
-              .range(colorbrewer[colorSchemePOS][colorRange]);
+            //colorbrewer is used to calculate color scheme for scaled values found in incomeDomain
+            var incomeColor = d3.scaleLinear() //scaleLinear for D3.V4
+              .domain(incomeDomain)
+              .range(colorbrewer[colorScheme][colorRange]);
 
-            var incomeColorNEG = d3.scaleLinear()
-              .domain(incomeDomainNEG)
-              .range(colorbrewer[colorSchemeNEG][colorRange]);
-
-            //building the map
+            /**
+              The following code actually draws the map. It uses the information gathered above to help drive the process.
+              We are calling our SVG and appending a "PATH" which is the physical geometric objects found in the topojson.
+            */
             svg.selectAll("path")
+            //data is given from the argument from the ready function, includes features on the map
               .data(usMap.features)
               .enter()
               .append("path")
               .attr("d", geoPath)
+              //These two lines are used to create the outline of regions on the map whether its states or counties... etc
               .style("stroke", "#808080")
               .style("stroke-width", "2")
               .attr("fill", function(d) {
                 var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
                   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
                 });
-
-                logDebug(geographyData);
-                //conditional used to color the boundries differently based on colorschemeSplitFlag
+                //conditional to check to see if geographydata returns a value if so it calls incomeColor to return a color value.
                 if(geographyData) {
                   var value = +geographyData[2];
-                  if(value < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint) {
-                    return(incomeColorNEG(value));
-                  } else {
-                      return(incomeColorPOS(value));
-                    }
+                  return incomeColor(value);
                 } else {
                     logDebug("No geography data defined");
-                    return ("lightgrey");
+                    return ("Grey");
                   }
+              //The next few portions of code are used to create the popup window. You will see .on("mouseover") and .on("mouseout")
               }).on("mouseover", function(d) {
                 var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
                   return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
@@ -1196,9 +1027,8 @@ function renderChart(obj) {
                 logDebug(geographyData);
 
                 var value = +geographyData[2];
-                var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
-
                 logDebug(value);
+                var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
                 logDebug(state);
 
                 if(geographyData) {
@@ -1207,254 +1037,502 @@ function renderChart(obj) {
                     .style("opacity", .9)
                      var text = "State: "+ state +"<br/>" + obj.vizualizationConfiguration.sumAreas.popupTextDescription + value;
                      div.html(text)
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
+                     .style("left", (d3.event.pageX) + "px")
+                     .style("top", (d3.event.pageY - 28) + "px");
                 } else {
-                  div.transition()
-                    .duration(200)
-                    .style("opacity", .9)
-                     var text = "No data assigned";
-                     div.html(text)
-                    .style("left", (d3.event.pageX) + "px")
-                    .style("top", (d3.event.pageY - 28) + "px");
-                  }
-          	    })
+                    div.transition()
+                      .duration(200)
+                      .style("opacity", .9)
+                       var text = "No data assigned";
+                       div.html(text)
+                         .style("left", (d3.event.pageX) + "px")
+                         .style("top", (d3.event.pageY - 28) + "px");
+                }
+            	  })
                 .on("mouseout", function(d) {
-                  div.transition()
-                    .duration(500)
-                    .style("opacity", 0);
+                    div.transition()
+                       .duration(500)
+                       .style("opacity", 0);
                 });
+            /**
+            LEGEND
+              The following code uses a series of conditionals to help create the legend positions.
+              The legend positions are topleft topright bottomright bottomleft and Right.
+              Each legend container is moved on an x and y axis depending on its position.
+            */
+            if(obj.vizualizationConfiguration.legend.legendFlag == true){
+              logDebug("Legend goes here");
 
-              if(obj.vizualizationConfiguration.legend.legendFlag == true) {
-                logDebug("Legend goes here");
-                if(obj.vizualizationConfiguration.legend.legendPosition == "topleft") {
-                  var legendContainerSettings = {
-                    x: 50 * 0.03,
-                    y: 50 * 0.82,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
-                  }
+              if(obj.vizualizationConfiguration.legend.legendPosition == "topleft") {
+                //legendContainerSettings is an object to hold values to help build legend logistics.
+                var legendContainerSettings = {
+                  x: 50 * 0.03,
+                  y: 50 * 0.82,
+                  width: 350,
+                  height: 90,
+                  roundX: 10,
+                  roundY: 10
                 }
-                else if(obj.vizualizationConfiguration.legend.legendPosition == "topright") {
-                  var legendContainerSettings = {
-                    x: 50 * 0.03 + 500,
-                    y: 50 * 0.82,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
-                  }
+              }
+              else if(obj.vizualizationConfiguration.legend.legendPosition == "topright") {
+                //legendContainerSettings is an object to hold values to help build legend logistics.
+                var legendContainerSettings = {
+                  x: 50 * 0.03 + 500,
+                  y: 50 * 0.82,
+                  width: 350,
+                  height: 90,
+                  roundX: 10,
+                  roundY: 10
                 }
-                else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomright") {
-                  var legendContainerSettings = {
-                    x: 50 * 0.03 + 500,
-                    y: 50 * 0.82 + 350,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
-                  }
+              }
+              else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomright") {
+                //legendContainerSettings is an object to hold values to help build legend logistics.
+                var legendContainerSettings = {
+                  x: 50 * 0.03 + 500,
+                  y: 50 * 0.82 + 350,
+                  width: 350,
+                  height: 90,
+                  roundX: 10,
+                  roundY: 10
                 }
-                else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomleft") {
-                  var legendContainerSettings = {
-                    x: 50 * 0.03,
-                    y: 50 * 0.82 + 350,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
-                  }
+              }
+              else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomleft") {
+                //legendContainerSettings is an object to hold values to help build legend logistics.
+                var legendContainerSettings = {
+                  x: 50 * 0.03,
+                  y: 50 * 0.82 + 350,
+                  width: 350,
+                  height: 90,
+                  roundX: 10,
+                  roundY: 10
                 }
-                else if(obj.vizualizationConfiguration.legend.legendPosition == "right") {
-                  logDebug("inside of legend container settings");
-                  var legendContainerSettings = {
-                    x: 50 * 0.03 + 675,
-                    y: 50 * 0.82 + 175,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
-                  }
+              }
+              else if(obj.vizualizationConfiguration.legend.legendPosition == "right") {
+                //legendContainerSettings is an object to hold values to help build legend logistics.
+                var legendContainerSettings = {
+                  x: 50 * 0.03 + 675,
+                  y: 50 * 0.82 + 175,
+                  width: 350,
+                  height: 90,
+                  roundX: 10,
+                  roundY: 10
                 }
-                else{
-                  var legendContainerSettings = {
-                    x: 50 * 0.03,
-                    y: 50 * 0.82,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
-                  }
-                  logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT");
+              }
+              else {
+                //legendContainerSettings is an object to hold values to help build legend logistics.
+                var legendContainerSettings = {
+                  x: 50 * 0.03,
+                  y: 50 * 0.82,
+                  width: 350,
+                  height: 90,
+                  roundX: 10,
+                  roundY: 10
                 }
+                logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT");
+              }
 
-                var legendContainer = svg.append("rect")
-                  .attr('x', legendContainerSettings.x)
-                  .attr('y', legendContainerSettings.y)
-                  .attr('rx', legendContainerSettings.roundX)
-                  .attr('ry', legendContainerSettings.roundY)
-                  .attr('width', legendContainerSettings.width)
-                  .attr('height', legendContainerSettings.height)
-                  .attr('id', 'legend-container')
+              /**
+              legendContainer pulls the contents of legendContainer settings defined in one of the conditionals above.
+              appending a rectangle to hold all of the legend information.
+              */
 
+              var legendContainer = svg.append("rect")
+                .attr('x', legendContainerSettings.x)
+                .attr('y', legendContainerSettings.y)
+                .attr('rx', legendContainerSettings.roundX)
+                .attr('ry', legendContainerSettings.roundY)
+                .attr('width', legendContainerSettings.width)
+                .attr('height', legendContainerSettings.height)
+                .attr('id', 'legend-container');
 
-                var legendBoxSetting = {
-                  width: 50,
-                  height: 15,
-                  y: legendContainerSettings.y + 55
-                };
+              //This is an object that holds the dimensions of the boxes that are colorcoded next to the values.
+              var legendBoxSetting = {
+                width: 50,
+                height: 15,
+                y: legendContainerSettings.y + 55
+              };
 
-                var legend = svg.selectAll('g.legend')
-                  .data(incomeDomainPOS)
-                  .enter()
-                  .append('g')
-                  .attr('class', 'legend');
+              //inserts the data into the legend.
+              var legend = svg.selectAll('g.legend')
+                .data(incomeDomain)
+                .enter()
+                .append('g')
+                .attr('class', 'legend')
 
-                legend.append("text")
-                  .attr('x', legendContainerSettings.x + 150)
-                  .attr('y', legendBoxSetting.y - 30)
-                  .style('font-size', 15)
-                  .text(obj.vizualizationConfiguration.legend.legendText);
+              //appending legend header
+              legend.append("text")
+                .attr('x', legendContainerSettings.x + 150)
+                .attr('y', legendBoxSetting.y - 30)
+                .style('font-size', 15)
+                .text(obj.vizualizationConfiguration.legend.legendText)
 
-                legend.append("rect")
-                  .attr('x', function(d,i) {
-                    return legendContainerSettings.x + 52 * i + 20;
-                  })
-                  .attr('y', legendBoxSetting.y)
-                  .attr('width', legendBoxSetting.width)
-                  .attr('height', legendBoxSetting.height)
-                  .attr('fill', function(d) {
-                    return incomeColorPOS(d)
-                  })
-                  .attr('opacity', .9);
+              //appending the rectangles that will be used as a vizual tool for matching colors ect.
+              legend.append("rect")
+                .attr('x', function(d,i){
+                  return legendContainerSettings.x + 52 * i + 20;
+                })
+                .attr('y', legendBoxSetting.y)
+                .attr('width', legendBoxSetting.width)
+                .attr('height', legendBoxSetting.height)
+                .attr('fill', function(d){
+                  return incomeColor(d)
+                })
+                .attr('opacity', .9)
 
-                legend.append("text")
-                  .attr('x', function(d,i) {
-                    return legendContainerSettings.x + 52 * i + 20;
-                  })
-                  .attr('y', legendBoxSetting.y - 5)
-                  .style('font-size', 12)
-                  .text(function(d,i) {
-                    return "> " + legendTextPOS[i]
-                });
+              //appending legend data text ontop of each box
+              legend.append("text")
+                .attr('x', function(d,i){
+                  return legendContainerSettings.x + 52 * i + 20;
+                })
+                .attr('y', legendBoxSetting.y - 5)
+                .style('font-size', 12)
+                .text(function(d,i){
+                  return "> " + legendText[i]
+                })
+          }
+        }   //colorschemesplitflag is false
+            /**
+              If colorscheme splitFlag is set to true we have to do everything twice. essentially we will build one map but will use
+              two different incomeDomain's and will have to build two seperate legends one that holds values above the breakpoint and another that
+              holds values below the breakpoint.
 
-                //legend 2
-                if(obj.vizualizationConfiguration.legend.legendPosition2 == "topleft") {
-                  var legendContainerSettings2 = {
-                    x: 50 * 0.03,
-                    y: 50 * 0.82,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
+            */
+            else {
+              logDebug("colorsccheme split flag is set to true");
+
+              //used to store values that are above the colorSchemeSplitFlag
+              var incomeDomainPOS = [];
+              var incomeDomainNEG = [];
+
+              var colorRange = obj.vizualizationConfiguration.sumAreas.colorRange;
+              var colorSchemeNEG = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.negativeColorScheme;
+              var colorSchemePOS = obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.positiveColorScheme;
+
+              logDebug(colorSchemePOS);
+              logDebug(colorSchemeNEG);
+
+              //initially stores all values used to colorcode the map
+              var valueArray= [];
+              _.each(obj.data.pivot[0].data, function(dataRow) {
+                valueArray.push(+dataRow[2]);
+              })
+
+              //convert value array to number for external Range function purposes
+              var result = valueArray.map(Number);
+
+              var max = d3.max(result, function(d) { return d;});
+              var min = d3.min(result, function(d) { return d;});
+
+              //colorschemeSplitFlag value should replace 0.
+              incomeDomainPOS = range(max, obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint, colorRange);
+              incomeDomainNEG = rangeNEG(obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint, min, colorRange);
+
+              //convert income domains to strings for legend purposes
+              var legendTextPOS = incomeDomainPOS.map(String);
+              var legendTextNEG = incomeDomainNEG.map(String);
+
+              //colorbrewer used to assign colors to the map.
+              var incomeColorPOS = d3.scaleLinear()
+                .domain(incomeDomainPOS)
+                .range(colorbrewer[colorSchemePOS][colorRange]);
+
+              var incomeColorNEG = d3.scaleLinear()
+                .domain(incomeDomainNEG)
+                .range(colorbrewer[colorSchemeNEG][colorRange]);
+
+              //building the map
+              svg.selectAll("path")
+                .data(usMap.features)
+                .enter()
+                .append("path")
+                .attr("d", geoPath)
+                .style("stroke", "#808080")
+                .style("stroke-width", "2")
+                .attr("fill", function(d) {
+                  var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
+                    return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
+                  });
+
+                  logDebug(geographyData);
+                  //conditional used to color the boundries differently based on colorschemeSplitFlag
+                  if(geographyData) {
+                    var value = +geographyData[2];
+                    if(value < obj.vizualizationConfiguration.sumAreas.colorSchemeAdditional.breakpoint) {
+                      return(incomeColorNEG(value));
+                    } else {
+                        return(incomeColorPOS(value));
+                      }
+                  } else {
+                      logDebug("No geography data defined");
+                      return ("lightgrey");
+                    }
+                }).on("mouseover", function(d) {
+                  var geographyData = _.find(obj.data.pivot[0].data, function (dataRow) {
+                    return (d.properties[obj.vizualizationConfiguration.sumAreas.mapField] === dataRow[1]);
+                  });
+                  logDebug(geographyData);
+
+                  var value = +geographyData[2];
+                  var state = d.properties[obj.vizualizationConfiguration.sumAreas.mapField];
+
+                  logDebug(value);
+                  logDebug(state);
+
+                  if(geographyData) {
+                    div.transition()
+                      .duration(200)
+                      .style("opacity", .9)
+                       var text = "State: "+ state +"<br/>" + obj.vizualizationConfiguration.sumAreas.popupTextDescription + value;
+                       div.html(text)
+                      .style("left", (d3.event.pageX) + "px")
+                      .style("top", (d3.event.pageY - 28) + "px");
+                  } else {
+                    div.transition()
+                      .duration(200)
+                      .style("opacity", .9)
+                       var text = "No data assigned";
+                       div.html(text)
+                      .style("left", (d3.event.pageX) + "px")
+                      .style("top", (d3.event.pageY - 28) + "px");
+                    }
+            	    })
+                  .on("mouseout", function(d) {
+                    div.transition()
+                      .duration(500)
+                      .style("opacity", 0);
+                  });
+
+                if(obj.vizualizationConfiguration.legend.legendFlag == true) {
+                  logDebug("Legend goes here");
+                  if(obj.vizualizationConfiguration.legend.legendPosition == "topleft") {
+                    var legendContainerSettings = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
                   }
-                }
-                else if(obj.vizualizationConfiguration.legend.legendPosition2 == "topright") {
-                  var legendContainerSettings2 = {
-                    x: 50 * 0.03 + 500,
-                    y: 50 * 0.82,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
+                  else if(obj.vizualizationConfiguration.legend.legendPosition == "topright") {
+                    var legendContainerSettings = {
+                      x: 50 * 0.03 + 500,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
                   }
-                }
-                else if(obj.vizualizationConfiguration.legend.legendPosition2 == "bottomright") {
-                  var legendContainerSettings2 = {
-                    x: 50 * 0.03 + 500,
-                    y: 50 * 0.82 + 350,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
+                  else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomright") {
+                    var legendContainerSettings = {
+                      x: 50 * 0.03 + 500,
+                      y: 50 * 0.82 + 350,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
                   }
-                }
-                else if(obj.vizualizationConfiguration.legend.legendPosition2 == "bottomleft") {
-                  var legendContainerSettings2 = {
-                    x: 50 * 0.03,
-                    y: 50 * 0.82 + 350,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
+                  else if(obj.vizualizationConfiguration.legend.legendPosition == "bottomleft") {
+                    var legendContainerSettings = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82 + 350,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
                   }
-                }
-                else if(obj.vizualizationConfiguration.legend.legendPosition == "right") {
-                  logDebug("inside of legend container settings");
-                  var legendContainerSettings = {
-                    x: 50 * 0.03 + 675,
-                    y: 50 * 0.82 + 175,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
+                  else if(obj.vizualizationConfiguration.legend.legendPosition == "right") {
+                    logDebug("inside of legend container settings");
+                    var legendContainerSettings = {
+                      x: 50 * 0.03 + 675,
+                      y: 50 * 0.82 + 175,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
                   }
-                }
-                else {
-                  var legendContainerSettings2 = {
-                    x: 50 * 0.03,
-                    y: 50 * 0.82,
-                    width: 350,
-                    height: 90,
-                    roundX: 10,
-                    roundY: 10
+                  else{
+                    var legendContainerSettings = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                    logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT");
                   }
-                  logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT");
-                }
 
-                var legendContainer2 = svg.append("rect")
-                  .attr('x', legendContainerSettings2.x)
-                  .attr('y', legendContainerSettings2.y)
-                  .attr('rx', legendContainerSettings2.roundX)
-                  .attr('ry', legendContainerSettings2.roundY)
-                  .attr('width', legendContainerSettings2.width)
-                  .attr('height', legendContainerSettings2.height)
-                  .attr('id', 'legend-container2');
+                  var legendContainer = svg.append("rect")
+                    .attr('x', legendContainerSettings.x)
+                    .attr('y', legendContainerSettings.y)
+                    .attr('rx', legendContainerSettings.roundX)
+                    .attr('ry', legendContainerSettings.roundY)
+                    .attr('width', legendContainerSettings.width)
+                    .attr('height', legendContainerSettings.height)
+                    .attr('id', 'legend-container')
 
 
-                var legendBoxSetting2 = {
-                  width: 50,
-                  height: 15,
-                  y: legendContainerSettings2.y + 55
-                };
+                  var legendBoxSetting = {
+                    width: 50,
+                    height: 15,
+                    y: legendContainerSettings.y + 55
+                  };
 
-                var legend2 = svg.selectAll('g.legend2')
-                  .data(incomeDomainNEG)
-                  .enter()
-                  .append('g')
-                  .attr('class', 'legend2');
+                  var legend = svg.selectAll('g.legend')
+                    .data(incomeDomainPOS)
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend');
 
-                legend2.append("text")
-                  .attr('x', legendContainerSettings2.x + 150)
-                  .attr('y', legendBoxSetting2.y - 30)
-                  .style('font-size', 15)
-                  .text(obj.vizualizationConfiguration.legend.legendText2);
+                  legend.append("text")
+                    .attr('x', legendContainerSettings.x + 150)
+                    .attr('y', legendBoxSetting.y - 30)
+                    .style('font-size', 15)
+                    .text(obj.vizualizationConfiguration.legend.legendText);
 
-                legend2.append("rect")
+                  legend.append("rect")
                     .attr('x', function(d,i) {
-                      return legendContainerSettings2.x + 52 * i + 20;
+                      return legendContainerSettings.x + 52 * i + 20;
                     })
-                    .attr('y', legendBoxSetting2.y)
-                    .attr('width', legendBoxSetting2.width)
-                    .attr('height', legendBoxSetting2.height)
+                    .attr('y', legendBoxSetting.y)
+                    .attr('width', legendBoxSetting.width)
+                    .attr('height', legendBoxSetting.height)
                     .attr('fill', function(d) {
-                      return incomeColorNEG(d)
+                      return incomeColorPOS(d)
                     })
                     .attr('opacity', .9);
 
-                legend2.append("text")
-                  .attr('x', function(d,i) {
-                    return legendContainerSettings2.x + 52 * i + 20;
-                  })
-                  .attr('y', legendBoxSetting2.y - 5)
-                  .style('font-size', 12)
-                  .text(function(d,i) {
-                    return "> " + legendTextNEG[i]
+                  legend.append("text")
+                    .attr('x', function(d,i) {
+                      return legendContainerSettings.x + 52 * i + 20;
+                    })
+                    .attr('y', legendBoxSetting.y - 5)
+                    .style('font-size', 12)
+                    .text(function(d,i) {
+                      return "> " + legendTextPOS[i]
                   });
-              }//end of legend Flag
-            } //end of colorscheme split flag = true
+
+                  //legend 2
+                  if(obj.vizualizationConfiguration.legend.legendPosition2 == "topleft") {
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+                  else if(obj.vizualizationConfiguration.legend.legendPosition2 == "topright") {
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03 + 500,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+                  else if(obj.vizualizationConfiguration.legend.legendPosition2 == "bottomright") {
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03 + 500,
+                      y: 50 * 0.82 + 350,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+                  else if(obj.vizualizationConfiguration.legend.legendPosition2 == "bottomleft") {
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82 + 350,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+                  else if(obj.vizualizationConfiguration.legend.legendPosition == "right") {
+                    logDebug("inside of legend container settings");
+                    var legendContainerSettings = {
+                      x: 50 * 0.03 + 675,
+                      y: 50 * 0.82 + 175,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                  }
+                  else {
+                    var legendContainerSettings2 = {
+                      x: 50 * 0.03,
+                      y: 50 * 0.82,
+                      width: 350,
+                      height: 90,
+                      roundX: 10,
+                      roundY: 10
+                    }
+                    logDebug("ERROR: SETTING LEGEND POSTION TO TOPLEFT");
+                  }
+
+                  var legendContainer2 = svg.append("rect")
+                    .attr('x', legendContainerSettings2.x)
+                    .attr('y', legendContainerSettings2.y)
+                    .attr('rx', legendContainerSettings2.roundX)
+                    .attr('ry', legendContainerSettings2.roundY)
+                    .attr('width', legendContainerSettings2.width)
+                    .attr('height', legendContainerSettings2.height)
+                    .attr('id', 'legend-container2');
+
+
+                  var legendBoxSetting2 = {
+                    width: 50,
+                    height: 15,
+                    y: legendContainerSettings2.y + 55
+                  };
+
+                  var legend2 = svg.selectAll('g.legend2')
+                    .data(incomeDomainNEG)
+                    .enter()
+                    .append('g')
+                    .attr('class', 'legend2');
+
+                  legend2.append("text")
+                    .attr('x', legendContainerSettings2.x + 150)
+                    .attr('y', legendBoxSetting2.y - 30)
+                    .style('font-size', 15)
+                    .text(obj.vizualizationConfiguration.legend.legendText2);
+
+                  legend2.append("rect")
+                      .attr('x', function(d,i) {
+                        return legendContainerSettings2.x + 52 * i + 20;
+                      })
+                      .attr('y', legendBoxSetting2.y)
+                      .attr('width', legendBoxSetting2.width)
+                      .attr('height', legendBoxSetting2.height)
+                      .attr('fill', function(d) {
+                        return incomeColorNEG(d)
+                      })
+                      .attr('opacity', .9);
+
+                  legend2.append("text")
+                    .attr('x', function(d,i) {
+                      return legendContainerSettings2.x + 52 * i + 20;
+                    })
+                    .attr('y', legendBoxSetting2.y - 5)
+                    .style('font-size', 12)
+                    .text(function(d,i) {
+                      return "> " + legendTextNEG[i]
+                    });
+                }//end of legend Flag
+              } //end of colorscheme split flag = true
+          }//end of bubble conditional
           }//end of summarized by area
 
       logDebug(obj.vizualizationConfiguration.discretes.length);

@@ -2,7 +2,7 @@ var testObjects =
 	{
 		"1-slippy-discrete": {
 		    "vizualizationConfiguration": {
-		        "defaultMapType": "jusa",
+		        "defaultMapType": "svg",
 						"defaultMapFace": "discrete",
 		        "slippy": {
 		            "defaultLatitude": 37.4316,
@@ -1187,6 +1187,7 @@ var testObjects =
 					},
 					"discretes": [],
 					"sumAreas": {
+							"bubble": true,
 							"colorScheme": "Greens",
 							"colorRange": 6,
 							"popupTextDescription":" Total Sales: ",
